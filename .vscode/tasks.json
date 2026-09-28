@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build LaTeX Bibliography",
+			"type": "shell",
+			"command": "xelatex -interaction=nonstopmode -file-line-error main.tex && biber main && makeglossaries main && xelatex -interaction=nonstopmode -file-line-error main.tex && xelatex -interaction=nonstopmode -file-line-error main.tex",
+			"group": "build"
+		}
+	]
+}

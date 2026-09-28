@@ -81,7 +81,7 @@ This modular threading architecture allows for concurrent execution while keepin
 
 Once data is parsed and structured locally, it is transmitted to the cloud via a GraphQL \gls{api} exposed by \gls{aws} appsync. Both the \gls{pwd12} and WXT536 sensors share the same endpoint, with each message tagged by a sensor-specific identifier to allow differentiation on the backend. This unified interface simplifies the cloud integration and reduces the need for multiple endpoints or \gls{api} configurations.
 
-The cloud pipeline mirrors the architecture described in Chapter~2, specifically Figure~\ref{fig:cloudflow}, which illustrates the key services involved: appsync acts as the entry point, forwarding validated messages to a dynamodb table for temporary storage and to other backend services such as Lambda for further processing.
+The cloud pipeline relies on \gls{aws} AppSync as the main entry point, forwarding validated messages to a DynamoDB table for temporary storage and to backend services such as Lambda for further processing.
 
 This design enables near real-time access to weather and visibility data while maintaining flexibility for downstream analytics or alerting procedures. The structure also supports asynchronous operations like offline buffering and retry mechanisms, which are detailed later in Section~\ref{sec:offline-buffering}.
 
@@ -283,7 +283,7 @@ In deployments where cellular connectivity may be unstable or unavailable for lo
 
 \subsection{Evaluation of Local Storage Options}
 
-Several local buffering mechanisms were considered for storing sensor data during internet outages. Table \ref{tab:buffering_comparison} summarizes the trade-offs:
+Several local buffering mechanisms were considered for storing sensor data during internet outages. Table~\ref{tab:buffering_comparison} summarizes the trade-offs:
 
 \begin{table}[H]
 \centering\

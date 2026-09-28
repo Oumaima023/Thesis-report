@@ -19,15 +19,15 @@
 \vspace{0.5cm}
 % ------------------- English Abstract -------------------
 
-{\textbf{Development of an IOT-based Weather Sensor System for Drone Operations}}\\[-0.5cm]
+{\textbf{Design and Implementation of a Comprehensive \acrshort{oee} Framework for an Automated Transport System}}\\[-0.5cm]
 \noindent\rule{\textwidth}{0.4pt}
 {\textbf{Abstract}}
 
 
 \small
-This graduation project presents the integration of the Vaisala PWD12 visibility sensor into an existing weather station originally based on the WXT536 sensor. Deployed on a Revolution Pi controller, the system delivers real-time meteorological data for Unisphere GmbH’s NOVA platform. The hardware ensures robust RS-485 connectivity, while the modular Python software architecture provides dedicated readers and parsers managed by systemd. Local buffering with SQLite guarantees data persistence and reliable synchronization with the AWS AppSync API. The final system is resilient, extensible, and capable of supporting additional sensors with minimal effort.
+This graduation project presents an Overall Equipment Effectiveness (\acrshort{oee}) framework adapted to autonomous yard-logistics operations. The approach redefines Availability, Performance, and Quality for variable transport missions and integrates Operational Design Domain (\acrshort{odd}) constraints. A canonical data model and ingestion pipeline were developed to harmonise telemetry, manual logs, and weather data. The framework was implemented at transfer level and extended with mission-phase diagnostics. Industrial data demonstrated the calculation chain, while controlled synthetic scenarios validated the consistency and sensitivity of the implemented metrics.
 
-\textbf{Keywords:} visibility sensor, Vaisala PWD12, weather station, RS-485, Python, offline buffering, AWS AppSync
+\textbf{Keywords:} \acrshort{oee}, autonomous vehicle, yard logistics, \acrshort{odd}, canonical data model, mission-phase diagnostics
 
 
 \vspace{0.5cm}
@@ -35,7 +35,7 @@ This graduation project presents the integration of the Vaisala PWD12 visibility
 % ------------------- French Abstract -------------------
 
 
-{\textbf{Développement d’un système de capteur météo basé sur l’IoT pour les opérations\\ de drones}}\\ [-1cm]
+{\textbf{Conception et implémentation d’un cadre complet de TRS pour un système de transport automatisé}}\\ [-1cm]
 
 \noindent\rule{\textwidth}{0.4pt}
 
@@ -44,28 +44,23 @@ This graduation project presents the integration of the Vaisala PWD12 visibility
 
 \begin{french}
 \small
-Ce projet de fin d'études décrit l’intégration du capteur de visibilité Vaisala PWD12 dans une station météo existante initialement basée sur le capteur WXT536. Déployé sur un contrôleur Revolution Pi, le système fournit des données météorologiques fiables et en temps réel pour la plateforme NOVA d’Unisphere GmbH. Le matériel assure une connectivité RS-485 robuste, tandis que l’architecture logicielle modulaire en Python propose des lecteurs et parseurs dédiés, gérés par systemd. Le stockage local avec SQLite garantit la persistance des données et leur synchronisation fiable avec l’API AWS AppSync. Le système final est résilient, extensible et peut intégrer facilement d’autres capteurs.
+Ce projet présente un cadre de Taux de Rendement Synthétique (TRS) adapté aux opérations de transport autonome en environnement logistique. L’approche adapte la Disponibilité, la Performance et la Qualité aux missions variables et intègre les contraintes \acrshort{odd}. Un modèle de données canonique et une chaîne d’intégration ont été développés pour harmoniser les données télémétriques, les journaux manuels et les données météorologiques. Le cadre est appliqué au niveau des transferts et complété par une analyse des phases de mission.
 
-\textbf{Mots-clés :} capteur de visibilité, Vaisala PWD12, station météo, RS-485, Python, stockage local, AWS AppSync
+\textbf{Mots-clés :} TRS, véhicule autonome, logistique de parc, \acrshort{odd}, modèle de données canonique, phases de mission
 \end{french}
 
 
 \vspace{0.5cm}
 
-% ------------------- Arabic Abstract -------------------
-\begin{RTL}
-{\arabicfont \textbf{تطوير نظام استشعار الطقس المبني على إنترنت الأشياء لعمليات الطائرات بدون طيار}}\\[-0.3cm]
+% ------------------- Arabic Abstract (native XeTeX RTL) -------------------
+\artext{{\Large\bfseries تصميم وتنفيذ إطار شامل للفعالية الإجمالية للمعدات لنظام نقل آلي}}
+\vspace{-0.3cm}
 \noindent\rule{\textwidth}{0.4pt}
 
-{\arabicfont \textbf{ملخص}}
-
-
+\artext{{\bfseries ملخص}}
 
 \small
-{\arabicfont
-يتناول مشروع التخرج هذا دمج مستشعر الرؤية PWD12 Vaisala في محطة طقس قائمة تعتمد أساسًا على مستشعر WXT536. يتم تشغيل النظام على وحدة تحكم Pi Revolution لتوفير بيانات أرصاد جوية دقيقة وفورية لمنصة NOVA التابعة لشركة Unisphere. يضمن التصميم المادي اتصالًا متينًا عبر RS-485، بينما يعتمد البرنامج على بنية معيارية بلغة Python مع وحدات قراءة وتحليل مخصصة تُدار بواسطة systemd. يضمن التخزين المحلي باستخدام SQLite حفظ البيانات ومزامنتها بشكل موثوق مع واجهة برمجة التطبيقات AWS AppSync. النظام الناتج مرن وقابل للتوسيع ويمكنه دعم أجهزة استشعار إضافية بسهولة.
+\artext{يقدّم هذا المشروع إطارًا للفعالية الإجمالية للمعدات (\acrshort{oee}) مكيّفًا مع عمليات النقل الذاتي في الساحات اللوجستية. يعتمد الإطار على تكييف مفاهيم الإتاحة والأداء والجودة مع طبيعة مهام النقل المتغيّرة، مع دمج قيود مجال التشغيل التصميمي (\acrshort{odd}). كما تم تطوير نموذج بيانات موحّد ومسار لمعالجة ودمج بيانات القياس الآلي والسجلات اليدوية والبيانات الجوية. طُبّق الإطار على مستوى عمليات النقل، مع إضافة طبقة تشخيصية على مستوى مراحل المهمة لتحديد مواقع الخسائر بشكل أدق. واستُخدمت البيانات الصناعية لإظهار سلسلة الحساب، بينما استُخدمت سيناريوهات اصطناعية مضبوطة للتحقق من اتساق المؤشرات وحساسيتها.}
 
-\textbf{الكلمات المفتاحية:} مستشعر الرؤية، PWD12، Vaisala، محطة طقس، RS-485، Python، التخزين المحلي، AWS AppSync
-}
-\end{RTL}
+\artext{{\bfseries الكلمات المفتاحية:} الفعالية الإجمالية للمعدات، المركبات الذاتية، لوجستيات الساحات، \acrshort{odd}، نموذج البيانات، مراقبة الأداء، مراحل المهمة}
 

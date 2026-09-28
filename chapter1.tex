@@ -1,86 +1,444 @@
 
-\chapter{General Context}
+\chapter{Industrial Context and State of the Art}
 
-\section*{Introduction}
+\section{Introduction}
 
-This chapter introduces the overall context of the project. It includes a brief overview of the hosting company, its key products, and the organizational structure. This background information provides the necessary foundation to understand the environment in which the project takes place.
+Autonomous yard-logistics systems integrate industrial transport, automated driving, remote supervision, and changing environmental conditions. Evaluating their performance requires considering more than the vehicle alone. It must also account for the logistics process, operational constraints, and available data. This chapter therefore examines the industrial context and relevant state of the art.
 
-\section{Presentation of the Hosting Company}
+It first presents the host company and project environment. It then describes the autonomous yard-logistics system, its operating area, system actors, transfer workflow, mission phases, architecture, and data sources.
 
-\subsection{Unisphere GmbH}
+The theoretical foundations of Overall Equipment Effectiveness are then reviewed. The discussion focuses on its classical model, applications beyond manufacturing, and limitations for autonomous systems. The chapter also examines autonomous-vehicle metrics, ODD, SOTIF, reliability indicators, and process capability. Finally, the chapter identifies the research gap and presents the project methodology.
 
-Unisphere GmbH is a privately held company headquartered in Konstanz, Germany. Founded in 2017 by a team of aviation and technology experts, it employs a diverse group of engineers, data scientists, and aviation professionals, focusing on serving clients across Europe and internationally. \cite{unisphere_linkedin, handelsregister, unisphere_website}.
+\section{Industrial and Project Context}
 
-Operating within the aerospace and aviation technology industry, Unisphere specializes in leveraging advanced data analytics, and software development to enhance the safety and efficiency of \gls{uam} and \gls{uas}. The company aims to contribute to the development of sustainable and automated flight technologies, addressing the growing demand for innovative air transport solutions \cite{unisphere_linkedin, unisphere_website}.
+\subsection{Presentation of TII KAMAG}
 
-Its mission centers on enabling safe, efficient, and sustainable aviation through digital innovation, envisioning a future where automated and electric flight transform urban environments while maintaining the highest safety standards \cite{unisphere_linkedin, unisphere_website}.
+This graduation project was carried out at TII KAMAG, a subsidiary of the TII Group (Transporter Industry International Group), a globally recognized manufacturer of heavy-duty transport vehicles and specialized logistics solutions. Founded in 1969, TII KAMAG 
+has evolved from a small engineering company into a leading provider of innovative transport systems designed to meet the demanding requirements of heavy industries.\cite{tiikamag_linkedin} \cite{tiikamag_website}
+\begin{figure}[H]
+    \centering
 
-Since its founding, Unisphere has gained recognition for its innovative contributions, securing multiple funding rounds and establishing strategic partnerships with key industry players. The company’s experts actively participate in international aviation forums, influencing regulatory frameworks for emerging airspace technologies \cite{unisphere_linkedin, unisphere_website, uav_industry_news}.
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{images/tii-kamag-logo.png}
+        \captionof{figure}{TII KAMAG Logo}
+        \label{fig:tii-kamag-logo}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{images/tii-group.png}
+        \captionof{figure}{TII Group Logo}
+        \label{fig:tii-group-logo}
+    \end{minipage}
 
-Unisphere fosters a collaborative and innovative work culture that values interdisciplinary teamwork, continuous learning, and inclusivity. The company also emphasizes sustainability and social responsibility within its workplace practices, aligning its culture closely with its mission and vision \cite{unisphere_linkedin, unisphere_website}.
+\end{figure}
+TII KAMAG operates in several industrial domains, including automotive, aerospace, and logistics solutions for heavy-goods transport.
+As a transport-technology provider, the company is developing autonomous driving systems to improve logistics processes in heavy industry.
+This work follows two complementary directions: improving existing vehicle systems and developing solutions that can perform complex tasks autonomously in demanding environments. \\
+TII KAMAG offers a range of industrial transport solutions, focusing on advanced logistics and material-handling applications. One key product, the Kamag Precision Tractor, is a specialized terminal vehicle for transport and handling operations in logistics environments. The Kamag Precision Mover complements this solution by handling and transporting swap bodies and semi-trailers within logistics hubs and industrial yards. Logistics companies such as DACHSER have used this application for many years, demonstrating its industrial relevance. \cite{tiikamag_website} \\
 
-Figure \ref{fig:unisphere_approach} illustrates how Unisphere classifies different airspace domains based on altitude, ranging from low-level drone operations to higher-altitude \gls{evtol} and commercial aircraft operations. This classification reflects the company’s focus on developing digital infrastructure and operational tools tailored to each layer of the airspace ecosystem, which can be summarized as follows:
+These vehicles reflect TII KAMAG’s focus on intelligent technologies and autonomous driving to improve efficiency and reliability in demanding environments. The company also provides fleet management, operator training, and maintenance services to support reliable operation for its international customers.
 
-\begin{itemize}
-\item \textbf{Ground Level, Altitude < 150 m:} Focused on drone operations for various applications, including delivery and surveillance, ensuring efficient and safe operations within urban environments.
-\item \textbf{Altitude from 150 m to 3 km:} Dedicated to air taxis and other piloted or automated aircraft designed for \gls{uam}, facilitating quick and sustainable transportation across cities.
-\item \textbf{Altitude from 11 km to 20 km:} Encompasses high-altitude platforms such as solar-powered drones and airships, enabling long-endurance missions and extending connectivity and observation capabilities.
-\end{itemize}
+
+\begin{figure}[H]
+    \centering
+  \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/PrecisionTractor.png}
+    \captionof{figure}{Kamag Precision Tractor\cite{tiikamag_website}}
+        \label{fig:precision_tractor}
+  \end{minipage}
+    \hfill
+  \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/PrecisionMover.png}
+    \captionof{figure}{Kamag Precision Mover\cite{tiikamag_website}}
+        \label{fig:precision_mover}
+  \end{minipage}
+
+\end{figure}
+
+TII KAMAG operates from an industrial site comprising multiple production facilities and technical departments dedicated to the development of transport technologies. The company employs approximately 350 people who contribute to the design, manufacturing, and continuous improvement of specialized transport solutions for customers worldwide.
+\begin{figure}[H]
+    \centering
+  \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/TIIKAMAGYARD.png}  
+        \captionof{figure}{TII KAMAG Campus\cite{tiikamag_website}}
+        \label{fig:tiikamag_yard}
+  \end{minipage}
+\end{figure}
+
+
+\subsection{Project Context and Objectives}
+
+The development of autonomous transport solutions creates a need for suitable methods to evaluate their operational effectiveness. Unlike stationary production equipment, autonomous yard vehicles execute variable transport missions under changing traffic and environmental conditions. These characteristics make the direct application of classical OEE insufficient for identifying and interpreting the main sources of operational loss.
+
+Within this industrial context, the objective of this graduation project is to \textbf{design and implement an \gls{oee}-based performance measurement framework adapted to autonomous yard logistics}. The work aims to define suitable Availability, Performance, and Quality metrics, account for \GLS{odd}-related constraints. It also provides complementary indicators for deeper operational diagnosis. The framework is supported by a structured data model and implemented using the available operational data.
+
+\section{Autonomous Yard-Logistics System}
+\label{sec:industrial-operating-context}
+
+The system under study operates within the DACHSER yard, where autonomous vehicles perform swap body transfer operations in a defined industrial logistics area.
+
+\subsection{Operating Environment and System Actors}
+
+The yard is a semi-structured environment with predefined driving paths connecting multiple parking locations. Parking locations may contain swap bodies, standardized load units supported by folding legs, or no load unit. The area is shared with pedestrians and manually operated vehicles, so the autonomous system must navigate intersections, crossing areas, and changing operational conditions.
+
+Three actors are involved in the operation: the autonomous Kamag Precision Mover, which executes transport missions; the remote supervisor or safety operator, who monitors operation, manages protective stops, validates specific manoeuvres, and intervenes when necessary; and the yard operations team, which manages transport orders, mission coordination, and operational exceptions.
+
+\subsection{Swap Body Transfer Workflow}
+
+The transfer is the basic unit of operation and represents the relocation of one swap body from a source location to a destination location. It may involve two missions: a pick-up mission, during which the Kamag Precision Mover travels to the source location, positions itself beneath the swap body, and lifts it; and a set-down mission, during which the loaded vehicle transports the swap body to the destination and unloads it.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{images/unisphere_approach.jpg}
+  \includegraphics[width=0.7\textwidth]{images/dachseryard.png}
+  \caption[The Dachser Yard]{The Dachser Yard~\cite{dachser_google_maps}}
+  \label{fig:dachseryard}
+\end{figure}
+\subsection{Operational Hierarchy}
+The logistics operation is structured into three levels: transfer, mission, and mission phase. A transfer represents the complete transport order from a source location to a destination. It is composed of one or two missions depending on the transfer scenario. Each mission describes a specific part of the transport operation, such as pick-up, set-down, or repositioning. Missions are further decomposed into elementary mission phases that describe the individual actions executed by the vehicle.
+\subsection{Mission Phases and Transfer Scenarios}
+
+The vehicle operation is divided into eight mission phases, denoted MP1 to MP8. These phases cover path following, manoeuvring, insertion, load handling, extraction, and return to the predefined path. Table \ref{tab:mission-phases} summarises their definitions, while Figure \ref{fig:MPdesc} illustrates the phase sequence.
+
+\begin{figure}[H]
+  \centering
+\includegraphics[width=0.7\textwidth]{images/MPdesc.png}
+\caption{Mission Phases Representation}
+\label{fig:MPdesc}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{Canonical Mission Phases}
+  \label{tab:mission-phases}
+  \begin{adjustbox}{max width=\textwidth}
+    \begin{tabular}{|c|p{4.3cm}|c|p{5.8cm}|}
+      \hline
+      \textbf{Phase} & \textbf{Description} & \textbf{Navigation mode} & \textbf{Detailed description} \\
+      \hline
+      MP1 & Follow the predefined path & follower & The \gls{av} drives forward or backward along the predefined path to \textbf{P1} \\
+      \hline
+      MP2 & Manoeuvre toward pre-insertion point & manoeuvre & From \textbf{P1} to \textbf{P2} \\
+      \hline
+      MP3 & Insert into spot under swap body & manoeuvre & From \textbf{P2} to \textbf{P3} \\
+      \hline
+      MP4 & Pick up swap body & manoeuvre & At \textbf{P3} \\
+      \hline
+      MP5 & Insert into empty spot & manoeuvre & From \textbf{P2} to \textbf{P3} \\
+      \hline
+      MP6 & Set down swap body & manoeuvre & At \textbf{P3} \\
+      \hline
+      MP7 & Extract from spot & manoeuvre & From \textbf{P3} to \textbf{P4} \\
+      \hline
+      MP8 & Catch up the predefined path & manoeuvre & From \textbf{P4} to \textbf{P5} \\
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{table}
+
+A transfer is classified by whether each of its two missions requires long-distance travel or takes place in close proximity to the target spot:
+
+\begin{table}[H]
+  \centering
+  \caption{Transfer scenarios}
+  \label{tab:transfer-scenarios}
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{|p{3cm}|p{11cm}|}
+      \hline
+      \textbf{Scenario} & \textbf{Mission-phase sequence} \\
+      \hline
+      \textbf{classic} &
+      \parbox[t]{\linewidth}{\textbf{Mission 1: PICK\_UP}\\ MP7 $\rightarrow$ MP8 $\rightarrow$ MP1 $\rightarrow$ MP2 $\rightarrow$ MP3 $\rightarrow$ MP4\\[0.2em]
+      \textbf{Mission 2: SET\_DOWN}\\ MP7 $\rightarrow$ MP8 $\rightarrow$ MP1 $\rightarrow$ MP2 $\rightarrow$ MP5 $\rightarrow$ MP6} \\
+      \hline
+      \textbf{Close proximity pick up} &
+      \parbox[t]{\linewidth}{\textbf{Mission 1: CLOSE\_PROXIMITY\_PICK\_UP}\\ MP7 $\rightarrow$ MP2 $\rightarrow$ MP3 $\rightarrow$ MP4\\[0.2em]
+      \textbf{Mission 2: SET\_DOWN}\\ MP7 $\rightarrow$ MP8 $\rightarrow$ MP1 $\rightarrow$ MP2 $\rightarrow$ MP5 $\rightarrow$ MP6} \\
+      \hline
+      \textbf{Close proximity set down} &
+      \parbox[t]{\linewidth}{\textbf{Mission 1: PICK\_UP}\\ MP7 $\rightarrow$ MP8 $\rightarrow$ MP1 $\rightarrow$ MP2 $\rightarrow$ MP3 $\rightarrow$ MP4\\[0.2em]
+      \textbf{Mission 2: CLOSE\_PROXIMITY\_SET\_DOWN}\\ MP7 $\rightarrow$ MP2 $\rightarrow$ MP5 $\rightarrow$ MP6} \\
+      \hline
+      \textbf{Double close proximity} &
+      \parbox[t]{\linewidth}{\textbf{Mission 1: CLOSE\_PROXIMITY\_PICK\_UP}\\ MP7 $\rightarrow$ MP2 $\rightarrow$ MP3 $\rightarrow$ MP4\\[0.2em]
+      \textbf{Mission 2: CLOSE\_PROXIMITY\_SET\_DOWN}\\ MP7 $\rightarrow$ MP2 $\rightarrow$ MP5 $\rightarrow$ MP6} \\
+      \hline
+      \textbf{park (GO\_TO)} &
+      \parbox[t]{\linewidth}{\textbf{Mission 1: GO\_TO}\\ MP7 $\rightarrow$ MP8 $\rightarrow$ MP1 $\rightarrow$ MP2 $\rightarrow$ MP5\\[0.2em]
+      \textit{Single mission scenario}} \\
+      \hline
+    \end{tabular}
+  \renewcommand{\arraystretch}{0.85}
+\end{table}
+
+\subsection{System and Data Architecture}
+
+The autonomous yard logistics system consists of two layers: an onboard vehicle layer and an off-board data-management layer. During transport missions, the \gls{av} continuously generates data on vehicle states, mission execution, events, and outcomes.
+
+At the vehicle level, onboard logging records each mission's operational trace, including timestamps, mission phases, system events, and execution results. These records support the reconstruction of transport operations and the identification of performance losses.
+
+The telemetry data is transmitted to off-board systems, where fleet information is consolidated into an Automatic Telemetry Dataset. This dataset provides the main input for computing \glspl{kpi} and evaluating \gls{oee}.
+
+This architecture links autonomous operation to performance analysis: vehicle execution generates operational data, telemetry systems collect and organize it, and the resulting dataset supports the evaluation of autonomous yard effectiveness.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.3\textwidth]{images/System Architecture.png}
+  \caption{System Architecture}
+  \label{fig:systemarchitecture}
+\end{figure}
+
+\subsection{Available Data and Evaluation Constraints}
+
+This section describes the data foundation used to design and evaluate the proposed performance measurement framework.
+\begin{itemize}
+  \item \textbf{Data sources:} The framework relies on two complementary data sources. The first is the automatic dataset, generated from vehicle operation and containing machine-recorded information such as timestamps, mission phases, operational events, and execution outcomes. The second is a manual field log maintained by operators, providing additional contextual information regarding interventions, exceptions, and operational events that cannot always be fully captured through automatic telemetry alone. These two sources are combined at the transfer level to create a unified structured dataset representing each transport operation. Real operational data from both sources was analysed during the design phase to identify the data fields and input structure required by the proposed framework, and to validate that the necessary information is practically collectable from the system.
+
+
+  \item \textbf{Historical and synthetic data:} Due to limitations in data coverage and completeness, real records alone were insufficient for a comprehensive evaluation. A synthetic dataset was therefore generated following the same input schema derived from the real data, enabling controlled and reproducible testing of the framework under predefined performance scenarios while remaining consistent with real operational characteristics.
+\end{itemize}
+\begin{figure}[H]
+  \centering
+\includegraphics[width=0.4\textwidth]{images/Data provenance flow.png}
+\caption{Data Provenance Flow}
+\label{fig:datacollectioncontext}
+\end{figure}
+
+
+\section{Industrial Performance-Measurement Problem}
+
+\gls{oee} was developed to evaluate stationary manufacturing equipment operating under repetitive and predictable conditions. Its classical formulation assumes fixed production cycles, clearly defined operating states, and losses categorized as availability, performance, and quality. Under these conditions, \gls{oee} effectively measures equipment utilization and production efficiency.
+
+These assumptions do not fully apply to \glspl{av} operating in dynamic yard environments. Unlike industrial machines, \gls{av} missions are affected by travel distances, route configurations, traffic, loading and unloading operations, and interactions with people and infrastructure. Operational interruptions also cannot always be interpreted as equipment failures. An \gls{av} may stop because of safety constraints, remote-supervision requests, autonomy limitations, congestion, or environmental conditions while remaining technically functional.
+
+Applying conventional \gls{oee} to autonomous yard operations may therefore obscure the true causes of performance losses by grouping fundamentally different events into identical categories. Mechanical failures, autonomy-related limitations, safety interventions, and environmental constraints require separate interpretation to support effective operational decisions.
+
+Current autonomous-driving metrics, such as disengagement rate and intervention frequency, primarily evaluate autonomy and safety. However, they do not measure the overall effectiveness of logistics operations. Traditional \gls{oee}, measures equipment efficiency but lacks the operational states and loss categories required for autonomous vehicles. This creates a measurement gap: existing approaches cannot precisely determine the useful transport work performed by an autonomous fleet.
+
+A dedicated performance-measurement framework is therefore required for autonomous yard logistics. Such a framework should preserve the industrial relevance of \gls{oee} while adapting its time hierarchy, performance indicators, and loss classification to mission variability, autonomy-specific events, supervision requirements, and operational constraints. This work addresses this need by developing an \gls{oee}-based performance-measurement approach for the autonomous transport system deployed in the DACHSER yard.
+
+\section{Overall Equipment Effectiveness Foundations}
+
+This section presents the foundations of \gls{oee} and its relevance to autonomous yard logistics. It reviews the classical \gls{oee} framework, its extension beyond manufacturing, and the assumptions underlying its main factors. It also introduces the Six Big Losses and relevant industrial standards. These foundations provide the basis for identifying the limitations that motivate the adapted framework proposed in this work.
+\subsection{Origins and Rationale of OEE}
+ \gls{oee} is a key manufacturing metric used to quantify production efficiency by identifying and reducing operational losses. Seiichi Nakajima introduced the concept in 1988 as part of Total Productive Maintenance (\gls{tpm}), a methodology developed by the Japan Institute of Plant Maintenance.\cite{nakajima1988tpm} The objective of \gls{tpm} is to maximize equipment effectiveness throughout its lifecycle through a comprehensive maintenance system involving all departments and employees.
+
+Nakajima's work provided a structured method for evaluating equipment performance beyond simple uptime. OEE combines equipment availability, operating speed, and product quality to reveal the capacity lost through inefficiencies. This lost capacity is often described as the ``Hidden Factory.'' By separating overall effectiveness into distinct factors, OEE supports targeted improvement actions and waste reduction.
+\subsection{Availability, Performance, and Quality}
+OEE is calculated as the product of three factors:
+\[
+\mathrm{OEE} = A \cdot P \cdot Q
+\]
+Availability, Performance, and Quality represent different types of operational loss:
+\begin{itemize}
+    \item \textbf{Availability} measures the proportion of scheduled operating time during which the equipment is running. It accounts for downtime losses such as breakdowns, setups, and adjustments.
+    \item \textbf{Performance} compares the actual operating speed with the ideal cycle time. It accounts for losses caused by minor stops and reduced speed.
+    \item \textbf{Quality} measures the proportion of good products in the total output. It accounts for losses caused by defects and rework.
+\end{itemize}
+\subsection{Fixed-Cycle Assumption}
+Classical OEE relies on a fixed-cycle assumption. For a given product, the ideal production cycle is assumed to remain constant. This cycle provides the reference for measuring actual operating speed and calculating the Performance factor. Deviations from the ideal cycle, including minor stops and reduced speed, are therefore classified as performance losses.
+
+This assumption is effective in stable and repetitive manufacturing environments. However, it becomes difficult to apply to dynamic systems whose mission durations and operating conditions vary. This limitation is particularly important when extending OEE to autonomous vehicles.
+\subsection{The Six Big Losses}
+Nakajima's OEE framework classifies production inefficiencies into the ``Six Big Losses.''\cite{nakajima1988tpm} This taxonomy provides a structured method for identifying the main causes of equipment underutilization:
+\begin{enumerate}
+    \item \textbf{Equipment Failure (Availability Loss):} unplanned downtime caused by breakdowns or technical faults.
+    \item \textbf{Setup and Adjustment (Availability Loss):} planned downtime required to prepare the machine for a different production run.
+    \item \textbf{Idling and Minor Stops (Performance Loss):} brief interruptions or jams that temporarily stop production.
+    \item \textbf{Reduced Speed (Performance Loss):} operation at a speed below the theoretical maximum.
+    \item \textbf{Process Defects (Quality Loss):} scrap or defective parts produced during steady-state operation.
+    \item \textbf{Reduced Yield (Quality Loss):} defective parts produced during startup or production transitions.
+\end{enumerate}
+The Six Big Losses are highly effective for static and repetitive manufacturing processes because they provide a clear structure for continuous improvement. However, their direct application to autonomous yard logistics requires adaptation to mobile operation, variable missions, and autonomy-related events.
+\begin{figure}[H]
+   \centering
+  \includegraphics[width=0.8\textwidth]{images/Time-model-for-OEE-measuring.jpg}
+  \caption[Major Losses and Computation of OEE]{Major Losses and Computation of OEE\cite{sciencedirect_oee_figure}}
+  \label{fig:hard}
+\end{figure}
+\subsection{Industrial Standards and Guidelines}
+Several standards and industrial guidelines support the consistent definition and measurement of OEE-related indicators:
+\begin{itemize}
+  \item \textbf{ISO 22400-2:2014:} This standard defines KPIs for manufacturing operations management. It provides formal definitions for indicators such as Availability, which is calculated as the ratio of Operating Time to Planned Production Time.\cite{iso22400_2_2014}
+
+  \item \textbf{SEMI E10:} Developed for the semiconductor industry, this standard defines equipment states and provides a framework for measuring reliability, availability, and maintainability (\gls{ram}). It distinguishes states such as Productive, Standby, and Unscheduled Downtime.\cite{semi_e10_ram} SEMI E79 extends this framework to define OEE for semiconductor manufacturing equipment.
+
+  \item \textbf{VDMA guidelines:} Guidelines such as VDMA 66412 support the standardization of manufacturing execution system (\gls{mes}) KPIs. They are generally aligned with ISO 22400 and provide guidance for data collection and analysis, with particular emphasis on technical availability.
+\end{itemize}
+\section{OEE Beyond Manufacturing}
+While OEE originated in discrete manufacturing, its underlying principles of identifying, classifying, and quantifying operational losses have gradually been extended to other industrial domains. As automation has expanded beyond traditional production lines, researchers have explored the application of OEE to logistics, warehousing, and mobile robotic systems. Although the fundamental objective remains the maximization of asset effectiveness, the transition from stationary production equipment to mobile autonomous systems requires substantial adaptation of both performance indicators and loss definitions.
+\subsection{OEE in Logistics and Material-Handling Systems}
+The application of OEE has progressively expanded from manufacturing equipment to automated material handling systems, including conveyor systems, sorting equipment, \glspl{agv}, and \glspl{amr}. These technologies play an increasingly important role in modern intralogistics by automating material transportation and improving operational efficiency.
+
+\subsection{Adaptation of OEE Components to Mobile Systems}
+Existing research shows that the three classical OEE dimensions remain applicable to mobile robotic systems, but require reinterpretation. Availability reflects vehicle readiness and downtime, Performance focuses on mission execution efficiency and speed, and Quality considers successful and error-free mission completion. Thus, OEE shifts from measuring machine productivity to evaluating the effectiveness and utilization of autonomous material handling systems~\cite{fragapane2021intralogistics}.
+\begin{figure}[H]
+   \centering
+  \includegraphics[width=0.3\textwidth]{images/oee_evolution.png}
+  \caption[Evolution of OEE applications]{Evolution of OEE applications in logistics and mobile robotic systems.}
+  \label{fig:oee-evolution}
   
-  \caption{Unisphere’s technology-driven approach for reliable,\\ automated flight operations from the ground to the stratosphere.\cite{unisphere_website}}
-  \label{fig:unisphere_approach}
 \end{figure}
+\subsection{Adaptation of the Six Big Losses}
+Applying \gls{oee} to mobile logistics also requires reinterpreting Nakajima's Six Big Losses. The original loss taxonomy was developed for stationary production equipment. Therefore it does not adequately represent the operational characteristics of autonomous mobile systems operating in dynamic environments.
 
+Within \glspl{agv} and \glspl{amr} applications, traditional setup and adjustment losses are commonly associated with battery refueling, software updates, vehicle initialization, or task assignment procedures. Idling and minor stoppages are frequently caused by obstacle avoidance, traffic congestion, waiting at intersections, or temporary interactions with human operators. Reduced speed losses arise when vehicles intentionally decrease their speed due to safety constraints, congestion, or navigation requirements. Likewise, process defects are reinterpreted as failed missions, misplaced loads, delivery inaccuracies, or navigation errors requiring manual intervention or mission repetition.
 
+These adaptations demonstrate that although the philosophy of loss identification remains applicable, the nature of the losses changes significantly when moving from fixed manufacturing equipment to autonomous mobile systems. Consequently, several studies emphasize the need for specialized loss taxonomies that accurately represent the operational behavior of autonomous logistics vehicles.
+\begin{table}[!ht]
+\renewcommand{\arraystretch}{1.5}
+\centering
+\caption{Adaptation of Nakajima's Six Big Losses to Mobile Logistics}
+\label{tab:mobile-logistics-losses}
+\begin{tabular}{|p{5cm}|p{9cm}|}
+\hline
+\textbf{Classical Six Big Loss} & \textbf{Mobile Logistics Interpretation} \\
+\hline
+Equipment failures & Vehicle hardware or software failures \\
+\hline
+Setup and adjustment & Battery refueling, software updates, vehicle initialization, task assignment \\
+\hline
+Idling and minor stops & Obstacle avoidance, traffic congestion, waiting at intersections or doors \\
+\hline
+Reduced speed & Speed reduction due to safety constraints, congestion, or navigation \\
+\hline
+Process defects & Failed missions, misplaced loads, delivery errors, navigation failures \\
+\hline
+Startup losses & Localization, calibration, or system initialization errors \\
+\hline
+\end{tabular}
+\end{table}
+\subsection{Limitations of OEE for Autonomous Systems}
 
-\subsection{Solar Impulse Project}
+Despite these adaptations, applying classical \gls{oee} directly to autonomous systems remains challenging, particularly in outdoor logistics environments. Autonomous vehicles differ from conventional manufacturing equipment in several ways, which complicates the interpretation of the traditional \gls{oee} factors.
 
-The Solar Impulse project, renowned for achieving the first solar-powered circumnavigation of the globe, played a pivotal role in the founding of Unisphere GmbH. This groundbreaking initiative, led by Bertrand Piccard and André Borschberg, showcased the potential of sustainable aviation by completing a 40,000-kilometer journey without a single drop of fuel. The aircraft, Solar Impulse 2, was equipped with 17,000 solar cells powering its electric motors and charging its batteries, enabling night flights and setting multiple aviation records.\cite{unisphere_website} \cite{solar_impulse_official}
+First, autonomous vehicles operate in changing environments affected by traffic, weather, pedestrians, and interactions with other vehicles. Unlike production machines operating under controlled conditions, variations in mission duration may result from environmental conditions rather than equipment inefficiency.
 
-The operational challenges encountered during the Solar Impulse mission, particularly the aircraft's sensitivity to weather conditions due to its lightweight, electric-propelled design, necessitated innovative approaches to flight planning and operations management. A significant portion of Unisphere's leadership and technical teams previously worked on the Solar Impulse project, where they were responsible for flight planning and operations. Their experience in simulation-based flight planning, assessing over 2,000 airports worldwide, and analyzing extensive historical weather data laid the foundation for Unisphere's development. This expertise has been instrumental in creating Unisphere's high-value services aimed at addressing real-life operational challenges in the realm of innovative air mobility.\cite{unisphere_website}
+Second, the fixed-cycle assumption of classical \gls{oee} is difficult to apply. Mission durations vary with travel distance, route complexity, traffic, obstacle avoidance, and operational priorities. As a result, defining a single ideal cycle time as a meaningful performance benchmark is difficult.
 
-To visually represent the global scope and historical achievement of the Solar Impulse mission, figure \ref{fig:solar_impulse} illustrates the full circumnavigation route undertaken by Solar Impulse 2. The map highlights key stopovers across Asia, North America, Europe, and the Middle East during its journey around the world. This mission not only demonstrated the feasibility of solar-powered flight but also laid the operational and technological foundation that would later inspire the creation of Unisphere GmbH\cite{solar_impulse_official}.
+Finally, autonomous systems generate operational events that have no direct equivalent in conventional manufacturing. Human interventions, remote-operator takeovers, disengagements, and autonomous decision-making failures represent additional loss categories that the traditional \gls{oee} framework does not adequately capture. These events affect operational effectiveness and must therefore be considered when adapting \gls{oee} to autonomous vehicles.
+\section{Performance Measurement of Autonomous Vehicles}
+Evaluating autonomous vehicles requires a broader perspective than traditional indicators such as speed, fuel consumption, and travel distance. In industrial environments, performance depends on the vehicle's ability to execute assigned missions safely, reliably, and efficiently.
+
+Unlike conventional vehicles, autonomous systems depend on the interaction between perception, decision-making, navigation, and environmental conditions. Evaluation therefore requires several frameworks and \glspl{kpi} covering autonomy, safety, reliability, and operational effectiveness.
+\subsection{Levels of Driving Automation}
+The SAE J3016 standard defines six levels of driving automation, ranging from Level 0 (no automation) to Level 5 (full automation). These levels describe how driving tasks are distributed between the human driver and the automated driving system.
+
+Level 4 automation is particularly relevant to autonomous yard logistics. At this level, the \gls{ads} performs all driving tasks without human intervention within a defined \gls{odd}. Level 4 systems are therefore suitable for controlled industrial environments such as logistics yards, where operating conditions can be constrained and monitored.
+\begin{figure}[H]
+   \centering
+  \includegraphics[width=0.4\textwidth]{images/SAE-J3016-levels-of-driving-automation_W640.jpg}
+  \caption[SAE Automation Levels]{SAE Automation Levels~\cite{sae_j3016_rg}}
+  \label{fig:sae-levels}
+  
+\end{figure}
+\subsection{Autonomous-Vehicle Performance Metrics}
+Autonomous vehicles are commonly evaluated using multiple \glspl{kpi}, each addressing a specific aspect of system behaviour. Unlike manufacturing systems, which often use \gls{oee} as an integrated measure of effectiveness, autonomous-vehicle research generally uses separate metrics for autonomy, safety, reliability, and operational efficiency.
+
+Existing review studies indicate that no universally accepted framework comprehensively evaluates autonomous-vehicle performance. Most available metrics focus on individual dimensions rather than overall operational effectiveness. The main metrics used in this context are summarized in Table~\ref{tab:av-performance-metrics}.
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.5}
+\centering
+\caption{Common Performance Metrics for Autonomous Vehicles}
+\label{tab:av-performance-metrics}
+\begin{tabular}{|p{3cm}|p{6cm}|p{5cm}|}
+\hline
+\textbf{KPI} & \textbf{Description} & \textbf{Performance Aspect} \\
+\hline
+Mission Success Rate & Percentage of missions completed successfully without failure & Mission effectiveness \\
+\hline
+Intervention / Disengagement Rate & Frequency of human intervention or autonomous disengagement & Autonomy and reliability \\
+\hline
+Technical Availability & Percentage of time the vehicle is operationally ready & System readiness \\
+\hline
+Mission Cycle Time & Time required to complete a transport mission & Operational efficiency \\
+\hline
+Fleet Utilization & Percentage of vehicles actively performing missions & Asset utilization \\
+\hline
+\end{tabular}
+\end{table}
+\subsection{Operational Design Domain}
+The \gls{odd} defines the conditions under which an \gls{ads} is designed to operate safely and effectively. It describes the limits of the system's operational capability. These limits depend on environmental and operational factors. They also determine when autonomous operation can continue without human intervention.
+
+For autonomous yard vehicles, the \gls{odd} specifies the areas in which the vehicle can operate. It also defines the conditions required for autonomous operation. These conditions include the infrastructure, road layout, weather, lighting, traffic, and presence of dynamic obstacles. They may also include speed restrictions, visibility requirements, and interaction with pedestrians or manually operated vehicles.
+\subsection{ODD, SOTIF, and Performance Measurement}
+ISO 34503 provides a structured approach for describing the \gls{odd} of automated driving systems. It organizes ODD characteristics into categories such as scenery, environmental conditions, and dynamic elements~\cite{iso34503_2023}.
+
+Figure~\ref{fig:odd-components} illustrates these ODD components. Together, they define the context in which an automated driving system must operate safely. A change in any of these components may affect the vehicle's ability to continue autonomous operation.
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{images/solarimpulse.png}
-  \caption{Global flight path of Solar Impulse 2.\cite{unisphere_website}}
-  \label{fig:solar_impulse}
+   \centering
+  \includegraphics[width=0.6\textwidth]{images/odd_components.png}
+  \caption[ODD Components]{Operational Design Domain Components~\cite{iso34503_2023}}
+  \label{fig:odd-components}
 \end{figure}
 
+The \gls{sotif} concept, defined by ISO 21448, addresses safety risks caused by functional limitations of an automated system rather than hardware failures~\cite{iso21448_2022}. This concept is important for autonomous vehicles operating in complex environments, where unexpected situations may occur even when the hardware remains functional.
 
-Unisphere offers a range of digital tools and platforms designed to support the safe and efficient operation of unmanned and automated aircraft. These solutions target different aspects of flight operations, from real-time weather monitoring to advanced mission simulation and data-driven operational analysis. The main products and services are presented below.
+For example, fog or other conditions that reduce visibility may prevent an autonomous vehicle from continuing safely despite the correct operation of its hardware components.
 
-\subsection{Products and services}
 
-\subsubsection{NOVA Platform}
+The distinction between \gls{odd} exclusions and technical failures is therefore important. A technical failure occurs when a system component does not operate as intended, such as in the case of a sensor malfunction, communication failure, or software error. An \gls{odd} exclusion occurs when the vehicle encounters conditions outside its defined operational boundaries, such as heavy rain, dense fog, or insufficient visibility. In this case, the vehicle may remain technically functional but unable to continue autonomous operation.
 
-Unisphere GmbH's NOVA Operations Platform is a comprehensive solution designed to streamline and automate drone flight operations. It integrates advanced weather intelligence, centralized asset management, and intuitive mission planning tools to enhance safety and efficiency for professional drone airlines.\cite{unisphere_website}
-The NOVA platform is a modular system designed to ingest various types of data, process and analyze it in real time, and support decision-making through a user-friendly interface. Its architecture includes several functional layers: data ingestion, processing and analytics, automation and decision support, and cloud services. These components work together to provide real-time insights into weather conditions, airspace constraints, and operational risks.
+This distinction affects the adaptation of \gls{oee} to autonomous vehicles. In conventional manufacturing, Availability losses are mainly associated with equipment breakdowns, maintenance, and setup activities. Autonomous vehicles introduce additional sources of unavailability related to environmental and operational constraints. ODD exclusions should therefore be treated as a distinct category of operational loss when evaluating the Availability factor.
+\section{Complementary Performance Indicators}
+Although OEE provides a holistic measure of operational effectiveness through the integration of Availability, Performance, and Quality, it does not fully characterize all aspects of autonomous system behaviour. In particular, reliability engineering metrics provide insight into failure behaviour and maintainability, while statistical quality methods allow the evaluation of operational consistency and variability.
+\subsection{Reliability and Maintainability Metrics}
+\label{sec:reliability_state_art}
+Reliability engineering provides established methods for evaluating the robustness and maintainability of complex systems. For autonomous vehicles, these metrics are particularly relevant because operational effectiveness depends not only on task execution but also on the ability of the system to remain available and recover from failures.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=1\textwidth]{images/nova arch.png}
-  \caption{Functional Architecture of the NOVA Platform}
-  \label{fig:novaarch}
-\end{figure}
-
-Figure \ref{fig:novaarch} illustrates the functional architecture of the NOVA platform, including its interaction with external data sources such as weather sensors, flight plans, \gls{notams}, and terrain data. Each layer performs a dedicated role, ensuring secure and efficient data flow from input to user interface.
-
-Key features of the NOVA platform include:
+The main reliability indicators include:
 
 \begin{itemize}
-    \item \textbf{Smart Dispatching: }  Consolidates all missions in one interface, enabling efficient resource management through automated weather assessments for the upcoming seven days. \cite{unisphere_website}
-    \item \textbf{Asset Management: } Centralizes the management of various aircraft types and their operational limits, ensuring compliance across the organization. \cite{unisphere_website}
-    \item \textbf{Team Assignment: } Provides teams with access to comprehensive weather data pertinent to their drone missions, facilitating informed decision-making. \cite{unisphere_website}
-    \item \textbf{All-in-One Weather Tool: } Combines rain radar, weather observations, and high-resolution forecasts into a single, globally accessible platform. \cite{unisphere_website}
-    \item \textbf{Efficient Flight Planning: } Enables quick go/no-go decisions based on automated evaluations of weather conditions in conjunction with specific mission parameters. \cite{unisphere_website}
-    \item \textbf{Weather Intelligence: } Automatically identifies optimal flight windows with favorable weather conditions over the next 48 hours. \cite{unisphere_website}
+  \item \textbf{Failure Rate ($\lambda$):} represents the frequency at which failures occur during operation. For systems with an approximately constant failure rate, it is commonly related to \gls{mtbf} as:
 \end{itemize}
+
+\[
+\lambda = \frac{1}{\mathrm{MTBF}}
+\]
+
+\begin{itemize}
+  \item \textbf{\gls{mtbf}:} represents the average operating time between two consecutive failures. A higher \gls{mtbf} indicates improved reliability and fewer interruptions caused by system faults.
+  \item \textbf{\gls{mttr}:} represents the average time required to restore the system after a failure. A lower \gls{mttr} indicates improved maintainability and faster recovery.
+\end{itemize}
+
+These reliability indicators can be combined to estimate technical availability:
+
+\[
+A = \frac{\mathrm{MTBF}}{\mathrm{MTBF} + \mathrm{MTTR}}
+\]
+
+This availability definition describes the proportion of time that a system is operational from a reliability perspective. It directly relates to the Availability component of OEE; however, the two concepts are not identical. Reliability-based availability focuses on the technical state of the system, while OEE Availability considers whether the asset is available for productive operation within the planned production or operational period.
+\subsection{Process Capability}
+Process capability indices $C_p$ and $C_{pk}$ are statistical measures used to evaluate how well a process operates within predefined specification limits~\cite{six_sigma_cp_cpk}. For a process characteristic with lower and upper specification limits (\gls{lsl} and \gls{usl}), process mean $\mu$, and standard deviation $\sigma$, the capability indices are defined as:
+
+\[
+C_p = \frac{\mathrm{USL} - \mathrm{LSL}}{6\sigma}
+\]
+
+\[
+C_{pk} = \min\left(\frac{\mathrm{USL} - \mu}{3\sigma}, \frac{\mu - \mathrm{LSL}}{3\sigma}\right)
+\]
+
+The $C_p$ index represents the potential capability of a process by evaluating the ratio between the allowed specification range and the natural process variability. However, it assumes that the process is perfectly centred. The $C_{pk}$ index additionally considers the deviation of the process mean from the target value and therefore provides a more realistic evaluation of the actual process capability.
+
+In the context of autonomous yard logistics, capability analysis provides complementary information to OEE by addressing the variability of execution performance. While OEE Performance evaluates the loss between actual and ideal execution rates, $C_p$ and $C_{pk}$ quantify the consistency with which repeated operations remain within an expected execution-time range. Therefore, capability analysis directly relates to the fixed-cycle assumption discussed earlier in this chapter, as it evaluates how closely actual mission durations follow the nominal cycle time. This aspect is particularly relevant for autonomous systems, where execution times may vary due to traffic interactions, obstacle avoidance, and dynamic operational conditions.
+
+\section{Research Gap and Project Positioning}
+
+The literature review shows that existing approaches provide valuable tools for evaluating industrial and autonomous systems; however, several limitations remain when applying them to autonomous yard logistics.
+
+Classical OEE was developed for stable manufacturing environments with repetitive operations and predefined cycle times. Its direct application to autonomous vehicles is challenging due to variable mission durations caused by traffic interactions, obstacle avoidance, environmental conditions, and operational constraints. Therefore, the \textbf{fixed-cycle assumption underlying the traditional Performance factor requires adaptation}.
+
+Furthermore, autonomous vehicle evaluation relies on multiple \glspl{kpi}, such as mission success rate, intervention rate, technical availability, and fleet utilization. While these metrics assess specific aspects of operation, they are generally considered independently and do not provide an integrated measure combining availability, performance, and quality losses.
+
+Autonomous systems also introduce new sources of operational unavailability. In particular, \textbf{\gls{odd}-related limitations must be distinguished from technical failures}, as a vehicle may remain functional but unable to operate under certain environmental conditions. Such losses are not explicitly represented in classical OEE frameworks.
+
+Additionally, reliability metrics (\gls{mtbf}, \gls{mttr}) and capability indices ($C_p$ and $C_{pk}$) provide complementary information regarding system robustness and execution-time consistency, but they are rarely integrated with OEE for autonomous logistics applications.
+
 
 %To visually represent the capabilities of the NOVA Operations Platform, its user-friendly interface, and how it integrates various operational aspects into a cohesive system, the following figure from Unisphere's official website can be included:
 
@@ -89,148 +447,30 @@ Key features of the NOVA platform include:
 %  \includegraphics[width=0.9\textwidth]{images/NOVA.jpg}
 %  \caption{NOVA Platform interface for mission planning and weather tools.}
 %  \label{fig:nova}
-%\end{figure}
+%
 
 
-\subsubsection{Operational Analysis}
+\section{Project Methodology and Work Plan}
 
-The Operational Analysis module is part of the NOVA platform and is designed to evaluate both simulated and historical flight operations. It enables operators and engineers to assess mission feasibility, flight safety, and aircraft performance under varying environmental and regulatory constraints.\cite{unisphere_website}
+\subsection{Development Approach}
 
-This module works by combining different input data layers, such as terrain, airspace structure, aircraft characteristics, mission profiles, and meteorological conditions. These are used to simulate flight paths and compute key safety indicators, including trajectory deviation, maximum climb or sink rates, battery state-of-charge, and other aircraft limitations.\cite{unisphere_website}
+The internship followed a structured yet flexible approach inspired by Agile principles. Rather than relying on a rigid predefined plan, the work progressed incrementally through data analysis, KPI definition, implementation, testing, and validation. Each stage was reviewed and refined based on practical findings and technical feedback.
 
-Unlike the NOVA real-time simulation tools (NOW, AWARE, CAST), which support operational decision-making during or prior to a mission, the Operational Analysis module is tailored for post-flight assessment and long-term mission planning. It allows users to conduct detailed evaluations of operational performance and weather impact across timeframes ranging from a single day to an entire year.
-
-Unisphere’s Operational Analysis supports four main types of analysis:
-
-\begin{itemize}
-    \item \textbf{Wind Analysis:} Identifies wind characteristics by altitude, location, and time of day, providing insights into vertical flight feasibility.\cite{unisphere_website}
-    \item \textbf{Service Availability:} Quantifies how often a given flight path or operation is feasible under weather and airspace constraints.\cite{unisphere_website}
-    \item \textbf{Track Analysis:} Evaluates route-specific performance metrics under simulated historical weather conditions.\cite{unisphere_website}
-    \item \textbf{Benchmark Analysis:} Compares different operational sites or conditions to identify optimal performance zones.\cite{unisphere_website}
-\end{itemize}
-
-Figure \ref{fig:oa} illustrates the data flow and safety indicators generated by the Operational Analysis module. It shows how multiple input layers—including terrain, weather, aircraft data, and mission plans—are integrated to feed the simulation engine. This engine produces operational indicators that allow engineers to identify risk patterns, detect exceedance of defined thresholds, and ensure compliance with aviation standards such as the \gls{easa}’s 95\% usability requirement.\cite{unisphere_website}
+The first steps focused on understanding the OEE methodology, system architecture, and available data. The work then progressed toward data preparation, KPI computation, validation, and reporting. Regular exchanges with the company supervisor and updates to the academic supervisor ensured continuous alignment with the project objectives.
+\subsection{Project Timeline}
+The internship spanned a total of six months, from March 2026 to August 2026. The project was divided into clear, consecutive phases to ensure efficient progress and a logical development workflow. The following timeline outlines the major milestones and activities:
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{images/OA.png}
-  \caption{Input Layers and Safety Metrics Generated by the Operational Analysis Module.\cite{unisphere_website}}
-  \label{fig:oa}
-\end{figure}
-
-This module plays a critical role in long-term flight optimization, infrastructure planning, and safety evaluation, especially in \gls{aam} contexts where novel aircraft and unstructured airspace introduce additional uncertainty.
-
-
-\subsubsection{U-Space Weather Service}
-
-The U-Space Weather Service is designed to meet the emerging regulatory and operational needs of drone traffic management in designated U-Space airspaces. This service seamlessly integrates real-time and forecast weather information—sourced from both local sensors and global weather models—and delivers them through a standardized \gls{api}, fully compliant with \gls{easa} Regulation (EU) 2021/664 \cite{unisphere_website}. 
-
-Figure~\ref{fig:wis} illustrates the system workflow: multiple weather service providers deliver data to Unisphere’s Weather Information Service (WIS) through interfaces such as FTP or dedicated APIs. The WIS consolidates and processes this information before exposing it via a REST API to U-Space Service Providers (USSPs) or similar traffic management systems, which in turn provide operational weather intelligence to end users. This architecture ensures that drone operators and other stakeholders can access harmonized, high-quality weather data through a single integration point.
-
-Unisphere’s weather service enhances operational reliability in U-Space environments by automating complex meteorological calculations. It manages multiple weather variables—like wind, visibility, precipitation, and cloud ceilings—allowing operators to assess mission feasibility, flight risk, and contingency planning. As described on Unisphere’s website, this tool aims to streamline \gls{bvlos} drone and \gls{evtol} operations by delivering “best-in-class weather intelligence” through simplified integrations \cite{unisphere_website}.
-
-In addition, the service supports infrastructure-level insights by offering business-case analysis for vertiport planning. For example, it helps determine site suitability by estimating weather availability, identifying optimal approach routes, and evaluating seasonal weather patterns \cite{unisphere_website}.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{images/wis.png}
-  \caption{Workflow of the U-Space Weather Service.}
-  \label{fig:wis}
-\end{figure}
-
-
-
-\subsection{Company Structure and Organization}
-
-Unisphere GmbH maintains a flat and collaborative organizational structure that supports agile development and cross-functional coordination. The company is led by an Executive Bureau composed of the \gls{ceo}, \gls{cto}, and \gls{coo}. While the \gls{ceo} oversees general strategy and administration—including human resources and finance, the \gls{cto} supervises the Software Development and Engineering Teams, and the \gls{coo} handles operations and sales.
-
-The development team is divided into frontend and backend roles, while the engineering team includes domain experts such as aerospace engineers. This structure encourages continuous communication across technical and strategic departments, ensuring that product development aligns with client needs and regulatory demands.
-
-Figure \ref{fig:org} provides an overview of Unisphere’s internal organizational structure.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.9\textwidth]{images/org.png}
-  \caption{Organizational Structure of Unisphere GmbH}
-  \label{fig:org}
-\end{figure}
-
-
-
-
-\section{Project Overview}
-
-\subsection{Background and Motivation}
-
-The integration of \gls{aam} systems, such as \gls{evtol} aircraft, is gaining momentum globally. A key milestone in this direction is the construction of the world's first permanent commercial vertiport near \gls{dxb}, launched in November 2024. The project, led by \textbf{Skyports Infrastructure} in partnership with the \textbf{\gls{rta} of Dubai}, aims to enable air taxi services with \textbf{Joby Aviation} by early 2026. \cite{skyports_vertiport_dubai}
-
-
-
-\textbf{Unisphere GmbH} was selected to provide the weather data infrastructure for this pioneering vertiport project through its integrated weather station system and the \textbf{NOVA platform}, which is central to Unisphere’s portfolio of drone operation management tools. \textbf{Since visibility data is a mandatory requirement} for \gls{evtol} operations under \gls{vfr}, the integration of a dedicated visibility sensor became essential. This provided an opportunity for Unisphere to extend its weather station capabilities, which previously focused on parameters such as wind, temperature, and precipitation, to now also include \textbf{visibility measurement} through sensors like the Vaisala \gls{pwd12}.
-
-This project fits into Unisphere’s broader strategy of continuously enhancing its simulation and operational analysis capabilities. While the vertiport use case was a primary driver, the addition of visibility data has broader applications for Unisphere’s other flight models, simulations, and operational planning tools. The goal is to provide highly accurate and localized weather data to optimize flight performance, ensure safety, and support strategic decision-making.
-
-Figure \ref{fig:dxv} shows a conceptual rendering of the vertiport infrastructure being constructed in Dubai. As one of the first operational hubs for \gls{evtol} air taxi services, this facility illustrates the real-world application context of the weather data integration carried out during the internship.
-
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.9\textwidth]{images/skyports.jpg}
-  \caption{The \gls{dxv}, adjacent to \gls{dxb}, the first commercial vertiport facility to receive technical design approval from the UAE. \cite{skyports_vertiport_approval}}
-  \label{fig:dxv}
-\end{figure}
-
-
-%From a personal perspective, the project was highly motivating due to its interdisciplinary nature, combining \textbf{hardware integration}, \textbf{embedded systems}, and \textbf{cloud technologies}, all in the context of a highly innovative and fast-growing industry. Although the intern had previous experience with sensors and embedded systems, this was the first exposure to cloud integration and large-scale infrastructure using platforms like \gls{aws}. It also offered a unique opportunity to deepen knowledge in \textbf{aviation}, \textbf{meteorology}, and \textbf{Linux-based systems}, making it a rich and formative technical experience.
-
-%Ultimately, the project’s outcome is expected to enhance Unisphere’s ability to support real-time decision-making for pilots and U-space service providers by delivering precise, site-specific environmental data. This is crucial for safe and efficient \gls{uav} operations and aligns with the broader vision of \textbf{increasing global integration of autonomous aviation systems}.
-
-\subsection{Project Context and Environment}
-
-The integration task was conducted within the framework of an existing weather monitoring system already in use by Unisphere GmbH. This system consisted of a Vaisala WXT536 sensor, which collected weather parameters such as wind speed, temperature, humidity, pressure, and precipitation. The sensor was connected via \gls{rs485} to a \gls{revpi} Connect+ industrial controller, where the data was parsed, validated, and transmitted to the cloud through \gls{aws} AppSync for use in the NOVA platform.
-
-The system was modular and already deployed in operational settings. Its primary purpose was to provide high-resolution, localized weather data for real-time flight simulation, monitoring, and operational analysis. Due to its architecture and reliability, the \gls{revpi}-based platform was considered suitable for extending with additional functionality. However, incorporating a second sensor required careful consideration of the existing communication interfaces, data processing logic, and system scalability.
-
-%\begin{figure}[H]
-%  \centering
-%  \includegraphics[width=0.51\textwidth]{images/archi.png}
-%  \caption{High-Level Architecture of the Weather Station System and Cloud Integration}
-%  \label{fig:archi}
-%\end{figure}
-
-
-\subsection{Problem Statement and Challenges}
-
-Despite the robustness of the existing system, a key functional limitation remained: the absence of a visibility measurement parameter, the quantitative estimation of meteorological visibility distance, expressed in meters, which is essential for \gls{evtol} operations conducted under \gls{vfr}. Under these flight rules, pilots and autonomous systems rely on sufficient visual range to navigate safely, particularly during approach and landing phases. Without accurate visibility readings, the platform could not fully support mission planning and feasibility analysis for \gls{aam} use cases such as the Dubai vertiport project.
-
-Addressing this limitation required the addition of a dedicated visibility sensor, as the existing Vaisala WXT536 in the weather station does not measure this parameter. The chosen solution was to integrate a Vaisala \gls{pwd12}, which not only measures visibility but also reports present weather conditions such as precipitation type and intensity — further enriching the dataset available for operational decision-making.
-
-The technical integration of this second sensor posed several challenges. These included ensuring compatibility with the \gls{revpi}’s serial interfaces, managing multiple communication ports with different baud rates, and adapting the system’s data handling logic to support an additional data stream with a different message structure. Early testing efforts also faced logistical issues, such as hardware availability, power supply setup, and validating sensor outputs. Since this was the first time Unisphere integrated a Vaisala \gls{pwd12} into the system, additional effort was required to understand its communication protocol and behavior in both simulated and live conditions.
-
-Beyond hardware and data parsing challenges, the project also introduced new expectations regarding system robustness, scalability, and cloud integration readiness. These challenges shaped the scope of the internship project and laid the foundation for the development work presented in the following chapters.
-
-\section{Methodology}
-
-\subsection{Action Plan and Approach}
-
-The internship followed a structured yet flexible development approach inspired by the \textbf{Agile methodology}. Although not implemented formally using a framework such as Scrum, the work was carried out in \textit{incremental phases}, each focusing on specific tasks such as local testing, sensor integration, system deployment, and cloud adaptation. Each phase included testing and feedback, allowing the plan to evolve based on practical findings and technical constraints.
-
-In line with Agile principles, the process emphasized \textbf{continuous validation}, \textbf{modularity}, and \textbf{adaptability}. The work was not predefined in a rigid Gantt chart but instead progressed through short development loops, frequent test sessions, and regular updates. Informal daily exchanges with the company supervisor, combined with weekly reports sent to the academic supervisor, ensured clear communication and ongoing alignment with project objectives.
-
-The initial steps focused on acquiring the necessary competencies, including Git usage, Linux terminal commands, and understanding the \gls{revpi}-based weather station system. This was followed by bench testing of individual components, integration of the new visibility sensor, and deployment to the actual \gls{revpi} system. Throughout the internship, a \textbf{top-down integration approach} was applied, starting from system-level understanding and gradually moving toward low-level implementation and optimization.
-
-This combination of \textit{iterative planning}, \textit{real-time testing}, and \textit{continuous feedback} provided an effective structure for carrying out a technically complex integration within a live, production-ready environment.
-
-
-\subsection{Gantt Chart and Timeline}
-The internship spanned a total of six months, starting on April 14th, 2025 and scheduled to end in mid-October 2025, with the final two weeks conducted remotely. The project was divided into clear, consecutive phases to ensure efficient progress and a logical development workflow. The following timeline outlines the major milestones and activities:
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[angle=90, width=1\textwidth]{images/gantt.jpg}
+  \includegraphics[angle=90, width=1\textwidth]{images/GanttChart.png}
   \caption{Gantt Diagram}
   \label{fig:gantt}
 \end{figure}
 
-\section*{Conclusion}
-This chapter introduced the operational context of Unisphere’s weather monitoring platform, the scope of the internship project, and the specific challenges addressed during the integration of a visibility sensor. The lack of visibility measurements, critical for supporting \gls{evtol} and other \gls{aam} operations under \gls{vfr}, was identified as a key gap in the existing system. To close this gap, the project set out clear objectives, defined a structured methodology, and established a realistic timeline for implementation, as outlined in the Gantt chart. The next chapter presents a detailed study of the existing system, providing the technical foundation for the integration work described later in this report.
+\section{Conclusion}
+
+This chapter established the industrial and theoretical foundations of the work. It presented TII KAMAG, the autonomous yard-logistics system, its operating environment, system actors, transfer workflow, mission hierarchy, architecture, and data sources. It also showed that operational effectiveness depends on technical performance, mission variability, human supervision, traffic, and environmental conditions.
+
+The review of \gls{oee} showed that Availability, Performance, and Quality provide a useful structure for measuring industrial effectiveness. However, classical \gls{oee} was developed for stable manufacturing systems with fixed cycle times. Autonomous yard vehicles operate under variable conditions and generate specific events, such as interventions, disengagements, autonomy limitations, and ODD-related exclusions. Existing autonomous-vehicle \gls{kpi}s, reliability metrics, and capability indices provide valuable information, but they do not combine these aspects into one integrated measure.
+
+These findings define the research gap addressed by this work. \textbf{An adapted \gls{oee} framework is required for autonomous yard logistics}. The framework must account for variable mission durations, autonomy-specific losses, supervision requirements, and ODD-related constraints. The following chapter presents its measurement unit, time hierarchy, adapted \gls{oee} factors, loss classification, \gls{odd} treatment, and complementary indicators.

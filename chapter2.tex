@@ -1,298 +1,770 @@
 
-  
+\chapter{Design and Data Architecture of the Proposed OEE Framework}
+\label{chap:oee-framework-design}
 
-\chapter{Study of the Existing System}
+\section{Introduction}
 
-\section*{Introduction}
+The previous chapter identified several limitations in applying classical \gls{oee} to autonomous yard logistics. These limitations include variable mission durations, heterogeneous interruptions, human supervision, and \gls{odd}-related restrictions. Classical \gls{oee} does not explicitly represent these characteristics. Its concepts must therefore be adapted to produce meaningful results for autonomous transport operations.
 
-This chapter presents a detailed analysis of the existing weather monitoring system in place at Unisphere. The purpose is to understand its current architecture, evaluate its components, and identify its operational strengths and weaknesses. The system includes a combination of sensor hardware, embedded devices, and cloud-based services that together form a pipeline for real-time environmental data acquisition and delivery. Through this analysis, we aim to assess the efficiency, reliability, and scalability of the existing setup, and to highlight opportunities for improvement. These insights provide a foundation for the design and integration of new components in subsequent chapters.
+This chapter presents the \gls{oee}-based framework developed for autonomous yard logistics. It preserves the classical relationship between Availability, Performance, and Quality. It also adapts the measurement unit, time hierarchy, loss classification, and interpretation of these factors. The main contributions include a \textbf{transfer-based measurement unit, a six-level time hierarchy, an \gls{odd}-aware time-accounting method, and a decomposition of Performance into dispatch utilisation and execution speed}.
 
-\section{System Description}
+The chapter also introduces a transfer-outcome taxonomy and complementary indicators for reliability, supervision, throughput, environmental influence, and process capability. It assesses the availability of the industrial data required for implementation and defines a canonical data model for structuring this information. These elements provide the basis for the implementation and validation presented in the following chapter.
+\section{Design Principles of the Adapted OEE Framework}
+\label{sec:pwd_context}
 
-\subsection{System Overview}
+Classical \gls{oee} was developed to evaluate fixed manufacturing assets. It measures effectiveness through equipment availability, operating speed, and product quality. Applying it directly to autonomous yard-logistics vehicles is not straightforward because their operating conditions differ from those of conventional production systems. In this work, I preserve the mathematical structure of classical OEE while adapting its concepts to autonomous transport operations.
 
+I developed the framework around five main design decisions. First, I selected the transfer as the main unit of productive output, while retaining missions and mission phases for diagnostic analysis. Second, I introduced scenario- and phase-dependent nominal durations to account for the variability of autonomous transport operations. Third, I decomposed Performance into dispatch utilisation and execution speed. Fourth, I separated ODD-related exclusions from technical downtime through a sequential time hierarchy and overlap-correction rules. Finally, I distinguished transfer outcomes from autonomy and supervision indicators. \textbf{These decisions adapt OEE to the variable and constrained nature of autonomous transport operations.}
 
-The system under study is a weather station designed to collect and transmit real-time meteorological data. It integrates a Vaisala WXT536 sensor, which measures parameters such as wind speed, temperature, humidity, pressure, and precipitation. The sensor communicates with a \gls{revpi} industrial controller over an \gls{rs485} interface. On the \gls{revpi}, the data is parsed and formatted before being sent to the cloud via \gls{aws} AppSync. The primary goal of this system is to support Unisphere’s mission of enabling safe and optimized flight operations through the NOVA platform. By providing high-quality, real-time weather data, the system enhances situational awareness, supports trajectory planning, and contributes to safety assessments.\\
-Figure~\ref{fig:system-overview-hybrid} illustrates the overall structure of the weather station. 
-It highlights the main data flow from the sensors to the RevPi, the cloud, and finally NOVA, while also showing the supporting infrastructure such as power supply, surge protection, and remote management tools.
+Based on these decisions, I maintain the relationship \textbf{$\mathrm{OEE} = A \times P \times Q$} while adapting the interpretation of each factor to autonomous yard logistics. I also ensure that operating time and operational losses are attributed completely and without overlap. The resulting framework remains mathematically consistent while providing detailed information about autonomous system performance.
 
+\section{The OEE Measurement Unit}
+\label{sec:oee-measurement-unit}
+I selected the transfer as the primary OEE measurement unit because it represents the complete logistics service delivered by the vehicle. In classical OEE, the productive output is usually represented by a manufactured product. In autonomous yard logistics, however, the system provides a transport service rather than producing a physical product. The transfer therefore serves as the natural accounting unit. It represents one complete transport order that moves a swap body from a source location to a destination location.
+
+As introduced in Section~\ref{sec:industrial-operating-context}, the operational process has three levels: transfer, mission, and mission phase. I evaluate OEE primarily at the transfer level, while retaining missions and mission phases for diagnostic analysis. This structure preserves the complete operational context. It also allows losses identified at transfer level to be traced to the underlying execution sequence. Figure~\ref{fig:hierarchical_organisation} illustrates this measurement hierarchy.
 \begin{figure}[H]
-\centering
-\begin{adjustbox}{width=\textwidth}
-\begin{tikzpicture}[
-  font=\small,
-  node distance=10mm and 12mm,
-  comp/.style={draw, rounded corners=2pt, inner sep=3mm, align=center},
-  group/.style={draw, rounded corners=2pt, inner sep=3mm, align=center, fill=black!3},
-  flow/.style={-{Latex}, thick},
-  mgmt/.style={densely dotted, -{Latex}, thick},
-  power/.style={dashed, -{Latex}, thick}
-]
-
-% Sensors group
-\node[group, label={[label]above:Sensors}] (sensors) 
-{\parbox{4.3cm}{\centering \textnormal{\textbf{Vaisala WXT536}\\[-2pt] (ASCII over RS-485, 19200)}}};
-
-% RevPi
-\node[comp, right=28mm of sensors] (revpi) 
-{\parbox{4cm}{\centering \textnormal{\textbf{RevPi Connect+}\\Raspberry Pi OS (Bookworm)\\Python 3.11 + systemd}}};
-
-
-% Cloud group
-\node[group, right=22mm of revpi, label={[label]above:AWS Cloud}] (cloud) 
-{\parbox{5.4cm}{\centering \textnormal{
-\textbf{AppSync} (GraphQL API)\\
-\textbf{Cognito} (Auth)\\
-\textbf{DynamoDB} (Realtime store)\\
-\textbf{Lambda / EventBridge / CloudWatch}
-}}};
-
-% User apps
-\node[comp, right=22mm of cloud] (apps) 
-{\parbox{3cm}{\centering \textnormal{\textbf{NOVA}\\Dashboards / APIs}}};
-
-% Power + surge
-\node[comp, below=20mm of sensors] (surge) 
-{\parbox{3cm}{\centering \textnormal{Vaisala\\Surge Protector}}};
-\node[comp, below=18mm of revpi] (psu) 
-{\parbox{3.5cm}{\centering \textnormal{DRL-24V480W1EN\\24\,V DC Power Supply}}};
-
-% Management block
-\node[comp, above=18mm of revpi] (mgmt) 
-{\parbox{3cm}{\centering \textnormal{Qbee / SSH\\(Remote Mgmt)}}};
-
-% Connections
-\draw[flow] (sensors.east) -- node[above, sloped]{RS-485 (ASCII)} (revpi.west);
-\draw[flow] (revpi) -- node[above, sloped]{Ethernet/4G} (cloud);
-\draw[flow] (cloud) -- (apps);
-
-\draw[power] (psu.north) -- ++(0,7mm) -| (revpi.south);
-\draw[power] (psu.west) -- ++(-18mm,0) |- (surge.east);
-\draw[power] (surge.north) -- ++(0,7mm) -| (sensors.south);
-
-\draw[mgmt] (mgmt) -- (revpi);
-
-% Legend
-\node[align=left, anchor=north west] at ($(psu.south west)+(-2mm,-13mm)$) {
-\begin{tikzpicture}[x=1cm,y=0.5cm]
-\draw[flow] (0,0) -- +(0.8,0) node[right, black]{Data flow};
-\draw[power] (0,-0.8) -- +(0.8,0) node[right, black]{Power};
-\draw[mgmt] (0,-1.6) -- +(0.8,0) node[right, black]{Remote management};
-\end{tikzpicture}
-};
-
-\end{tikzpicture}
-\end{adjustbox}
-\caption{System overview: functional data flow with supporting infrastructure (power, surge, remote management).}
-\label{fig:system-overview-hybrid}
+  \centering
+  \includegraphics[width=0.2\textwidth]{images/hierarchical organisation.png}
+  \caption{Hierarchical Organisation of the Operational Process}
+  \label{fig:hierarchical_organisation}
 \end{figure}
 
+\section{The Six-Level Time Hierarchy}
+\label{sec:six-level-time-hierarchy}
 
+I developed a six-level time hierarchy to separate scheduling losses, planned exclusions, ODD restrictions, unplanned downtime, performance losses, and quality losses. Each level is obtained from the previous one by subtracting a specific category of loss or exclusion. This sequential structure assigns every part of the operating period to one category. It also prevents double counting and keeps the OEE factors mathematically consistent. The overlap-correction mechanism for ODD exclusions and downtime is detailed in Section~\ref{sec:weather-data-processing-and-odd-integration}.
 
+The hierarchy starts with total calendar time $T_t$. This represents the complete evaluation period. I remove non-operating periods, such as nights, weekends, and scheduled non-operating days, to obtain Planned Operating Time $T_o$.
 
-\subsection{Hardware Architecture}
+I then remove planned stoppages, such as maintenance, refuelling, and system preparation. I also remove periods during which operation is not expected because the vehicle is outside its Operational Design Domain. The remaining time is Required Time $T_r$. Unplanned interruptions during Required Time are then removed to obtain Available Time $T_a$.
 
-The initial deployment of the weather station system includes a compact yet robust set of components designed for industrial reliability and field deployment. The setup is composed of the Revolution Pi Connect+ as the central processing unit, connected via dedicated RS-485 interfaces to the Vaisala WXT536 and \gls{pwd12} sensors. The \gls{revpi} also connects to the 24 V DC power supply that feeds both sensors. The network connection (Ethernet/4G) provides the link to the cloud backend. This arrangement ensures that each sensor operates on an independent communication bus with the correct baud rate, reducing cross-talk and improving reliability in remote deployments.
+Next, I subtract performance losses to obtain Performance-Adjusted Time $T_n$. This value represents the nominal-speed equivalent duration of all qualifying started transfers. Finally, I subtract quality losses to obtain Useful Time $T_u$. This value represents the nominal-speed equivalent duration of successfully completed transfers.
 
+Table~\ref{tab:six-level-time-hierarchy} defines the six time levels.
 
-
-%\begin{figure}[H]
-%  \centering
-%  \includegraphics[width=0.8\textwidth]{images/HARD.png}
-%  \caption{Actual System Architecture}
-%  \label{fig:hard}
-%\end{figure}
-
-
-
-\subsubsection*{Main Hardware Components}
-\begin{itemize}
-    \item \textbf{Vaisala WXT536:} Multi-parameter weather sensor measuring wind, temperature, humidity, pressure, and precipitation.
-    \item \textbf{\gls{revpi} Connect+:} Industrial Raspberry Pi-based controller responsible for data parsing and cloud integration.
-    \item \textbf{DRL-24V480W1EN:} \gls{din}-rail industrial power supply delivering stable 24\,V\,DC.
-    \item \textbf{Vaisala Surge Protector:} Protects the system against lightning-induced voltage spikes.
-    \item \textbf{Heavy-duty Mast:} A freestanding lamp stand used to mount the sensor outdoors.
-    \item \textbf{Industrial Ethernet Switch (IDS-105FE):} Provides network connectivity between \gls{revpi} and backend services.
-    \item \textbf{Cables and Connectors:} Including an 8-pin M12 cable for power and \gls{rs485} communication.
-\end{itemize}
-
-
-
-\subsubsection*{Power and Communication}
-\begin{itemize}
-    \item \textbf{Power Input:} 230\,V\,AC supplied to the DRL power supply.
-    \item \textbf{Sensor Power:} 24\,V\,DC provided to the WXT536.
-    \item \textbf{Communication Interface:} RS-485 using an 8-pin M12 connector (differential A/B lines).
-    \item \textbf{\gls{revpi} Serial Port:} Typically \texttt{/dev/ttyAMA5} or \texttt{/dev/ttyAMA4} depending on wiring configuration.
-\end{itemize}
-
-\subsubsection*{Installation and Protection}
-\begin{itemize}
-    \item \textbf{Mounting:} Pole-mounted setup suitable for testing and outdoor deployments.
-    \item \textbf{Grounding:} Properly grounded and protected against electrical surges.
-    \item \textbf{Enclosure:} Components placed in a sealed electrical box for weather protection.
-\end{itemize}
-
-
-
-\subsection{Communication Interfaces}
-
-The system relies on a combination of serial and cloud-based communication interfaces to ensure seamless data flow from sensor to cloud platform.
-
-\begin{itemize}
-  \item \textbf{Sensor-to-Controller Communication:}  
-  The Vaisala WXT536 sensor communicates with the \gls{revpi} using the \textbf{\gls{ascii} protocol} over an \textbf{\gls{rs485}} physical interface. The communication is configured at a \textbf{baud rate of 19200}. A twisted pair configuration is used for the \gls{rs485} line, and an M12 8-pin connector is employed to connect the sensor to the electric box.
-
-  \item \textbf{Data Handling on the \gls{revpi}:}  
-  Upon reception, the sensor messages are verified using a \textbf{\gls{crc} checksum} to ensure data integrity. Once validated, the data is parsed and formatted into a readable structure for further use and transmission.
-
-  \item \textbf{Controller-to-Cloud Communication:}  
-  The parsed weather data is transmitted in real-time to the cloud using \textbf{\gls{aws} AppSync}, a GraphQL-based service that supports low-latency communication. Data is not batched, but pushed directly upon reception and validation.
-
-  \item \textbf{Remote Access and Monitoring:}  
-  Remote access to the \gls{revpi} is achieved through \textbf{\gls{ssh}} using its \gls{ip} address when connected to the office Ethernet network. Additionally, \textbf{Qbee} is used as a remote monitoring and management platform, allowing secure access and deployment from external locations.
-
-  \item \textbf{Surge Protection:}  
-  Although surge protection is primarily applied to the power lines, the communication setup benefits indirectly from the protected environment within the electric enclosure, reducing the risk of hardware damage.
-\end{itemize}
-
-
-\subsection{Software Stack and Cloud Services}
-
-The system is built around a lightweight but robust software stack running on an industrial-grade controller, with full integration into \gls{aws} cloud services. Figure \ref{fig:cloudflow} presents a high-level view of the software and cloud architecture, illustrating the flow of data from sensor acquisition to real-time cloud transmission and backend interaction. The software and cloud components are structured as follows:
-
-
-\begin{itemize}
-  \item \textbf{Programming Language:}  
-  The entire application logic is implemented in \textbf{Python}, which provides a balance between rapid development and system-level hardware communication capabilities.
-
-  \item \textbf{Runtime Environment:}  
-  The \gls{revpi} Connect+ controller runs \textbf{Raspbian GNU/Linux 12 (Bookworm)}, a Debian-based operating system. The Python application is executed within a \textbf{\gls{venv}} to ensure package isolation, and is deployed as a \textbf{systemd service} to guarantee automatic startup and resilience after reboots.
-
-  \item \textbf{Data Handling and Parsing:}  
-  Sensor data is received via the \gls{rs485} interface and is subject to a \textbf{\gls{crc} checksum validation}. Once validated, the \gls{ascii}-formatted message is parsed into a structured format suitable for cloud transmission. 
-
-  \item \textbf{Cloud Integration:}  
-  Real-time weather data is transmitted to the cloud via \textbf{\gls{aws} AppSync}, using a GraphQL \gls{api} endpoint. This allows efficient and structured interaction with backend services while enabling real-time data availability.
-
-  \item \textbf{Authentication and Security:}  
-  Authentication is managed via \textbf{\gls{aws} Cognito}, and access to the AppSync endpoint is secured using an \textbf{\gls{api} key}, stored in environment variables to prevent hardcoding credentials within the source code.
-  
-  \item \textbf{Supporting AWS Services:}  
-  In addition to AppSync and Cognito, other AWS services are integrated in the backend to support system monitoring and data processing. These include \textbf{DynamoDB} for storing incoming weather records, \textbf{CloudWatch} for runtime monitoring and logging, and \textbf{EventBridge}, which is used internally for identifying inactive sensors and automating alerting and historical weather data preprocessing.
-
-
-  \item \textbf{Deployment and Maintenance:}  
-  For \gls{vcs}, we use \textbf{Git}. Updates are pushed to the \gls{revpi} either via local access or remotely using \textbf{Qbee}, a device management platform that supports remote monitoring and secure \gls{ssh} access.
-\end{itemize}
-
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.4}
+\centering
+\caption{Definition of the Six-Level Time Hierarchy}
+\label{tab:six-level-time-hierarchy}
+\begin{tabular}{|p{3.4cm}|p{1.6cm}|p{7.2cm}|}
+\hline
+\textbf{Term} & \textbf{Symbol} & \textbf{Definition} \\
+\hline
+Calendar Time & $T_t$ & Complete evaluation horizon (e.g., 24 h $\times$ 365 d), used as the absolute time reference \\
+\hline
+Planned Operating Time & $T_o$ & Scheduled operating window after removing non-operating periods \\
+\hline
+Required Time & $T_r$ & $T_o$ minus planned and ODD-related exclusion \\
+\hline
+Available Time & $T_a$ & $T_r$ minus unplanned downtime\\
+\hline
+Performance-Adjusted Time & $T_n$ & Nominal-speed equivalent time of all qualifying started transfers \\
+\hline
+Useful Time & $T_u$ & Nominal-speed equivalent time of successfully completed transfers \\
+\hline
+\end{tabular}
+\end{table}
+Figure~\ref{fig:six_level_time_hierarchy} illustrates the complete time hierarchy.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{images/cloud flow.png}
-    \caption{Data Flow Architecture}
-    \label{fig:cloudflow}
+  \centering
+  \includegraphics[angle=90,width=0.95\textwidth,height=0.95\textheight,keepaspectratio]{images/time hierarchy.png}
+  \caption{Six-Level Time Hierarchy of the Proposed OEE Framework}
+  \label{fig:six_level_time_hierarchy}
+\end{figure}
+The resulting decomposition is expressed as:
+
+\[
+T_t \xrightarrow{-\text{non-operating}} T_o
+\xrightarrow{-\text{ODD exclusions}} T_r
+\xrightarrow{-\text{unplanned downtime}} T_a
+\xrightarrow{-\text{performance losses}} T_n
+\xrightarrow{-\text{quality losses}} T_u
+\]
+
+Based on this hierarchy, I define the three OEE components as:
+
+\[
+A = \frac{T_a}{T_r}, \qquad P = \frac{T_n}{T_a}, \qquad Q = \frac{T_u}{T_n},
+\]
+
+Therefore:
+
+\[
+\mathrm{OEE} = A \times P \times Q = \frac{T_u}{T_r}.
+\]
+
+The proposed hierarchy differs from classical OEE in two important ways. First, Required Time $T_r$ excludes ODD-related periods. The vehicle is therefore not penalised for conditions under which autonomous operation is not permitted. Second, I calculate Performance and Quality using the nominal durations of qualifying and successful transfers. This preserves the relationship $\mathrm{OEE}=T_u/T_r$ and maintains mathematical consistency.
+
+
+
+
+\section{Availability}
+
+Availability measures the fraction of \textbf{Required Time} during which the autonomous vehicle is operationally available:
+
+\[
+A = \frac{T_a}{T_r} = \frac{T_r - \text{Unplanned Downtime}}{T_r}.
+\]
+
+I defined Required Time so that planned stoppages and ODD-related periods are removed before Availability is calculated. Since $T_r$ already excludes planned stoppages andperiods outside the Operational Design Domain (ODD) (Section~\ref{sec:weather-data-processing-and-odd-integration}), Availability reflects exclusively \textbf{unplanned downtime}. Consequently, ODD-related exclusions reduce the OEE denominator but do not affect the Availability factor. It ensures that the vehicle is not penalised for conditions under which autonomous operation is not permitted.
+
+Unplanned downtime events are classified according to three complementary dimensions, as illustrated in Figure~\ref{fig:unplanned_downtime}.
+
+\begin{itemize}
+  \item \textbf{Category} describes the nature of the interruption. Two principal categories are distinguished:
+  \begin{itemize}
+    \item \textbf{System faults}, corresponding to failures originating from the autonomous system itself, such as localisation failures, trajectory deviations, or low-level system errors.
+    \item \textbf{Human interventions}, corresponding to operator-initiated interruptions, including manual vehicle takeover and client-requested transfer aborts.
+  \end{itemize}
+  \item \textbf{Owner} identifies the responsible party (autonomous system or operations), enabling consistent attribution of losses and supporting root-cause analysis.
+  \item \textbf{Failure status} distinguishes engineering failures from supervisory or operational events, providing the basis for the complementary reliability metrics presented in Section~\ref{subsec:reliability-and-process-quality-indicators}.
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{images/unplanned_downtime.png}
+  \caption{Classification of Unplanned Downtime Events}
+  \label{fig:unplanned_downtime}
 \end{figure}
 
-\section{System Evaluation}
+\section{Performance}
+\label{sec:performance}
 
-\subsection{System Strengths}
+I decomposed Performance into the \gls{dur} and the \gls{esr}. This separation distinguishes unused Available Time from delays during mission execution.
 
-The weather station system designed by Unisphere exhibits several strengths that contribute to its operational effectiveness, maintainability, and integration potential.
+Classical OEE evaluates Performance by comparing actual production speed with an ideal cycle time. This approach is not sufficient for autonomous yard logistics. Low Performance may result from two different causes. The vehicle may remain available without executing a mission. Alternatively, an assigned mission may take longer than its nominal duration.
 
-\subsubsection{Robustness and Reliability}
+To distinguish these causes, I define Performance as the product of two factors:
 
-The existing system, prior to the integration of the new visibility sensor, was architected for operational stability and reliability in long-term deployments. The software runs as a \texttt{systemd} service on the \gls{revpi}, which ensures automatic restarts in case of unexpected shutdowns or power failures. In addition, error handling mechanisms are implemented through \gls{crc} checksum validation and structured message parsing. These features contribute to reducing the likelihood of system crashes and ensuring consistent data availability over time. 
+\[
+P = \mathrm{DUR} \times \mathrm{ESR}.
+\]
 
+$T_e$ denote the total actual execution time of qualifying started transfers. Let $T_n$ denote the sum of their corresponding nominal durations.
 
-\subsubsection{Simplicity and Modularity}
+I define the \textbf{Dispatch Utilisation Rate} as:
 
-The system architecture follows a modular design that separates sensor communication, data parsing, and cloud transmission into distinct functional layers. This separation allows for clear interfaces between components and simplifies both debugging and future extensions. For instance, the code responsible for parsing data from the sensor is encapsulated in independent modules, which can be reused or adapted for other sensors. The availability of an unused RS-485 port on the \gls{revpi} further simplified the physical integration of the new Vaisala \gls{pwd12} sensor, requiring minimal disruption to the existing setup. Overall, the modular structure enables scalable development without requiring a complete system overhaul.
+\[
+\mathrm{DUR} = \frac{T_e}{T_a}.
+\]
 
+\gls{dur} measures the proportion of Available Time spent executing qualifying transport operations. It captures losses caused by a lack of orders, dispatch delays, waiting between tasks, and underutilisation of the vehicle.
 
-\subsubsection{Cloud Integration}
+I define the \textbf{Execution Speed Rate} as:
 
-The system benefits from seamless integration with \textbf{\gls{aws}} cloud services, particularly through the use of AppSync for real-time data streaming. This integration ensures immediate availability of weather data for backend services and frontend applications. AppSync enables efficient communication using GraphQL, which allows clients to fetch precisely the data they need, minimizing payload size and reducing response latency. The use of scalable cloud services also facilitates future extensions, such as long-term storage, alerting, and analytics.
+\[
+\mathrm{ESR} = \frac{T_n}{T_e}.
+\]
 
-\subsection{Limitations and Opportunities for Improvement}
+\gls{esr} compares the nominal duration of the executed work with its actual duration. It captures losses caused by slow navigation, waiting during execution, obstacle interactions, retries, and other delays that extend mission duration.
 
-While the weather station system demonstrates robustness and modularity, certain technical limitations were identified during the integration work. These limitations represent opportunities for further refinement in future system iterations.
+The decomposition preserves the original Performance factor:
 
-\subsubsection{Lack of Visibility Measurement}
+\[
+P = \frac{T_e}{T_a} \times \frac{T_n}{T_e} = \frac{T_n}{T_a}.
+\]
 
-The existing weather station provides valuable meteorological data such as wind, precipitation, temperature, humidity, and pressure. However, it does not include visibility measurements, which are critical for aviation-related applications. Visibility data directly supports decision-making for flight safety, landing operations, and trajectory planning. The absence of this parameter reduces the system’s ability to deliver a comprehensive picture of atmospheric conditions.
+This decomposition provides more diagnostic information than a single Performance ratio. A low \acrshort{dur} indicates that the available vehicle was not sufficiently utilised. A low \acrshort{esr} indicates that assigned work was executed more slowly than its nominal reference. These two causes can therefore be analysed separately.
 
+Finally, scenario- and phase-dependent nominal durations reduce the limitations of the fixed-cycle assumption. Each transfer is compared with an appropriate operational reference rather than with one common cycle time.
+\section{Quality}
+I introduced a five-class transfer-outcome taxonomy to represent successful, manually assisted, aborted, cancelled, and unachievable operations.
 
+In autonomous yard logistics, quality cannot be assessed through the conformity of a manufactured product. Instead, it is defined by the outcome of the transport operation. The proposed framework therefore introduces a five-class outcome taxonomy that distinguishes successful, unsuccessful, and excluded transport executions.
 
-\subsubsection{Protocol and Communication Constraints}
-
-The system relies on the \gls{rs485} interface for communication with the weather sensors. While \gls{rs485} is reliable for industrial serial communication, it requires all connected devices to operate at the same baud rate. This constraint limits the possibility of using multiple sensors with different serial configurations on the same line.  
-Moreover, the current setup uses the \gls{ascii} protocol, which, although simple, is less efficient in terms of message size and validation. Alternative protocols like Modbus \gls{rtu} may offer improvements in reliability and bandwidth usage. A comparative overview is shown in Table~\ref{tab:protocol-comparison}.
-
-\begin{table}[!ht]
-\renewcommand{\arraystretch}{1.5}
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.4}
 \centering
-\caption{Comparison between \gls{ascii} and Modbus \gls{rtu} protocols}
-\label{tab:protocol-comparison}
-\begin{tabular}{|c|c|c|}
+\caption{Outcome Taxonomy for Quality Assessment in Autonomous Yard Logistics}
+\label{tab:quality-outcome-taxonomy}
+\begin{tabular}{|p{3.6cm}|p{6.1cm}|p{2.6cm}|}
 \hline
-\textbf{Aspect} & \textbf{\gls{ascii} Protocol} & \textbf{Modbus \gls{rtu} Protocol} \\
+\textbf{Outcome} & \textbf{Description} & \textbf{Contribution} \\
 \hline
-Message Format & Human-readable characters & Binary format \\
+Completed Autonomous & Transfer completed without human intervention & Successful \\
 \hline
-Bandwidth Efficiency & Lower (larger messages) & Higher (compact messages) \\
+Completed Manual & Transfer completed following manual intervention & Quality Loss \\
 \hline
-Error Detection & Typically \gls{crc} or checksum & \gls{crc} integrated \\
+Aborted & Transfer started but not completed & Quality Loss \\
 \hline
-Ease of Debugging & Easier (text-based) & Harder (binary) \\
+Cancelled & Transfer cancelled before execution & Excluded \\
 \hline
-Message Size & Larger due to encoding & Smaller and more efficient \\
+Unachievable & Transfer impossible because of operational constraints & Excluded \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsubsection{Lack of Offline Resilience}
+Transfers completed autonomously deliver the required transport service and are therefore considered successful. Aborted transfers and manually completed transfers consume operational resources without producing the intended outcome and consequently constitute quality losses. Cancelled and unachievable transfers are excluded because execution was never expected under valid operating conditions.
 
-The original version of the weather station system was designed with the assumption of continuous internet connectivity. However, operational experience with different customer deployments revealed that connectivity disruptions can occur — for example, due to network outages or infrastructure work within the client’s network environment. In such cases, the system is unable to transmit weather data to the cloud, leading to permanent data loss during the offline period.
+To capture different aspects of operational quality, two complementary indicators are defined.
 
-This limitation affects the completeness and continuity of the dataset, which are essential for use cases such as real-time monitoring, retrospective analysis, and flight simulation validation. Enhancing the system to support offline buffering and delayed transmission is therefore a critical area for future improvement.
+The \textbf{time-based quality}
 
-\subsubsection{Data Handling and Storage Gaps}
+\[
+Q_{\mathrm{time}} = \frac{T_u}{T_n}
+\]
 
-The current system uses an \textbf{\gls{aws} DynamoDB} table to store incoming weather records, each of which is assigned a \textbf{\gls{ttl}} attribute of 48 hours. This design ensures that outdated entries are automatically deleted, allowing the system to maintain a lightweight and cost-efficient database while supporting real-time weather monitoring.
+is used in the computation of OEE and preserves the fundamental relationship
 
-Although short-term retention is sufficient for most operational needs, certain use cases — such as long-term analysis, retrospective evaluations, or training of predictive models — require permanent access to historical weather data. Figure \ref{fig:cloud improved} illustrates an architectural extension that incorporates a dedicated cloud storage layer. This improvement allows the system to maintain its real-time performance while enabling historical data archiving in a scalable and structured manner.
+\[
+\mathrm{OEE} = A \times P \times Q = \frac{T_u}{T_r}.
+\]
 
+The \textbf{count-based quality}
+
+\[
+Q_{\mathrm{count}} = \frac{N_{\mathrm{successful}}}{N_{\mathrm{started}}}
+\]
+
+provides an operational view of mission success independent of execution duration. Reporting both indicators distinguishes losses caused by unsuccessful executions from those resulting from differences in mission duration or route complexity.
+
+\section{The OEE family --- OEE, GEE, and TEEP}
+
+Three nested indicators are defined using the same useful operating time $T_u$ while varying only the time horizon considered: \gls{gee} and \gls{teep} alongside \gls{oee}.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.4}
+\centering
+\caption{Comparison of OEE, GEE, and TEEP}
+\label{tab:oee-gee-teep}
+\begin{tabular}{|p{2.2cm}|p{2.4cm}|p{9.0cm}|}
+\hline
+\textbf{Metric} & \textbf{Formula} & \textbf{Interpretation} \\
+\hline
+OEE & $\dfrac{T_u}{T_r}$ & How effectively the available operational time was converted into useful output \\
+\hline
+GEE & $\dfrac{T_u}{T_o}$ & How effectively the planned operating window was exploited \\
+\hline
+TEEP & $\dfrac{T_u}{T_t}$ & How effectively total calendar time was exploited \\
+\hline
+\end{tabular}
+\end{table}
+
+Because the corresponding denominators are nested:
+
+\[
+T_t \geq T_o \geq T_r
+\]
+
+the following relationship always holds:
+
+\[
+\mathrm{TEEP} = \frac{T_u}{T_t} \leq \mathrm{GEE} = \frac{T_u}{T_o} \leq \mathrm{OEE} = \frac{T_u}{T_r}
+\]
+
+The differences between these indicators provide additional diagnostic information. The gap between \acrshort{gee} and \acrshort{oee} reflects the exclusions applied between Planned Operating Time $T_o$ and Required Time $T_r$, including planned stoppages and ODD-related exclusions within the operating window. The gap between \acrshort{teep} and \acrshort{gee} reflects the calendar time outside the planned operating schedule, such as nights, weekends, and other non-operating periods.
+
+
+\section{ODD Exclusion Framework --- Weather ODD, Operational ODD, and Double-Counting Prevention}
+\label{sec:odd-exclusion-framework}
+
+I designed the ODD-aware time-accounting method to prevent environmental and operational restrictions from being classified as technical failures.
+
+The Operational Design Domain (ODD), introduced in Section~\ref{sec:pwd_context}, defines the environmental and operational conditions under which the autonomous driving system is expected to perform its intended function. Periods in which the vehicle operates outside its ODD do not represent equipment unavailability; rather, operation is not required or permitted under those conditions. Therefore, ODD-excluded periods are removed from the Required Time $T_r$ definition instead of being treated as Availability losses.
+
+Within the proposed framework, ODD exclusion is implemented by subtracting the corresponding excluded duration from the transition between Planned Operating Time $T_o$ and Required Time $T_r$. The framework distinguishes two complementary sources of ODD exclusion: weather-related constraints and operational constraints.
+
+\subsection{Weather ODD}
+
+Weather-based exclusions represent environmental conditions that exceed the operational limits defined for the autonomous vehicle. Hourly meteorological observations are evaluated against configurable thresholds stored in the \texttt{ODD\_Parameters} table.
+
+\begin{table}[H]
+\scriptsize
+\renewcommand{\arraystretch}{1.4}
+\centering
+\caption{Weather-Based ODD Exclusion Criteria}
+\label{tab:weather-odd-criteria}
+\begin{tabular}{|p{2.4cm}|p{3.8cm}|p{5.3cm}|}
+\hline
+\textbf{Condition} & \textbf{Parameter} & \textbf{Exclusion criterion} \\
+\hline
+Heavy rain & \texttt{precip\_threshold\_mm\_h} & Precipitation rate above threshold \\
+\hline
+Snowfall & \texttt{snow\_threshold\_mm\_h} & Water-equivalent snowfall rate above threshold \\
+\hline
+Strong wind & \texttt{wind\_threshold\_ms} & Wind speed above threshold \\
+\hline
+Freezing conditions & \texttt{temp\_freeze\_c} & Temperature below threshold \\
+\hline
+Fog & \texttt{fog\_dewpoint\_diff\_k} + cloud cover & Dew-point depression below threshold with cloud coverage above 80\% \\
+\hline
+\end{tabular}
+\end{table}
+
+Each shift hour violating at least one weather constraint is classified as ODD-excluded, and its duration is stored, thereby reducing the Required Time $T_r$. When multiple weather constraints occur simultaneously, a fixed precedence rule (rain $>$ snow $>$ wind $>$ freezing $>$ fog) is applied only for event attribution and traceability.
+
+\subsection{Operational ODD}
+
+In addition to environmental constraints, autonomous yard operations are affected by external operational conditions that determine whether a valid mission can be executed. Examples include an unavailable swap body, a blocked destination position, or an incorrect swap body type assignment. These conditions prevent mission execution independently of the vehicle capability.
+
+Each operational ODD exclusion is classified similarly, and the accumulated duration is stored after applying weather-based exclusions, with the total daily ODD exclusion capped at the planned shift duration.
+
+The Required Time is therefore calculated as:
+
+\[
+T_r = T_o - T_{startup} - T_{refueling} - T_{SW/FW} - T_{planned\_maint} - T_{out\_of\_odd}
+\]
+
+where $T_{out\_of\_odd}$ represents the total duration excluded due to weather and operational ODD violations.
+
+\subsection{Double-Counting Prevention}
+
+I introduced overlap-correction rules to ensure that each period is assigned to only one exclusion or loss category.
+
+ODD periods may overlap with downtime or with other operational exclusions. Without correction, the same duration could be removed more than once.
+
+For example, a technical interruption may occur during an hour that has already been excluded because of weather. Deducting its full duration from Available Time would penalise the vehicle for a period during which operation was not required.
+
+For each event, only the part outside an already excluded ODD period is retained:
+
+\[
+T_{effective} = T_{event} - T_{event \cap ODD}
+\]
+
+or equivalently:
+
+\[
+T_{effective} = T_{event}(1 - f_{overlap})
+\]
+
+where $f_{overlap}$ represents the fraction of the event duration overlapping with an already excluded ODD period.
+
+This correction is applied to both unplanned downtime events and operational ODD events during the transfer-level time-hierarchy computation (Section~\ref{subsec:time-hierarchy-computation}), ensuring that every lost second is attributed to exactly one category within the time hierarchy. Consequently, ODD limitations affect the operational time requirement without artificially reducing Availability, preserving the physical interpretation of the OEE factors.
+
+\section{Operational Deployment Indicators}
+
+The proposed framework defines complementary indicators to explain the technical and operational causes behind the aggregate OEE value. These indicators cover reliability, execution robustness, human supervision, operational capacity, environmental influence, and execution-time capability. Where the required input data are available, they can be computed from the same canonical data structure used for OEE calculation.
+
+\subsection{Engineering Reliability Metrics --- MTBF, MTTR, and Failure Rate}
+
+As introduced in Section~\ref{sec:reliability_state_art}, MTBF, MTTR, and failure rate provide complementary information on system reliability and maintainability. Within the proposed framework, these indicators are used to distinguish the technical failure behaviour of the autonomous vehicle from the broader operational losses captured by OEE.
+
+Only genuine technical or equipment failures are considered reliability events. Supervisory interventions, operational constraints, and ODD-related exclusions are excluded because they do not directly represent hardware or software failures.
+
+For the proposed framework, MTBF is calculated using Available Time $T_a$ as the operational exposure time:
+
+\[
+\mathrm{MTBF} = \frac{T_a}{N_{\mathrm{fail}}}
+\]
+
+while MTTR represents the average repair or recovery duration associated with the detected failures:
+
+\[
+\mathrm{MTTR} = \frac{\sum_{i=1}^{N_{\mathrm{fail}}} t_{\mathrm{recovery},i}}{N_{\mathrm{fail}}}.
+\]
+
+The corresponding failure rate is obtained as defined in Section~\ref{sec:reliability_state_art}:
+
+\[
+\lambda = \frac{1}{\mathrm{MTBF}}.
+\]
+
+These indicators complement OEE Availability by distinguishing whether technical losses result primarily from frequent failures or from prolonged recovery periods:
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.4}
+\centering
+\caption{Reliability Metric Definitions}
+\label{tab:reliability-metric-definitions}
+\begin{tabular}{|p{2.4cm}|p{6cm}|p{7cm}|}
+\hline
+\textbf{Metric} & \textbf{Definition} & \textbf{Purpose} \\
+\hline
+MTBF & Average operational time between failures & Measures failure frequency \\
+\hline
+MTTR & Average recovery duration after failure & Measures maintainability \\
+\hline
+$\lambda$ & Failure rate & Represents failure occurrence intensity \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Process-quality indicators}
+
+The Quality factor of OEE evaluates whether a transfer is successfully completed; however, successful completion alone does not fully represent the maturity of an autonomous system. A vehicle may maintain a stable Quality value while requiring increasing human support, additional execution attempts, or more frequent recovery actions.
+
+To identify such gradual degradation, process-quality indicators are calculated at the transfer level. These indicators act as leading measures of autonomous capability by monitoring execution behaviour before it results in measurable OEE losses.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.4}
+\centering
+\caption{Process-Quality Indicators}
+\label{tab:process-quality-indicators}
+\begin{tabular}{|p{5cm}|p{12cm}|}
+\hline
+\textbf{Indicator} & \textbf{Definition} \\
+\hline
+First-attempt pickup rate & Ratio of transfers completed successfully during the first pickup attempt to the total number of qualifying pickup operations \\
+\hline
+First-attempt set-down rate & Ratio of transfers completed successfully during the first set-down attempt to the total number of qualifying set-down operations \\
+\hline
+Retry rate & Ratio of transfers requiring at least one additional execution attempt to the total number of qualifying transfers \\
+\hline
+Remote validation rate & Ratio of transfers requiring at least one remote validation to the total number of qualifying transfers \\
+\hline
+Protective-stop rate & Ratio of transfers experiencing at least one protective stop to the total number of qualifying transfers \\
+\hline
+\end{tabular}
+\end{table}
+
+These indicators provide insight into the robustness of autonomous execution and reveal increasing dependence on supervision that may remain hidden in aggregated OEE values.
+
+\subsection{Human supervision and autonomy indicators}
+
+Autonomous yard systems are designed to reduce manual involvement; however, supervision remains an important operational factor during deployment. Therefore, indicators related to human assistance are monitored:
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.4}
+\centering
+\caption{Human Supervision and Autonomy Indicators}
+\label{tab:human-supervision-indicators}
+\begin{tabular}{|p{5.0cm}|p{9.0cm}|}
+\hline
+\textbf{Indicator} & \textbf{Definition} \\
+\hline
+Intervention rate & Number of remote interventions per completed transfer \\
+\hline
+Autonomous completion ratio & Proportion of transfers completed without human intervention \\
+\hline
+Remote assistance duration & Total time spent requiring remote operator support \\
+\hline
+\end{tabular}
+\end{table}
+
+These indicators quantify the remaining human workload and allow evaluation of the progression toward higher levels of autonomous operation.
+
+\subsection{Capacity and throughput indicators}
+
+OEE measures the effectiveness of required operating time but does not directly represent the achieved logistics capacity. Therefore, throughput-oriented indicators are included to evaluate the operational output of the autonomous fleet.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.4}
+\centering
+\caption{Capacity and Throughput Indicators}
+\label{tab:capacity-throughput-indicators}
+\begin{tabular}{|p{5.0cm}|p{9.0cm}|}
+\hline
+\textbf{Indicator} & \textbf{Definition} \\
+\hline
+Transfers per operating day & Number of completed transfers during the defined operating window \\
+\hline
+Transfers per operating hour & Average transfer throughput during active operation \\
+\hline
+Transfer duration distribution & Statistical distribution of transfer execution times across scenarios \\
+\hline
+\end{tabular}
+\end{table}
+
+These indicators connect the effectiveness measurement framework with practical logistics performance requirements.
+
+\subsection{Environmental influence indicators}
+
+Since autonomous vehicle performance depends on environmental and operational conditions, ODD-related information is analysed together with operational outcomes.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.4}
+\centering
+\caption{Environmental Influence Indicators}
+\label{tab:environmental-influence-indicators}
+\begin{tabular}{|p{6.0cm}|p{9.0cm}|}
+\hline
+\textbf{Indicator} & \textbf{Definition} \\
+\hline
+ODD exclusion duration & Total time removed from Required Time due to weather or operational ODD limitations \\
+\hline
+Weather versus intervention correlation & Relationship between environmental conditions and human intervention frequency \\
+\hline
+Weather versus abort correlation & Relationship between environmental conditions and unsuccessful mission outcomes \\
+\hline
+\end{tabular}
+\end{table}
+
+These indicators support the identification of external factors affecting autonomous operation and help distinguish vehicle limitations from environmental constraints.
+
+\subsection{Execution-time capability analysis}
+\label{subsec:execution-time-capability-analysis}
+
+In addition to execution success and operational throughput, the consistency of autonomous execution is evaluated through process capability analysis. While process-quality indicators describe \textbf{how} operations are executed, capability analysis evaluates \textbf{how consistently} execution duration remains within an expected range.
+
+Execution-time capability is evaluated using transfer and mission durations relative to a tolerance band centred around the nominal duration:
+
+\[
+\mathrm{USL} = 1.3 \times T_{\mathrm{nominal}}
+\]
+
+\[
+\mathrm{LSL} = 0.7 \times T_{\mathrm{nominal}}
+\]
+
+The capability indices are calculated as:
+
+\[
+C_p = \frac{\mathrm{USL} - \mathrm{LSL}}{6\sigma}
+\]
+
+\[
+C_{pk} = \min\left(\frac{\mathrm{USL} - \mu}{3\sigma}, \frac{\mu - \mathrm{LSL}}{3\sigma}\right)
+\]
+
+where $\mu$ and $\sigma$ represent the mean and standard deviation of the measured execution durations.
+
+The $C_p$ index evaluates the spread of execution times relative to the defined tolerance interval, whereas $C_{pk}$ additionally considers the deviation of the process mean from the nominal duration. Therefore, $C_{pk}$ can identify systematic slowdowns or accelerations even when execution variability remains limited.
+
+Capability analysis is performed at two levels:
+
+\begin{itemize}
+  \item \textbf{Transfer-scenario level:} evaluates end-to-end predictability from an operational and logistics perspective.
+  \item \textbf{Mission-phase level:} evaluates the consistency of individual MP1–MP8 execution durations relative to their phase-specific nominal references.
+\end{itemize}
+
+Together, these complementary indicators extend the OEE framework from a pure effectiveness measurement toward a broader evaluation of autonomous system maturity, operational capacity, and deployment readiness.
+
+
+\section{Industrial Data Assessment and OEE Input Availability}
+\label{sec:industrial-data-sources-oee-input-availability}
+I assessed the datasets used to implement the proposed framework and evaluated their suitability for OEE computation. This section presents the available industrial and environmental data sources. It then examines their temporal coverage, granularity, consistency, and completeness. Finally, it compares the information required by the OEE model with the information available in the source records.
+
+This assessment has two objectives. First, it identifies the data constraints that motivate the processing and reconstruction methods used in the implementation pipeline. Second, it identifies the additional fields required for more reliable OEE computation in future deployments. I therefore use the real data to assess the feasibility of the proposed approach and define its data requirements. The data is not treated as a complete or controlled measurement campaign.
+\subsection{Available Industrial Data Sources}
+\label{subsec:available-industrial-data-sources}
+The implementation uses two operational datasets: an automatic dataset export and a manual field log. These sources differ in structure, granularity, and content. The automatic dataset provides machine-generated information, while the field log adds operator-recorded context.
+\subsubsection{Automatic dataset}
+The automatic dataset covers two acquisition campaigns. Phase 1 ran from \textbf{11 December 2022 to 10 February 2023}. Phase 2 took place in \textbf{March 2023}. The dataset contains three linked levels:
+
+\begin{itemize}
+  \item 425 transfers with 99 attributes;
+  \item 750 missions with approximately 38 attributes;
+  \item 3,137 incidents with approximately 28 attributes.
+\end{itemize}
+
+Transfer records describe complete transport orders. They include retry, abort, error, soft-stop, disengagement, and manual-mode counters. They also contain operating-mode durations, travelled distances, and GPS information.
+
+Mission records include the mission type, duration, distance, state, and error information. Incident records capture events such as soft stops, protective stops, disengagements, and transitions to manual operation.
 \begin{figure}[H]
   \centering
-  \includegraphics[ width=\textwidth]{images/cloud improved.png}
-  \caption{Proposed improvement to cloud architecture with persistent data storage}
-  \label{fig:cloud improved}
+  \includegraphics[width=0.24\textwidth]{images/AutoData.png}
+  \caption{Automatic dataset source data model}
+  \label{fig:auto_data_model}
+\end{figure}
+\subsubsection{Manual field-log dataset}
+The manual dataset contains \textbf{944} operator-recorded mission attempts across seven test weeks. Phase 1 includes \textbf{weeks 50, 2, 3, 5, and 6}. Phase 2 includes \textbf{weeks 10 and 11}. Each row represents one mission attempt and contains approximately 25 attributes.
+
+These attributes cover identification, timing, outcome, human intervention, and environmental context. They include mission and scenario information, start and completion times, manoeuvre and catch-up durations, success or failure status, failure location and reason, manual-assistance details, ODD compliance, and free-text comments about weather and operating conditions.
+
+The records are distributed across several weekly worksheets, but they share the same flat structure. Each row represents one observed mission attempt. Unlike the automatic dataset, the manual log does not separate transfers, missions, and incidents into linked levels. It also lacks common identifiers such as \texttt{transfer\_id} and \texttt{mission\_id}.
+
+The two sources therefore cannot be merged through a direct identifier-based join. I instead identify corresponding records using temporal and operational attributes, including the execution date, timestamp, mission type, and source and destination positions.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.2\textwidth]{images/ManualData.png}
+  \caption{Manual field-log source data model}
+  \label{fig:manual_data_model}
+\end{figure}
+\subsection{Availability of Required OEE Inputs}
+\label{sec:availability-of-required-oee-inputs}
+The datasets were not collected as part of a dedicated OEE measurement campaign. The automatic and manual sources cover partially overlapping periods. They also differ in structure, identifiers, and temporal precision. The automatic dataset contains system-generated transfer and mission identifiers. The manual log contains independent operator observations. I therefore harmonise and reconcile the two sources before combining them.
+
+Several inputs required by the OEE framework are not recorded explicitly. These include planned operating schedules, planned activity durations, nominal execution times, structured downtime categories, and complete repair information. Some quantities can be reconstructed from existing fields. Others require documented configuration values or engineering assumptions.
+
+Table~\ref{tab:oee-data-readiness} summarises the readiness of the available data for OEE computation. The classification distinguishes between directly available information, values derived from source records, and inputs that must be configured or estimated.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Availability of source-data inputs for OEE computation}
+\label{tab:oee-data-readiness}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{3.2cm}|p{5.5cm}|p{5.2cm}|}
+\hline
+\textbf{OEE element} & \textbf{Required information} & \textbf{Availability in the source data} \\
+\hline
+Calendar Time $T_t$ & Observation-period boundaries & Directly available \\
+\hline
+Planned Operating Time $T_o$ & Shift calendar and operating window & Not recorded \\
+\hline
+Required Time $T_r$ & Planned activities and ODD exclusions & Partially available \\
+\hline
+Available Time $T_a$ & Downtime duration and classification & Partially available \\
+\hline
+Performance-Adjusted Time $T_n$ & Actual and nominal execution durations & Actual durations available; nominal durations absent \\
+\hline
+Useful Time $T_u$ & Standardised transfer outcomes & Derivable from existing fields \\
+\hline
+Reliability indicators & Failure and repair information & Incomplete \\
+\hline
+Process-quality indicators & Retries, interventions, and stop events & Distributed across both sources \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\section{Canonical Data Model}
+\label{sec:canonical-data-model}
+\subsection{Purpose and Design Objectives}
+\label{subsec:purpose-and-design-objectives}
+The automatic dataset and the manual field log presented in Section~\ref{sec:availability-of-required-oee-inputs} differ in structure, granularity, identifiers, and information content. The automatic source organises information across transfers, missions, and incidents, whereas the manual source records independent mission observations without shared system identifiers. Moreover, neither source contains all the information required by the proposed OEE framework in a directly usable form.
+
+I therefore developed a canonical data model to provide a unified representation of the required information. The model does not reproduce either source dataset. Instead, it defines a common target structure. The available automatic and manual records are transformed into this structure before being processed by the metrics engine.
+The canonical model serves two purposes. In the present implementation, it provides a standard input structure for consolidating the heterogeneous industrial records. It also defines a recommended structure for future data collection within the company. Future systems can record OEE-relevant information directly in this form, reducing the need for reconstruction and manual interpretation.
+
+As shown in Figure~\ref{fig:canonical_data_model}, the core model consists of six operational entities: \texttt{Transfers}, \texttt{Missions}, \texttt{Downtime\_Events}, \texttt{Speed\_Loss\_Events}, \texttt{Out\_of\_ODD\_Events}, and \texttt{Shift\_Schedule}. The Transfers entity represents the central operational unit, while the supporting entities store information defined at a finer or broader level of granularity.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\textwidth]{images/BigData_UML.png}
+  \caption{Canonical entity-relationship model and mapping of attributes to the OEE dimensions}
+  \label{fig:canonical_data_model}
+\end{figure}
+\subsection{Transfer as the Central Operational Entity}
+\label{subsec:transfer-as-the-central-operational-entity}
+The \texttt{Transfers} entity forms the centre of the canonical model. A transfer represents a complete transport order performed between a source position and a destination position. It provides a meaningful unit of analysis because each transfer has a defined execution interval, an operational scenario, a final outcome, and a nominal-duration reference.
+
+Transfer records provide the main inputs for Performance and Quality. Actual and nominal durations are used to evaluate execution speed, while the standardised outcome determines whether the transfer contributes to Useful Time. Availability is calculated separately at vehicle-and-operating-day level using \texttt{Shift\_Schedule} and \texttt{Downtime\_Events}. The transfer-level results are then aggregated over the same evaluation period to obtain the complete OEE.
+
+The fields contained in \texttt{Transfers} can be grouped according to their analytical role, as summarised in Table~\ref{tab:transfers-information-groups}. Only the principal fields are highlighted here; the complete set is shown in Figure~\ref{fig:canonical_data_model}.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Main information groups in the Transfers entity}
+\label{tab:transfers-information-groups}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{3.2cm}|p{5.8cm}|p{8cm}|}
+\hline
+\textbf{Information group} & \textbf{Representative fields} & \textbf{Purpose} \\
+\hline
+Identification and context & \texttt{transfer\_id}, \texttt{vehicle\_id}, \texttt{date}, \texttt{data\_source}, \texttt{mode} & Identify the operation and preserve its source and operating context \\
+\hline
+Route and scenario & \texttt{source\_spot}, \texttt{dest\_spot}, \texttt{transfer\_type}, \texttt{scenario} & Describe the transfer configuration and select the appropriate nominal reference \\
+\hline
+Timing & \texttt{transfer\_start}, \texttt{transfer\_end}, \texttt{transfer\_dur\_sec}, \texttt{nominal\_dur\_sec} & Support execution-time and Performance calculations \\
+\hline
+Execution & \texttt{mission\_count}, \texttt{abort\_count}, \texttt{retry\_count} & Describe how the transfer was completed \\
+\hline
+Outcome & \texttt{outcome\_5class}, \texttt{failure\_reason} & Support Quality and failure analysis \\
+\hline
+Diagnostic indicators & \texttt{remote\_val\_cnt}, \texttt{prot\_stop\_cnt}, \texttt{1st\_pickup}, \texttt{1st\_setdown} & Support supervision, reliability, and process-quality analysis \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The standardised outcome taxonomy distinguishes between \texttt{COMPLETED\_AUTO}, \texttt{COMPLETED\_MANUAL}, \texttt{ABORTED}, \texttt{CANCELED}, and \texttt{UNACHIEVABLE}. This classification ensures that transfers originating from different source datasets are interpreted consistently by the metrics engine.
+
+\subsection{Supporting Entities and Relationships}
+\label{subsec:supporting-entities-and-relationships}
+The supporting entities represent information recorded at a different level from the complete transfer. \texttt{Missions} preserves the operational tasks composing each transfer, while \texttt{Downtime\_Events}, \texttt{Speed\_Loss\_Events}, and \texttt{Out\_of\_ODD\_Events} represent distinct types of operational losses or exclusions. \texttt{Shift\_Schedule} stores the planned operating information defined for each vehicle and operating day.
+
+Each mission is linked to one transfer through \texttt{transfer\_id}. Downtime and speed-loss events may also be linked to a specific transfer. However, this relationship can remain optional because some events may occur between transfers. Similarly, an ODD event may affect a specific transfer or a broader operating interval. It can therefore also be associated with the vehicle and operating date.
+
+\texttt{Shift\_Schedule} is independent of individual transfers because a scheduled operating period exists even when no transfer is executed. It is identified by the combination of \texttt{date} and \texttt{vehicle\_id}. Table~\ref{tab:canonical-entity-granularity} summarises the level of granularity and analytical role of each entity.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Entities and levels of granularity in the canonical data model}
+\label{tab:canonical-entity-granularity}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{3.5cm}|p{4.3cm}|p{3.0cm}|p{4.2cm}|}
+\hline
+\textbf{Entity} & \textbf{Level of granularity} & \textbf{Principal key} & \textbf{Main analytical role} \\
+\hline
+\texttt{Transfers} & One complete transport order & \texttt{transfer\_id} & Performance and Quality analysis \\
+\hline
+\texttt{Missions} & One operational task within a transfer & \texttt{mission\_id} & Sub-transfer diagnostics \\
+\hline
+\texttt{Downtime\_Events} & One unplanned interruption & \texttt{event\_id} & Availability and reliability \\
+\hline
+\texttt{Speed\_Loss\_Events} & One non-stopping execution loss & \texttt{event\_id} & Performance-loss diagnosis \\
+\hline
+\texttt{Out\_of\_ODD\_Events} & One ODD-exclusion interval & \texttt{event\_id} & Required-Time determination \\
+\hline
+\texttt{Shift\_Schedule} & One vehicle and operating day & \texttt{date}, \texttt{vehicle\_id} & Planned Operating Time and Required Time \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\subsection{Mapping to the OEE Dimensions}
+\label{subsec:mapping-to-the-oee-dimensions}
+The colour coding used in Figure~\ref{fig:canonical_data_model} indicates the OEE dimension supported by each field. Green fields contribute primarily to Availability, blue fields to Performance, red fields to Quality, and orange fields to both Performance and Quality. Black fields provide diagnostic information.
+
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Mapping of the OEE time hierarchy to the canonical data model}
+\label{tab:oee-time-hierarchy-mapping}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{3cm}|p{1.4cm}|p{3.5cm}|p{8cm}|}
+\hline
+\textbf{OEE quantity} & \textbf{Symbol} & \textbf{Principal source} & \textbf{Implementation} \\
+\hline
+Calendar Time & $T_t$ & Analysis configuration & Duration of the selected calendar evaluation period \\
+\hline
+Planned Operating Time & $T_o$ & \texttt{Shift\_Schedule} & Sum of \texttt{shift\_duration\_sec} over scheduled operating periods \\
+\hline
+Required Time & $T_r$ & \texttt{Shift\_Schedule}, \texttt{Out\_of\_ODD\_Events} & Planned Operating Time after planned and ODD-related exclusions \\
+\hline
+Available Time & $T_a$ & \texttt{Downtime\_Events} & Required Time minus qualifying unplanned downtime \\
+\hline
+Performance-Adjusted Time & $T_n$ & \texttt{Transfers} & Sum of \texttt{nominal\_dur\_sec} for qualifying executed transfers \\
+\hline
+Useful Time & $T_u$ & \texttt{Transfers} & Sum of \texttt{nominal\_dur\_sec} for transfers satisfying the useful-outcome criteria \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\subsection{Role as a Reference Data Structure}
+\label{subsec:role-as-a-reference-data-structure}
+I discussed the proposed canonical model with members of the engineering team. The discussion focused on its potential use for future data collection and framework development. The model identifies the information that should be recorded systematically to support OEE computation.
+
+This information includes common identifiers, shift schedules, event timestamps, nominal durations, failure categories, repair times, and ODD exclusions. I therefore present the model as a technical recommendation. It does not represent an already deployed company data architecture.
+
+In this work, I first populate the model using the available automatic and manual records. This step tests whether the existing industrial data can be transformed into the proposed structure. It also identifies which fields are directly available, which can be reconstructed, and which require estimates or configuration assumptions.
+
+I then test the model using controlled synthetic data. These datasets contain complete and predefined inputs. They make it possible to evaluate the data structure and calculation engine under known operating conditions and loss scenarios.
+
+The two datasets serve different purposes. The industrial data demonstrates the feasibility of applying the proposed model to existing records. The synthetic data supports controlled validation of its completeness, consistency, and suitability for OEE computation.
+
+
+
+\section{Framework Summary}
+The proposed framework extends the classical \gls{oee} methodology to the evaluation of autonomous yard logistics systems while preserving the original structure. The principal adaptations introduced in this work include the definition of the transfer as the measurement unit, the extension of the time hierarchy to account for autonomous operation, the explicit treatment of Operational Design Domain (ODD) exclusions, and the introduction of autonomous-vehicle-specific loss classifications. Figure~\ref{fig:framework_summary} presents an overview of the adopted framework.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{images/frameworksummary.png}
+  \caption{Overview of the proposed OEE-based performance evaluation framework}
+  \label{fig:framework_summary}
 \end{figure}
 
+Availability, Performance, and Quality remain the primary measures used to compute OEE, GEE, and TEEP, whereas complementary indicators support diagnosis of operational performance without altering the OEE calculation itself.
 
+Reliability metrics (MTBF, MTTR, and failure rate) characterise the technical behaviour of the autonomous vehicle, while process-quality indicators monitor the robustness of mission execution. Process capability indices (Cp and Cpk) evaluate the consistency of execution times, and operational indicators such as intervention rate, supervision workload, throughput, and weather correlation provide additional information regarding deployment readiness.
 
-\subsubsection{Scope of This Work}
+The framework definition is complemented by an assessment of the available industrial inputs and by the specification of a canonical data model. Together, these additions connect the conceptual OEE structure to the data architecture required for implementation. 
 
-The analysis above highlights three main limitations of the existing weather station system: protocol and communication constraints, gaps in data storage, and lack of offline resilience.  
-However, not all of these gaps fall within the scope of the present work.
+\section{Conclusion}
+In this chapter, I developed an OEE-based framework for autonomous yard logistics. I retained the classical relationship between Availability, Performance, and Quality. I then adapted the quantities used to calculate these factors to the operational characteristics of autonomous transport.
 
-In this thesis, two aspects are addressed directly:
-\begin{itemize}
-    \item \textbf{Integration of a new visibility measurement:} The Vaisala PWD12 sensor is added to complement the WXT536 and extend the system’s measurement capabilities.
-    \item \textbf{Enhancing offline resilience:} A local buffering mechanism based on SQLite is implemented to prevent data loss during temporary connectivity outages.
-\end{itemize}
+I selected the transfer as the primary measurement unit and developed a six-level time hierarchy. I also decomposed Performance into dispatch utilisation and execution speed. This decomposition separates vehicle underuse from delays during mission execution. In addition, I introduced an ODD-aware time-accounting method that distinguishes external operating restrictions from technical unavailability.
 
-The following limitations are acknowledged but not solved within this work:
-\begin{itemize}
-    \item \textbf{Protocol and communication constraints:} A theoretical improvement could be achieved by adopting Modbus RTU instead of ASCII, allowing more efficient message formats and flexible baud rate handling. This would require substantial changes in both firmware configuration and software parsing, and is therefore considered out of scope for this thesis.
-    \item \textbf{Data storage gaps:} A potential solution is to introduce a cloud-based persistent storage layer (e.g. Amazon S3 or a time-series database) to complement DynamoDB’s short-term retention. This would enable historical analysis and model training, but lies outside the immediate objectives of this work.
-\end{itemize}
+I defined overlap-correction rules and a transfer-outcome taxonomy for autonomous operations. I also incorporated complementary indicators for reliability, human supervision, throughput, environmental influence, process quality, and execution-time capability. Together, these indicators provide additional diagnostic information without changing the core OEE calculation.
 
-This scoping ensures that the thesis remains focused on sensor integration and operational robustness, while still acknowledging other improvement paths for the system.
+Finally, I assessed the availability of the industrial inputs required by the framework. I identified the main gaps in the source data and defined a canonical data model containing transfers, missions, events, ODD exclusions, and shift information. This model aligns the available data with the proposed time hierarchy and OEE factors.
 
-
-
-\section*{Conclusion}
-With a clear understanding of the existing weather station system, including its architecture, strengths, and limitations, the focus now shifts to the detailed study of the new visibility sensor selected for integration: the Vaisala \gls{pwd12}. This chapter provided a comprehensive examination of the sensor’s internal design, operating principles, and technical specifications, as well as its relevance to the system’s operational objectives. This foundational understanding is essential to ensure effective hardware integration, data parsing, and long-term reliability within the broader weather monitoring platform.
-
+These contributions adapt classical OEE to the operational characteristics of autonomous yard logistics. \textbf{The resulting framework links the conceptual OEE model to the data structure required for implementation and validation.} The following chapter presents the implementation, validation, and evaluation of the framework. It covers data integration, event classification, nominal-duration estimation, ODD integration, KPI computation, and controlled validation.

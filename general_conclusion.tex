@@ -1,0 +1,18 @@
+\chapter*{General Conclusion}
+\addcontentsline{toc}{chapter}{General Conclusion}
+
+In this work, I studied how to evaluate the operational effectiveness of autonomous vehicles in yard-logistics environments. Classical OEE was designed for stationary manufacturing systems. It does not fully describe mission variability, autonomous driving constraints, remote supervision, or ODD conditions. I therefore proposed an OEE-based framework for autonomous transport operations.
+
+I kept the classical Availability, Performance, and Quality structure. I selected the transfer as the main measurement unit. I also introduced a six-level time hierarchy. This hierarchy separates non-operating periods, planned and ODD exclusions, downtime, performance losses, and quality losses. I divided Performance into dispatch utilisation and ESR. I also added engineering indicators to support the diagnosis.
+
+I developed a canonical data model and an ingestion pipeline for incomplete industrial data. I applied the framework to real industrial records. This showed how the calculation process works in practice. Some inputs had to be reconstructed. I also used synthetic datasets to test the consistency and sensitivity of the calculations. Finally, I developed a mission-phase extension to identify losses at different stages of a mission.
+
+The main limitations are related to data quality and event classification. Missing telemetry can affect the indicators. Ambiguous events can also lead to inconsistent classification. Clear classification rules and expert review are therefore necessary.
+
+The main academic contribution of my work is the adaptation of OEE to autonomous yard logistics. The framework combines a global effectiveness indicator with engineering diagnostics. It also provides a common structure for heterogeneous operational data. Its industrial contribution is a practical method for identifying operational losses and supporting performance improvement.
+
+Future work should improve data collection and reduce data reconstruction. Mission and transfer identifiers should be recorded directly. Timestamps, technical events, ODD conditions, and mission phases should also be synchronised and recorded consistently.
+
+This work provides a basis for standardising performance measurement for autonomous transport systems. More data from longer periods, additional vehicles, and different environments are needed before the results can be generalised.
+
+Overall, I developed a structured foundation for evaluating autonomous yard-logistics performance. The framework connects OEE, operational data, and engineering diagnostics in a common approach.

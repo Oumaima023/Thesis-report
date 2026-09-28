@@ -1,583 +1,1448 @@
+\chapter{Implementation and Validation of the Proposed \texorpdfstring{\gls{oee}}{OEE} Framework}
+\label{chap:oee-framework-implementation}
 
+\newlength{\chapterThreeTextFloatSep}
+\newlength{\chapterThreeFloatSep}
+\newlength{\chapterThreeInTextSep}
+\newlength{\chapterThreeAboveCaptionSkip}
+\newlength{\chapterThreeBelowCaptionSkip}
+\setlength{\chapterThreeTextFloatSep}{\textfloatsep}
+\setlength{\chapterThreeFloatSep}{\floatsep}
+\setlength{\chapterThreeInTextSep}{\intextsep}
+\setlength{\chapterThreeAboveCaptionSkip}{\abovecaptionskip}
+\setlength{\chapterThreeBelowCaptionSkip}{\belowcaptionskip}
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{5pt}
+\setlength{\belowcaptionskip}{2pt}
 
-\chapter{Study of the PWD12 Sensor}
-\label{chap:pwd12-study}
+\section{Introduction}
 
-\section*{Introduction}
+The previous chapter defined the proposed \gls{oee} framework for autonomous yard logistics. This chapter presents how I implemented and validated the framework. The implementation combines a \textbf{transfer-level \gls{oee} engine with a mission-phase layer for more detailed operational analysis}.
 
-This chapter focuses on the Vaisala \gls{pwd12} visibility sensor, shown in figure~\ref{fig:pwd}, a key component to be integrated into the weather monitoring system. The study covers its functionality, measurement principles, supported features, and communication capabilities. Special attention is given to the configuration process, the command interface, and how the sensor behaves in standalone testing scenarios. Understanding the \gls{pwd12}’s capabilities and requirements is essential before proceeding with its integration into the broader system. This chapter establishes the technical basis for ensuring reliable operation and effective data acquisition. Unless otherwise specified, all technical details in this chapter are based on the Vaisala PWD22/52 User’s Guide \cite{vaisala2015pwd}.
+The implementation uses the canonical data model defined in the previous chapter and applies it to the available industrial records through a structured ingestion pipeline. However, due to incomplete and heterogeneous records, the resulting indicators are treated as illustrative rather than as a definitive evaluation of vehicle performance. \textbf{Controlled synthetic scenarios were therefore developed to validate the calculation logic, sensitivity, and consistency of the framework.}
 
+The chapter first presents the implementation components: the data integration and model-ingestion pipeline, weather-data processing for \gls{odd} integration, the transfer-level metrics and reporting engine, and the mission-phase diagnostic extension. It then presents the validation approach, the controlled synthetic validation results, and the mission-phase diagnostic validation.
+
+\section{Data Integration and Model Ingestion Pipeline}
+\label{sec:data-integration-and-model-ingestion-pipeline}
+
+The automatic dataset export and manual field log were transformed into the canonical model defined in Section~\ref{sec:canonical-data-model} through a three-stage pipeline. The process first harmonises and cross-matches the two sources, then reconstructs complete transfers and consolidates the available information, and finally populates the canonical entities and derives the missing \gls{oee} inputs. The resulting workflow is illustrated in Figure~\ref{fig:processing_pipeline}.
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{images/Vaisala_PWD12.jpg}
-  \caption{Vaisala Present Weather Detector PWD12}
-  \label{fig:pwd}
+  \includegraphics[width=0.8\textwidth]{images/datapipline.png}
+  \caption{End-to-end processing pipeline for canonical-model ingestion}
+  \label{fig:processing_pipeline}
 \end{figure}
 
-\section{Sensor Context and Operational Role}
-\label{sec:pwd_context}
+\subsection{Source Harmonisation and Automatic-Manual Cross-Matching}
+\label{subsec:source-harmonisation-and-automatic-manual-cross-matching}
+The automatic and manual datasets use different identifiers, timestamp formats, and levels of precision. Destination identifiers were therefore normalised into a common format, while date and time fields were converted into comparable timestamps.
 
-\subsection{Purpose of Integrating the PWD12}
+Records were matched using execution date, mission type, destination position, and start time. Date, mission type, and destination had to match exactly after normalisation, while a maximum start-time difference of 30 min was allowed. A one-to-one rule was applied so that each automatic mission could be associated with only one manual observation. The matching criteria are summarised in Table~\ref{tab:auto-manual-matching-rules}.
 
-The decision to integrate the \textbf{Vaisala \gls{pwd12}} visibility sensor into the weather station was largely influenced by Unisphere's prior experience with Vaisala hardware and the reliability of their certified instruments. Vaisala's long-standing reputation in meteorological sensing, combined with the sensor's compliance with aviation and meteorological standards, made it a trustworthy addition to the system. Although the decision was made before the start of the internship, the integration aligned well with the company's infrastructure and quality expectations.
-
-\subsection{Role in the Weather Station}
-
-The \gls{pwd12} extends the capabilities of the existing weather station by adding \textbf{visibility measurement}, a parameter that was not captured by the previously installed WXT536 sensor. This enhancement was essential for supporting operational environments such as vertiports, where visibility conditions directly impact the feasibility of air taxi operations.
-
-
-\subsection{Relevance to UAS Operations and the NOVA Platform}
-
-Visibility data plays a critical role in \textbf{\gls{uas}} operations, particularly under \textbf{\gls{vfr}} and for applications like \textbf{\gls{uam}}. In such contexts, poor visibility can ground flights or require re-routing, making accurate and localized measurement a key enabler for operational decision-making.
-
-Within the NOVA platform, visibility readings contribute to weather-aware flight planning, real-time monitoring, and post-operation analysis. The integration of the \gls{pwd12} is especially relevant for advanced vertiport deployments, such as the one near \gls{dxb}, where air taxi services are planned. In these environments, visibility is not just a regulatory requirement but a critical factor in ensuring safety and operational continuity.
-
-
-
-\section{Internal Architecture and Hardware Components}
-
-The Vaisala \gls{pwd12} sensor is a sophisticated device designed to deliver precise visibility and present weather measurements in outdoor environments. This section explores its internal structure and the physical components that contribute to its functionality.
-
-\subsection{Optical Measurement System}
-
-At the core of the visibility measurement functionality is the \gls{pwd12}’s \textbf{forward-scatter optical system} \cite{vaisala2015pwd}. It consists of an infrared light source and a photodetector arranged at a 42° angle relative to each other. When light emitted by the source encounters airborne particles like fog or rain, some of the light is scattered and captured by the receiver. The intensity of this scattered light is used to calculate the \textbf{\gls{mor}}.
-
-This arrangement allows for a compact design with minimal maintenance requirements, as it eliminates the need for moving parts. The measurement volume is carefully defined to avoid contamination from precipitation that may pass through but not reflect light effectively.
-
-As shown in Figure \ref{fig:optic}, the layout of the optical components ensures that only forward-scattered light is measured, minimizing noise from ambient light and non-relevant angles.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.9\textwidth]{images/optic.png}
-  \caption{\gls{pwd12} Optical System Layout\cite{vaisala2015pwd}}
-  \label{fig:optic}
-\end{figure}
-
-\subsection{RAINCAP Precipitation Sensor}
-
-In parallel with visibility measurements, the \gls{pwd12} features a \textbf{RAINCAP} sensor\cite{vaisala2015pwd} mounted on the top of the enclosure. This is a solid-state capacitive sensor that detects precipitation through mechanical vibrations caused by raindrops or snowflakes hitting its surface. The internal signal processing algorithm analyzes the impact pattern and frequency to differentiate between precipitation types like drizzle, rain, snow, and sleet.
-
-This mechanism allows for fast and reliable precipitation detection without requiring any moving parts, enhancing durability in the field. The design and principle of operation are illustrated in Figure \ref{fig:raincap}.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.9\textwidth]{images/raincap.png}
-  \caption{RAINCAP Block Diagram\cite{vaisala2015pwd}}
-  \label{fig:raincap}
-\end{figure}
-
-\subsection{Anti-Icing and Heating Mechanisms}
-
-To ensure uninterrupted performance in cold and icy conditions, the \gls{pwd12} is equipped with \textbf{automatic heaters}\cite{vaisala2015pwd} located in three zones: the optical head, the RAINCAP sensor, and the main enclosure. These heaters are activated based on environmental conditions and internal temperature readings to prevent snow or ice buildup on sensitive areas.
-
-The heater outputs can be controlled remotely via digital I/O lines or allowed to operate autonomously. The heater configuration helps maintain consistent measurement accuracy regardless of the surrounding weather.
-
-\subsection{Signal Processing Unit and Embedded Controller}
-
-All sensor outputs are processed by an embedded microcontroller inside the \gls{pwd12}. This unit is responsible for:
-\begin{itemize}
-    \item Converting raw analog signals into digital measurements,
-    \item Filtering and applying classification algorithms,
-    \item Generating weather codes and output strings,
-    \item Managing communication and diagnostic reporting.
-\end{itemize}
-
-\subsubsection{Enclosure and Protection}
-
-The Vaisala \gls{pwd12} is housed in a rugged, \textbf{\acrshort{ip66}-rated enclosure}\cite{vaisala2015pwd}, designed for long-term deployment in demanding outdoor environments. The enclosure combines \textbf{anodized aluminum} with \textbf{\acrshort{uv}-resistant polycarbonate} to ensure structural integrity, weather resistance, and longevity.
-
-Key features of the protective design include:
-
-\begin{itemize}
-    \item \textbf{Ingress Protection:} The \gls{ip66} rating guarantees that the enclosure is dust-tight and protected against strong water jets from any direction, making it suitable for exposed locations.
-    
-    \item \textbf{\gls{emc} Shielding:} The internal electronics are shielded to comply with \textbf{\gls{en61326}}, reducing susceptibility to electrical interference from nearby equipment or power lines. This is essential when the sensor is installed near radar, communication antennas, or industrial machinery.
-    
-    \item \textbf{Grounding and Surge Protection:} A dedicated grounding terminal allows the sensor to be connected to the site’s earthing system. Additionally, the PWD12 includes internal protection components against electrostatic discharge and transient surges on communication and power lines. However, external surge arrestors are recommended for full compliance with installation best practices.
-    
-    \item \textbf{Environmental Robustness:} The physical form factor minimizes accumulation of snow, debris, or bird droppings on optical and sensing elements. The sloped housing design promotes self-cleaning, reducing maintenance needs.
-    
-    \item \textbf{Connector Interface:} The cable gland or M12 interface is sealed to prevent moisture ingress while providing mechanical strain relief for the cable.
-\end{itemize}
-
-These protection features make the \gls{pwd12} well-suited for aviation and meteorological applications where \textbf{continuous and interference-free operation} is essential.
-
-
-\section{Technical Specifications}
-
-The Vaisala \gls{pwd12} sensor is designed to provide high-accuracy visibility and present weather measurements. It outputs a variety of environmental parameters relevant for \gls{uas} operations, particularly under \gls{vfr} conditions.
-
-\subsection{Measurable Parameters and Units}
-
-The \gls{pwd12} outputs a rich set of weather data using periodic \gls{ascii} messages\cite{vaisala2015pwd}. The standard configuration includes the following measurements:
-\begin{itemize}
-    \item \textbf{Visibility}: 1-minute and 10-minute averaged visibility values (in meters).
-    \item \textbf{Present Weather Codes}: Instantaneous, 15-minute, and 1-hour weather conditions using both \gls{nws} and \gls{wmo} code standards.
-    \item \textbf{Precipitation}: Intensity (mm/h), cumulative precipitation (mm), and snow accumulation (mm).
-    \item \textbf{Optional Parameters}: Air temperature (°C) and background luminance (cd/m²) can also be measured when Message 7 is enabled.
-\end{itemize}
-
-
-\subsection{Accuracy, Resolution, and Operating Ranges}
-
-Table \ref{tab:pwd12specs} summarizes key performance parameters for the visibility and precipitation-related measurements\cite{vaisala2025pwd12}.
 \begin{table}[H]
 \small
-\renewcommand{\arraystretch}{1.5}
-\setlength{\tabcolsep}{8pt} % Adjust column padding
-
+\renewcommand{\arraystretch}{1.15}
 \centering
-\caption{\gls{pwd12} Visibility Sensor Measurement Characteristics (See PWD Datasheet\cite{vaisala2025pwd12})}
-\label{tab:pwd12specs}
-\begin{tabular}{|p{3cm}|c|c|c|p{3.5cm}|}
-    \hline
-    \textbf{Parameter} & \textbf{Range} & \textbf{Interval} & \textbf{Uncertainty} & \textbf{Notes} \\
-    \hline
-    Visibility (1/10 min) & 1--2000 m & 15 s & ±10\% or ±2.5\% & Averaged over 1 and 10 minutes \\
-    \hline
-    Precipitation Intensity & 0--999.99 mm/h & 15 s & ±2.5\% & Resolution: 0.05 mm \\
-    \hline
-    Cumulative Precipitation & 0--99.99 mm & 15 s & ±2.5\% & Reset on restart or CLRS command \\
-    \hline
-    Snow Accumulation & 0--999 mm & 15 s & ±2.5\% & Reset on restart or CLRS command \\
-    \hline
-    Present Weather Code & 0--99 & 15 s & – & Based on optical and Doppler signals \\
-    \hline
+\caption{Automatic-manual cross-matching rules}
+\label{tab:auto-manual-matching-rules}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{2.8cm}|p{4.2cm}|p{3.8cm}|p{4.0cm}|}
+\hline
+\textbf{Criterion} & \textbf{Automatic source} & \textbf{Manual source} & \textbf{Matching rule} \\
+\hline
+Destination & Normalised destination identifier & Normalised destination identifier & Exact \\
+\hline
+Execution date & Date extracted from mission timestamp & Recorded date & Exact \\
+\hline
+Mission type & \texttt{mission\_type} & Recorded mission type & Exact after normalisation \\
+\hline
+Start time & Automatic mission start & Manual starting time & Maximum difference of 30 min \\
+\hline
 \end{tabular}
+\end{adjustbox}
+\end{table}
+The procedure was applied to \textbf{750} automatic missions and \textbf{944} manual attempts. It produced 101 matched pairs. This limited number is mainly explained by the partial overlap between the acquisition periods, the difference in timestamp precision, and the absence of a shared mission identifier. The matched dataset preserves the fields from both sources and records the time difference used during the association.
+
+\subsection{Transfer Reconstruction and Dataset Consolidation}
+\label{subsec:transfer-reconstruction-and-dataset-consolidation}
+Matched and unmatched records from Section~\ref{subsec:source-harmonisation-and-automatic-manual-cross-matching} are reconstructed into transfer-level observations and consolidated into a common intermediate dataset.
+
+For the automatic source, the existing transfer structure is preserved, with missions and incidents linked through the original system identifiers. When a manual match is available, its contextual information is attached to the same operation.
+
+Manual observations require transfer reconstruction because no transfer identifier is available. Consecutive mission attempts are grouped when they occur on the same day and the gap between them does not exceed 15 min. A reconstructed transfer generally consists of a pick-up followed by a set-down, with an optional parking movement.
+
+Matched records enrich overlapping observations, while unmatched records from both sources are retained when they contain usable information. After standardisation of timestamps, positions, operating mode, and data origin, the consolidated dataset contains \textbf{908} transfers and \textbf{1,692 missions}, including \textbf{101 matched automatic–manual pairs}.
+\subsection{Mapping the Consolidated Data to the Canonical Model}
+\label{subsec:mapping-the-consolidated-data-to-the-canonical-model}
+The consolidated transfer and mission datasets are then mapped to the canonical structure defined in Section \ref{sec:canonical-data-model}. Table \ref{tab:canonical-entity-population} summarises the population of the canonical entities.
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Population of the canonical entities}
+\label{tab:canonical-entity-population}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{3.7cm}|p{5.2cm}|p{8.0cm}|}
+\hline
+\textbf{Canonical entity} & \textbf{Main input} & \textbf{Population approach} \\
+\hline
+\texttt{Transfers} & Consolidated transfer dataset & Direct column mapping and standardised derived fields \\
+\hline
+\texttt{Missions} & Consolidated mission dataset & Direct column mapping using \texttt{transfer\_id} \\
+\hline
+\texttt{Downtime\_Events} & Error and disengagement information & Conversion into structured unplanned-downtime records \\
+\hline
+\texttt{Speed\_Loss\_Events} & Recorded protective-stop duration & One record per transfer with non-zero soft-stop time \\
+\hline
+\texttt{Out\_of\_ODD\_Events} & Operational failure reasons and ODD conditions & Classification into structured ODD-event records \\
+\hline
+\texttt{Shift\_Schedule} & Operating dates and configured schedule values & One record per vehicle and operating day \\
+\hline
+\end{tabular}
+\end{adjustbox}
 \end{table}
 
-\subsection{Supported Message Types and Baud Rates}
+\texttt{Transfers} and \texttt{Missions} are populated from the corresponding consolidated records, while event-level entities are generated from the available operational information. Error and disengagement records are converted into \texttt{Downtime\_Events}. Protective-stop durations are instead represented as \texttt{Speed\_Loss\_Events}, since they increase execution time without necessarily representing loss of Availability. This separation prevents the same interval from affecting both Availability and Performance.
 
-The sensor is configured to emit \texttt{Message 2}, which contains the present weather status in standard format, and optionally \texttt{Message 7}\cite{vaisala2015pwd} for aviation-specific use. These messages are structured in the \gls{ascii} protocol and transmitted periodically over the \gls{rs485} interface.
-
-Each message includes a \gls{crc} checksum for error detection, and consists of multiple comma-separated fields representing visibility, weather codes, precipitation levels, and optional extensions such as temperature and luminance.
+Operational \gls{odd} conditions are mapped into \texttt{Out\_of\_ODD\_Events}, while weather-related \gls{odd} events are added separately through the process described in Section~\ref{sec:weather-data-processing-and-odd-integration}. A \texttt{Shift\_Schedule} record is generated for each observed vehicle and operating day.
 
 
-\subsection{Power Requirements and Electrical Characteristics}
+\subsection{Derivation and Configuration of Missing OEE Inputs}
+\label{subsec:derivation-and-configuration-of-missing-oee-inputs}
+Several inputs required by the OEE framework are not directly available in the industrial records. I therefore complete the calculation chain using three approaches. Some values are configured from project information. Others are derived from the observed data. When no measurement is available, I use a documented assumption. Table~\ref{tab:configured-derived-oee-inputs} summarises these inputs and their role in the implementation.
 
-The \gls{pwd12} requires separate power inputs for its measurement electronics and its integrated heater system\cite{vaisala2015pwd}:
+I define the operating schedule from project documentation. The planned shift runs \textbf{from 07:00 to 13:00, Monday to Friday}. Public holidays are excluded from the planned operating period. I also introduce startup and refuelling durations as planned exclusions when calculating Required Time. No software or firmware update events were recorded during the analysed period. I therefore set their duration to zero and assume that they occur outside the operating shift.
 
-\begin{itemize}
-    \item \textbf{Measurement Electronics:} 12–50\,V\,DC
-    \item \textbf{Heaters:} 24\,V\,DC recommended
-\end{itemize}
+Nominal transfer durations require a separate treatment because the source data contains no authoritative reference duration. I therefore define a scenario-specific \textbf{provisional operational benchmark} from successful transfers completed without errors or retries. This benchmark is not presented as a universal ideal cycle time. For each scenario, I set it to 1.20 times the minimum duration observed among these clean transfers:
 
-The sensor is designed for outdoor environments and includes built-in features for environmental resilience:
-\begin{itemize}
-    \item \textbf{Operating Temperature:} -40\textdegree{}C to +60\textdegree{}C
-    \item \textbf{Ingress Protection:} \gls{ip66}-rated enclosure
-    \item \textbf{\gls{emc} Protection:} The electronics comply with EN61326-1 and EN55011 Class B emission limits.
-    \item \textbf{Mounting:} Vertical mounting with proper optical alignment (receiver facing north in the northern hemisphere).
-\end{itemize}
+$$
+t_{\mathrm{nominal},s} = 1.20 \times \min_{i \in C_s} \left(t_{\mathrm{actual},i}\right)
+$$
 
-\section{Installation and Environment Requirements}
+Here, $C_s$ represents the set of clean successful transfers for scenario $s$. The multiplier of 1.20 was selected as a transparent margin above the observed best-case clean execution, rather than as a universal engineering constant. It acknowledges that the shortest observation may be unusually fast and provides a reproducible reference in the absence of an independently specified cycle time. Consequently, ESR and all indicators based on this duration should be interpreted as conditional on this benchmark definition. A formal sensitivity analysis over alternative multipliers and validation against an authoritative industrial reference remain necessary before using the values for contractual or cross-site comparison. When the available reference observations are insufficient, I use a fallback nominal value of \textbf{120 s}. This fallback affects \textbf{37} transfers, corresponding to \textbf{4.1\%} of the consolidated dataset. I also apply a transfer-duration cap of 7,200 s as an outlier-control rule. This prevents abnormally long transfers from distorting the Execution Speed Rate.
 
-Proper installation is crucial to ensure the long-term reliability, accuracy, and durability of the \gls{pwd12} sensor. Vaisala provides clear guidelines to mitigate environmental interference and support optimal sensor performance.
+Other quantities also require substitute values. Manual emergency-stop events have no recorded duration. I therefore assign \textbf{30 s} to each event. This concerns three downtime events. Repair duration is also missing for part of the dataset. When no measured repair interval is available, I use a value of \textbf{5 min} per failure. This affects \textbf{268} transfers and is particularly relevant to the manual records.
 
-\subsection{Site Selection Guidelines}
+I apply two additional limits during reconstruction. Recovery gaps are capped at 8 h. This prevents overnight periods from being interpreted as downtime. Manual mission attempts are grouped into the same reconstructed transfer only when the gap between consecutive operations does not exceed \textbf{15 min}.
 
-The sensor must be installed in an open area with unobstructed airflow and visibility. According to Vaisala's recommendations\cite{vaisala2015pwd}:
+Together, these configured, derived, and fallback values complete the input set required by the canonical model described in Section~\ref{sec:canonical-data-model}.
 
-\begin{itemize}
-    \item A \textbf{minimum horizontal clearance of 100\,m} should be maintained from large objects such as buildings, trees, or towers.
-    \item The sensor should not be mounted near heat sources (e.g., \gls{hvac} exhausts, rooftops) or highly reflective surfaces.
-    \item The installation site must be accessible for maintenance and cleaning and support a vibration-free, rigid mounting base to minimize measurement artifacts.
-\end{itemize}
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Configured and derived inputs used in the implementation}
+\label{tab:configured-derived-oee-inputs}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{2.3cm}|>{\raggedright\arraybackslash}p{4.4cm}|>{\raggedright\arraybackslash}p{2.9cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Type} & \textbf{Basis} & \textbf{Main use} \\
+\hline
+Shift window & 07:00--13:00, Mon--Fri & Configured & Project documentation & Planned Operating Time ($T_o$) \\
+\hline
+Public holidays & 4 days & Configured & Operating calendar & Planned Operating Time ($T_o$) \\
+\hline
+Startup duration & 10 min/day & Configured & Project documentation & Required Time ($T_r$) \\
+\hline
+Refuelling duration & 20 min/fortnight & Configured & Project documentation & Required Time ($T_r$) \\
+\hline
+Software/firmware updates & 0 min & Configured assumption & No recorded events; assumed outside shift & Required Time ($T_r$) \\
+\hline
+Transfer-duration cap & 7,200 s & Configured & Outlier control & ESR, $T_n$ \\
+\hline
+Nominal duration & 1.20 $\times$ min. clean-success duration & Derived operational benchmark & Scenario-specific transfer data; provisional 20\% margin & ESR, $T_n$, $T_u$ \\
+\hline
+Nominal fallback & 120 s & Fallback & Insufficient reference observations (4.1\% of transfers, $n=37$) & ESR, $T_n$ \\
+\hline
+Manual emergency-stop duration & 30 s/event & Fallback & No recorded event duration (0.3\% of transfers, $n=3$) & Available Time ($T_a$) \\
+\hline
+Manual repair duration & 5 min/failure & Fallback & No measured repair interval (29.5\% of transfers, $n=268$; 55.5\% of manual transfers) & MTTR \\
+\hline
+Recovery-gap cap & 8 h & Configured & Excludes overnight intervals & Downtime reconstruction \\
+\hline
+Manual grouping gap & 15 min & Configured & Max. gap within one reconstructed transfer & Transfer reconstruction \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
 
-Figure~\ref{fig:siteguidelines} from the official manual illustrates the optimal site selection constraints.
+\section{Weather Data Processing and ODD Integration}
+\label{sec:weather-data-processing-and-odd-integration}
+The \gls{odd}-accounting method defined in Section~\ref{sec:odd-exclusion-framework} requires environmental conditions to be converted into time-based exclusions that can be used by the metrics engine. This section describes how this process was implemented. Weather observations are first prepared at hourly resolution, then compared with the configured \gls{odd} limits. Violating periods are finally converted into \texttt{Out\_of\_ODD\_Events} and integrated into the daily operating schedule.
+
+\subsection{Weather Data Acquisition and Preparation}
+\label{subsec:weather-data-acquisition-and-preparation}
+Meteorological data was obtained from the \textbf{ERA5 hourly single-level reanalysis dataset} provided through the Copernicus Climate Data Store~\cite{era5_single_levels_cds}. ERA5 combines numerical model information with observations to provide a spatially and temporally consistent representation of atmospheric conditions. The selected product provides hourly data on a global regular latitude--longitude grid with a spatial resolution of $0.25^\circ \times 0.25^\circ$.
+
+ERA5 was used because no local weather station provided continuous measurements for the analysed period. The dataset therefore provides a consistent external source for reconstructing the environmental conditions corresponding to the available operational records.
+
+For the present implementation, the available weather archives cover December 2022 to April 2023. The grid point closest to the operating site was selected at $48.50^\circ\text{N},\,10.25^\circ\text{E}$. The required atmospheric variables were extracted and converted into the units used by the ODD-classification procedure.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Weather variables used for ODD classification}
+\label{tab:weather-variables-odd-classification}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{2.0cm}|p{4.0cm}|p{5.0cm}|p{2.0cm}|}
+\hline
+\textbf{ERA5 variable} & \textbf{Physical quantity} & \textbf{Transformation} & \textbf{Resulting unit} \\
+\hline
+\texttt{t2m} & 2 m air temperature & $T - 273.15$ & $^\circ$C \\
+\hline
+\texttt{d2m} & 2 m dew-point temperature & $T_d - 273.15$ & $^\circ$C \\
+\hline
+\texttt{u10}, \texttt{v10} & 10 m wind components & $\sqrt{u_{10}^{2} + v_{10}^{2}}$ & m/s \\
+\hline
+\texttt{tp} & Total precipitation & $\times 1000$ & mm \\
+\hline
+\texttt{sf} & Snowfall water equivalent & $\times 1000$ & mm \\
+\hline
+\texttt{tcc} & Total cloud cover & $\times 100$ & \% \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The ERA5 source provides hourly estimates of atmospheric and land-surface quantities, which makes it suitable for comparison with the hourly ODD logic implemented in the framework.
+
+The converted weather observations are then aligned with the operating schedule. Only weather records corresponding to a scheduled operating interval are relevant for \gls{oee} computation. Conditions outside this period do not generate an \gls{odd} exclusion.
+
+\subsection{Hourly Weather-ODD Classification}
+\label{subsec:hourly-weather-odd-classification}
+Each retained hourly observation is evaluated against the configurable weather limits stored in \texttt{ODD\_Parameters}. Five environmental conditions are considered: heavy rain, snowfall, strong wind, freezing temperature, and fog.
+
+An hour is classified as outside the weather ODD when at least one of these conditions exceeds its corresponding limit. When several conditions occur simultaneously, the hour is excluded only once. A precedence rule may be used to assign a dominant cause for reporting, but it does not increase the excluded duration.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Hourly weather-based ODD exclusion criteria}
+\label{tab:hourly-weather-odd-criteria}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{3.0cm}|p{5.2cm}|p{5.0cm}|}
+\hline
+\textbf{Weather condition} & \textbf{ERA5 variables} & \textbf{Exclusion criterion} \\
+\hline
+Heavy rain & Total precipitation & $\geq 5.0$ mm/h \\
+\hline
+Snowfall & Snowfall water equivalent & $\geq 2.0$ mm/h \\
+\hline
+Strong wind & 10 m wind speed & $\geq 15.0$ m/s \\
+\hline
+Freezing conditions & 2 m air temperature & $\leq -5.0\,^\circ$C \\
+\hline
+Fog proxy & 2 m air temperature, 2 m dew-point temperature, total cloud cover & $\lvert T - T_d \rvert < 2.5\ \mathrm{K}$ and cloud cover $> 80\%$ \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The fog condition is implemented as a proxy because no direct fog variable is used in the processing pipeline. A small difference between air temperature and dew-point temperature, combined with high cloud cover, is used to identify atmospheric conditions associated with reduced visibility.
+
+The threshold values are stored as configuration parameters rather than embedded directly in the processing logic. They can therefore be modified without changing the weather-processing workflow.
+
+\subsection{ODD Event Generation and Canonical-Model Integration}
+\label{subsec:odd-event-generation-and-canonical-model-integration}
+After hourly classification, the violating records are aggregated by operating day. The weather-based exclusion time is calculated from the proportion of observed shift hours classified as outside the ODD:
+
+$$
+T_{\mathrm{ODD,wx}} = \frac{N_{\mathrm{bad}}}{N_{\mathrm{observed}}} \, T_{\mathrm{shift}},
+$$
+
+where $N_{\mathrm{bad}}$ is the number of violating hourly observations, $N_{\mathrm{observed}}$ is the number of available weather observations within the corresponding operating period, and $T_{\mathrm{shift}}$ is the scheduled shift duration.
+
+The proportional calculation allows the procedure to remain applicable when the available weather records do not cover the complete operating window.
+
+This integration connects the weather-processing module directly to the canonical model defined in Section~\ref{sec:canonical-data-model}. The metrics engine therefore receives the ODD exclusion through the same standardised structure as the other OEE inputs. Its treatment within the $T_o \rightarrow T_r$ transition follows the methodology already defined in Section~\ref{sec:odd-exclusion-framework}.
+
+Figure~\ref{fig:weather_odd_processing} illustrates the weather-ODD processing and canonical-model integration workflow.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.3\textwidth]{images/weatherflow.png}
+  \caption{Weather-ODD processing and canonical-model integration workflow}
+  \label{fig:weather_odd_processing}
+\end{figure}
+\section{Transfer-Level Metrics and Reporting Engine}
+\label{sec:transfer-level-metrics-and-reporting-engine}
+The transfer-level metrics engine is the analytical core of the framework. It takes the canonical dataset produced by the integration pipeline (Section~\ref{sec:data-integration-and-model-ingestion-pipeline}), enriched with ODD information (Section~\ref{sec:weather-data-processing-and-odd-integration}), and applies the calculation rules from Chapter 2 to derive the six-level time hierarchy, the OEE factors, and the complementary operational indicators. This section presents the resulting analysis based on the consolidated industrial dataset.
+\subsection{Time-Hierarchy Computation}
+\label{subsec:time-hierarchy-computation}
+The engine computes the six time levels sequentially:
+
+$$
+T_t \rightarrow T_o \rightarrow T_r \rightarrow T_a \rightarrow T_n \rightarrow T_u.
+$$
+
+Their mathematical definitions were established in Section~\ref{sec:six-level-time-hierarchy} and are therefore not repeated here. The implementation applies these definitions directly to the consolidated dataset.
+
+The analysed period covers \textbf{95 calendar days}, corresponding to \textbf{2,280.00 h} of Calendar Time. The populated shift schedule contains 44 vehicle-shift entries, representing \textbf{264.00 h} of Planned Operating Time. After the configured planned exclusions and ODD-related periods are removed, \textbf{139.40 h} remain as Required Time.
+
+The effective unplanned downtime is subsequently deducted to obtain 79.56 h of Available Time. The nominal durations associated with qualifying started transfers produce 17.20 h of Performance-Adjusted Time. Finally, the nominal contribution of autonomously completed transfers results in 10.16 h of Useful Time. These values are consistent with the time hierarchy used by the current metrics implementation.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Consolidated OEE time hierarchy}
+\label{tab:consolidated-oee-time-hierarchy}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{4.5cm}|p{2.0cm}|p{3.0cm}|}
+\hline
+\textbf{Time level} & \textbf{Symbol} & \textbf{Value} \\
+\hline
+Calendar Time & $T_t$ & 2,280.00 h \\
+\hline
+Planned Operating Time & $T_o$ & 264.00 h \\
+\hline
+Required Time & $T_r$ & 139.40 h \\
+\hline
+Available Time & $T_a$ & 79.56 h \\
+\hline
+Performance-Adjusted Time & $T_n$ & 17.20 h \\
+\hline
+Useful Time & $T_u$ & 10.16 h \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+\subsection{OEE Factor Computation}
+\label{subsec:oee-factor-computation}
+The time hierarchy is used to calculate the three OEE factors. For the consolidated dataset, Availability is:
+
+$$
+A = \frac{T_a}{T_r} = \frac{79.56}{139.40} = 57.08\%.
+$$
+
+Performance is:
+
+$$
+P = \frac{T_n}{T_a} = \frac{17.20}{79.56} = 21.62\%.
+$$
+
+The time-based Quality factor is:
+
+$$
+Q = \frac{T_u}{T_n} = \frac{10.16}{17.20} = 59.08\%.
+$$
+
+The resulting Overall Equipment Effectiveness is:
+
+$$
+\mathrm{OEE} = \frac{T_u}{T_r} = 7.29\%.
+$$
+
+The factor formulation provides the corresponding internal consistency check:
+
+$$
+\mathrm{OEE} = A \times P \times Q = 57.08\% \times 21.62\% \times 59.08\% = 7.29\%.
+$$
+
+The engine also reports a count-based Quality indicator. For the consolidated dataset, this value is 60.41\%. The difference from the time-based value arises because the nominal duration varies between transfer scenarios; consequently, a transfer does not necessarily contribute the same amount of nominal time as another.
+\subsubsection*{Performance Decomposition}
+Performance is further decomposed into the Dispatch Utilisation Rate and Execution Speed Rate introduced in Section~\ref{sec:performance}. For the consolidated dataset, the updated calculation gives:
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Performance decomposition of the consolidated dataset}
+\label{tab:performance-decomposition-consolidated-dataset}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{5.0cm}|p{3.0cm}|}
+\hline
+\textbf{Indicator} & \textbf{Value} \\
+\hline
+DUR & 100.00\% \\
+\hline
+ESR & 21.62\% \\
+\hline
+Performance & 21.62\% \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The decomposition therefore satisfies:
+
+$$
+P = \mathrm{DUR} \times \mathrm{ESR} = 100.00\% \times 21.62\% = 21.62\%.
+$$
+
+The \acrshort{dur} reaches its maximum value in the consolidated evaluation. Consequently, the observed Performance loss is represented primarily by the \acrshort{esr} rather than by additional dispatch-utilisation loss. An \acrshort{esr} of 21.62\% indicates a substantial difference between the nominal execution reference and the observed transfer durations.
+
+A \acrshort{dur} of 100\% should not be interpreted as continuous vehicle motion. Transfer duration may contain protective stops, waiting periods, remote assistance, and other execution delays. These losses remain part of the observed transfer duration and therefore affect execution speed.
+
+\subsection{Reliability and Process-Quality Indicators}
+\label{subsec:reliability-and-process-quality-indicators}
+In addition to the headline OEE factors, the metrics engine generates complementary indicators to support the diagnosis of operational losses. Reliability-related analysis focuses on the recorded unplanned downtime, while process-quality indicators describe recurring execution characteristics that are not directly visible in the global OEE value.
+
+For reliability analysis, the failure count comes from the \texttt{Transfers} table. A transfer is counted as a technical failure when \texttt{Failure\_Event\_Count}=1. Thus, 338 of the 908 transfers contain a technical failure, while 570 do not. This is a transfer count, not a count of downtime-event rows.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Engineering reliability indicators for the consolidated industrial dataset}
+\label{tab:engineering-reliability-indicators-consolidated-dataset}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{6.8cm}|p{3.2cm}|}
+\hline
+\textbf{Indicator} & \textbf{Value} \\
+\hline
+Technical-failure transfers & 338 \\
+\hline
+Available Time $T_a$ & 79.563 h \\
+\hline
+Total repair/recovery duration & 130.4 min \\
+\hline
+MTBF & 0.235 h \\
+\hline
+MTTR & 0.39 min \\
+\hline
+Failure rate $\lambda$ & 4.248 failures/h \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The Pareto analysis uses the event-level \texttt{Downtime\_Events} table. It counts only recorded downtime-event rows. Therefore, the 142 \texttt{system\_fault} records are not the total number of failing transfers. Some failing transfers do not have a corresponding \texttt{system\_fault} record.
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Pareto analysis of recorded unplanned downtime}
+\label{tab:pareto-recorded-unplanned-downtime}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{1.0cm}|p{4.0cm}|p{2.6cm}|p{2.8cm}|p{2.6cm}|p{2.8cm}|}
+\hline
+\textbf{Rank} & \textbf{Downtime category} & \textbf{Number of events} & \textbf{Recorded duration (h)} & \textbf{Share of downtime (\%)} & \textbf{Cumulative share (\%)} \\
+\hline
+1 & System fault & 142 & 107.213 & 69.73 & 69.73 \\
+\hline
+2 & Recovery gap & 209 & 36.927 & 24.02 & 93.75 \\
+\hline
+3 & Intervention & 3 & 5.879 & 3.82 & 97.57 \\
+\hline
+4 & Disengagement & 120 & 2.726 & 1.77 & 99.34 \\
+\hline
+5 & Operational error & 16 & 1.019 & 0.66 & 100.00 \\
+\hline
+\textbf{Total} & --- & \textbf{490} & \textbf{153.764} & \textbf{100.00} & --- \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+System faults constitute the dominant category, accounting for 69.73\% of the recorded downtime duration. Recovery gaps contribute a further 24.02\%. Together, these two categories represent 93.75\% of the total recorded downtime, indicating that the distribution is strongly concentrated in a small number of loss categories.
+
+The durations shown in the Pareto analysis correspond to the recorded or reconstructed downtime events. They are used primarily for loss diagnosis and prioritisation. The effective downtime used in the Availability calculation may be lower after ODD-overlap correction and time-hierarchy constraints are applied.
+%\begin{figure}[H]
+%  \centering
+%\includegraphics[width=0.72\textwidth]{images/unplanned downtime duration.png}
+%\caption{Recorded unplanned downtime duration by category}
+%\label{fig:unplanned_downtime_duration}
+%\end{figure}
+
+Process-quality indicators provide a complementary view of transfer execution. They capture retries, first-attempt success, remote assistance, and protective stops that may affect operational performance without necessarily representing technical downtime.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Process-quality indicators for the consolidated dataset}
+\label{tab:process-quality-indicators-consolidated-dataset}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{6.0cm}|p{3.0cm}|}
+\hline
+\textbf{Indicator} & \textbf{Value} \\
+\hline
+First-Attempt Pickup Rate & 67.76\% \\
+\hline
+First-Attempt Set-down Rate & 84.30\% \\
+\hline
+Retry Rate & 22.44\% \\
+\hline
+Remote Validation Rate & 10.82\% \\
+\hline
+Protective Stop Rate & 28.42\% \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The results show that pickup operations have a lower first-attempt success rate than set-down operations. Retries occur in approximately one fifth of qualifying transfers, while protective stops affect more than one quarter of them. Remote validation is required less frequently but remains relevant for evaluating the level of human supervision.
+\subsection{Execution-Time Distribution and Capability}
+The Performance factor relies on scenario-specific nominal durations. The variability of the observed transfer durations was therefore examined before evaluating execution-time capability.
+
+Figure~\ref{fig:transfer_duration_distribution} shows the distribution of transfer durations in the consolidated industrial dataset. Most transfers are concentrated between 2 and 20 minutes, while a smaller proportion exhibits considerably longer execution times. This long-duration tail indicates substantial variability in the operational data and helps explain the difference between actual and nominal execution times.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\textwidth]{images/transfer_duration_distribution.png}
+  \caption{Distribution of transfer durations in the consolidated industrial dataset}
+  \label{fig:transfer_duration_distribution}
+\end{figure}
+
+To complement this analysis, execution-time capability was evaluated for each transfer scenario. These scenarios include park, close-proximity parking, and \gls{rmf} parking configurations. The engine compares the actual duration of each eligible transfer with its scenario-specific nominal duration and calculates the $C_p$ and $C_{pk}$ indices using the tolerance limits defined in Section~\ref{subsec:execution-time-capability-analysis}.
+
+The results are presented in Table~\ref{tab:transfer-execution-time-capability-by-scenario}. All evaluated scenarios show very low $C_p$ values and negative $C_{pk}$ values. The mean actual-to-nominal duration ratios range from approximately 4.75 to 20.71, indicating that the observed execution times are substantially higher than their corresponding nominal references.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Transfer execution-time capability by scenario}
+\label{tab:transfer-execution-time-capability-by-scenario}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{3.2cm}|p{0.8cm}|p{1.8cm}|p{1.9cm}|p{2.3cm}|p{1.3cm}|p{1.5cm}|p{2.6cm}|}
+\hline
+\textbf{Scenario} & \textbf{$n$} & \textbf{Nominal duration (s)} & \textbf{Mean duration (s)} & \textbf{Mean actual/nominal ratio} & \textbf{$C_p$} & \textbf{$C_{pk}$} & \textbf{Interpretation} \\
+\hline
+Close-proximity parking & 13 & 77 & 1,595.0 & 20.71 & 0.0029 & -0.1906 & Not capable \\
+\hline
+Park & 89 & 32 & 519.2 & 16.23 & 0.0025 & -0.1246 & Not capable \\
+\hline
+\acrshort{rmf} parking & 14 & 77 & 1,031.1 & 13.39 & 0.0044 & -0.1770 & Not capable \\
+\hline
+Unclassified & 14 & 77 & 366.0 & 4.75 & 0.0285 & -0.3279 & Not capable \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The negative $C_{pk}$ values indicate that the mean execution time lies outside the selected tolerance range. The process is therefore not capable relative to the current nominal-duration references. This result is consistent with the low ESR obtained in Section~\ref{subsec:oee-factor-computation} and highlights the difference between the derived best-case nominal durations and the execution times observed under industrial operating conditions.
+
+\subsection{OEE Family and Reporting Outputs}
+The metrics engine also calculates the broader OEE-family indicators introduced in Section~2.8. For the consolidated dataset:
+
+$$
+\mathrm{GEE} = \frac{T_u}{T_o} = 3.85\%,
+$$
+
+and
+
+$$
+\mathrm{TEEP} = \frac{T_u}{T_t} = 0.45\%.
+$$
+
+These indicators use progressively broader time references than \acrshort{oee}. \acrshort{gee} relates Useful Time to the planned operating period, whereas \acrshort{teep} relates it to the complete calendar evaluation horizon. They are reported alongside \acrshort{oee} to make the effect of scheduling and planned exclusions visible without changing the headline \acrshort{oee} definition.
+
+The final Excel workbook contains both summary and diagnostic outputs. In addition to the consolidated OEE results, it provides daily and weekly breakdowns, downtime and speed-loss analyses, capability results, process-quality indicators, statistical monitoring outputs, and data-lineage information. The reporting layer therefore separates the headline effectiveness value from the detailed indicators required for engineering diagnosis.
+
+Only the principal industrial-data outputs are presented in this section. The framework supports a broader set of complementary indicators, but their evaluation depends on the completeness of the corresponding input data. Indicators that could not be evaluated reliably from the available records are retained as part of the framework specification and are discussed in the limitations and future data requirements.
+
+\section{Mission-Phase Diagnostic Extension}
+\label{sec:mission-phase-diagnostic-extension}
+The transfer-level analysis in Section~\ref{sec:transfer-level-metrics-and-reporting-engine} provides the authoritative \gls{oee} result. However, it does not show which mission phase causes a delay, retry, or other loss.
+
+A mission-phase diagnostic extension was therefore added using the MP1--MP8 sequence defined in Table~\ref{tab:mission-phases}.
+
+The industrial records do not contain reliable timestamps for each mission phase. The phase-level dataset is therefore reconstructed synthetically from the observed transfer and mission records.
+
+The resulting indicators are used for diagnostic demonstration only. They do not represent directly measured phase-level performance. The transfer-level OEE remains unchanged.
+\subsection{Mission-Phase Data Structure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{images/mp_datamodel.png}
+  \caption{Data model of the mission-phase diagnostic extension}
+  \label{fig:mp_datamodel}
+\end{figure}
+
+The canonical model was extended with a \texttt{Mission\_phases} entity. This creates an additional level between missions and phase-specific diagnostic events. The resulting hierarchy is:
+
+Transfer $\rightarrow$ Mission $\rightarrow$ Mission Phase.
+
+Each \texttt{Mission\_phases} record represents one execution instance of one phase. It remains linked to its parent mission and transfer. The entity contains the phase sequence, reconstructed timing, actual duration, nominal duration, outcome, and operational context.
+
+For MP1, additional route information is stored. This includes travelled distance and the number of road and pedestrian crossings. These fields are required because the MP1 nominal duration depends on the travelled path.
+
+Downtime and speed-loss records can also be linked to a phase through \texttt{mp\_id}. This link is optional. Events that cannot be assigned reliably to one phase remain associated with the mission or transfer level.
+Table~\ref{tab:mission-phases-information-groups} summarises the main information groups in the \texttt{Mission\_phases} entity and their role in the diagnostic analysis.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Main information groups in the \texttt{Mission\_phases} entity}
+\label{tab:mission-phases-information-groups}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{3.3cm}|p{5.6cm}|p{5.1cm}|}
+\hline
+\textbf{Information group} & \textbf{Main attributes} & \textbf{Purpose} \\
+\hline
+Identification & \texttt{mp\_id}, \texttt{mission\_id}, \texttt{transfer\_id} & Preserve the transfer--mission--phase hierarchy \\
+\hline
+Sequence & \texttt{transfer\_flow}, \texttt{phase\_flow}, \texttt{phase} & Locate the phase within the mission \\
+\hline
+Timing & \texttt{mp\_start}, \texttt{mp\_end}, \texttt{mp\_dur\_sec} & Represent reconstructed execution \\
+\hline
+Nominal reference & \texttt{nominal\_dur\_sec} & Support ESR and capability analysis \\
+\hline
+Outcome & \texttt{mp\_outcome} & Support phase-level Quality analysis \\
+\hline
+Route context & \texttt{distance\_m}, \texttt{n\_crossings}, \texttt{n\_ped\_crossings} & Support MP1 nominal-duration calculation \\
+\hline
+Operational context & \texttt{scenario}, \texttt{transfer\_type} & Support diagnostic grouping \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\subsection{Mission-Phase Reference and Nominal Durations}
+\label{subsec:mission-phase-reference-and-nominal-durations}
+After defining the structure, a nominal-duration reference is assigned to each phase.
+
+The phase-level nominal durations use a different method from the transfer-level nominal durations defined in Section~\ref{subsec:derivation-and-configuration-of-missing-oee-inputs}. Transfer-level values are derived operational benchmarks based on the industrial records, rather than authoritative ideal cycle times. Phase-level values are configured specifically for the controlled diagnostic layer.
+
+MP2--MP8 use fixed reference durations. These values are modelling assumptions in the current implementation. MP1 uses a variable duration because path-following time depends on the route.
+
+Table~\ref{tab:mission-phase-nominal-duration-configuration} summarises the nominal-duration configuration used for the mission-phase layer.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Mission-phase nominal-duration configuration}
+\label{tab:mission-phase-nominal-duration-configuration}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{1.2cm}|p{5.0cm}|p{2.5cm}|p{4.6cm}|}
+\hline
+\textbf{Phase} & \textbf{Description} & \textbf{Nominal duration} & \textbf{Basis} \\
+\hline
+MP1 & Follow predefined path & Distance-dependent & Calculated \\
+\hline
+MP2 & Manoeuvre toward pre-insertion point & 45 s & Configured assumption \\
+\hline
+MP3 & Insert under swap body & 10 s & Configured assumption \\
+\hline
+MP4 & Pick up swap body & 5 s & Configured assumption \\
+\hline
+MP5 & Insert into empty spot & 10 s & Configured assumption \\
+\hline
+MP6 & Set down swap body & 3 s & Configured assumption \\
+\hline
+MP7 & Extract from spot & 10 s & Configured assumption \\
+\hline
+MP8 & Catch up predefined path & 20 s & Configured assumption \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The nominal duration of MP1 is calculated as:
+
+$$
+T_{\mathrm{nom},\mathrm{MP1}} = \frac{d}{v} + 5 n_c + 5 n_p,
+$$
+
+where $d$ is the travelled distance, $v = 15\,\mathrm{km/h}$ is the nominal path-following speed, $n_c$ is the number of road crossings, and $n_p$ is the number of pedestrian crossings. A 5 s allowance is configured for each crossing.
+
+\subsection{Construction of the Synthetic Mission-Phase Dataset}
+\label{subsec:construction-of-the-synthetic-mission-phase-dataset}
+The industrial logs contain transfer and mission durations but do not contain phase boundaries. The \texttt{Mission\_phases} records must therefore be reconstructed.
+
+For each eligible transfer, the recorded scenario is first identified. The corresponding mission and phase sequence is then obtained from the reference configuration. The MP1--MP8 sequences were introduced earlier in Table~\ref{tab:mission-phases} and are therefore not repeated here. A nominal duration is first assigned to each phase using the rules defined in Section~\ref{subsec:mission-phase-reference-and-nominal-durations}. However, these nominal values represent reference execution times and do not reproduce the duration observed in the industrial transfer.
+
+To construct the phase-level actual durations, the recorded duration of the parent transfer is distributed across its phases. First, the nominal durations of all phases belonging to the transfer are summed. A scaling factor is then calculated as:
+
+$$
+\alpha = \frac{T_{\mathrm{actual},\mathrm{transfer}}}{\sum_j T_{\mathrm{nominal},j}}.
+$$
+
+Each phase nominal duration is then multiplied by this factor:
+
+$$
+T_{\mathrm{actual},j} = \alpha \, T_{\mathrm{nominal},j}.
+$$
+
+In this way, phases with a larger nominal duration receive a larger share of the observed transfer time. The generated phase durations therefore remain consistent with the duration of their parent transfer.
+
+A small random variation of $\pm 10\%$ is then applied to the generated phase durations. This avoids producing identical execution patterns for phases with the same reference values and introduces controlled variability into the synthetic dataset.
+
+The generator also introduces controlled error and retry behaviour. A failed phase can be followed by another attempt of the same phase. Failed attempts use a duration between 1.0 and 2.0 times their nominal duration.
+
+\paragraph*{Phase-attributed downtime}
+Existing downtime events are preserved. They are associated with a mission phase only when the available context supports a reliable attribution. Events that cannot be assigned to one phase remain classified as between-phase downtime.
+
+The main phase associations are summarised in Table~\ref{tab:phase-attributed-downtime-sources}.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Main downtime sources attributable to mission phases}
+\label{tab:phase-attributed-downtime-sources}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{1.0cm}|p{13.2cm}|}
+\hline
+\textbf{Phase} & \textbf{Main attributable downtime sources} \\
+\hline
+MP1 & Cross-walk and obstacle-related interruptions \\
+\hline
+MP2 & Manoeuvre-area, path, obstacle, swap body, and spot-related interruptions \\
+\hline
+MP3 & Gate, swap body, and spot-related interruptions \\
+\hline
+MP4 & Gate and swap body handling interruptions \\
+\hline
+MP5 & Gate, obstacle, and spot-related interruptions \\
+\hline
+MP6 & Swap body handling interruptions \\
+\hline
+MP7 & Manoeuvre-area, obstacle, and visibility-related interruptions \\
+\hline
+MP8 & Path, obstacle, and visibility-related interruptions \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+When downtime is attributed to a phase, its duration contributes to the phase Availability calculation. Between-phase downtime is kept outside the phase metric and remains available at transfer level.
+
+\paragraph*{Phase-specific speed losses}
+Temporary execution delays are represented separately through \texttt{Speed\_Loss\_Events}. These events do not reduce phase Availability. Instead, they increase the actual execution duration and therefore affect ESR.
+
+Speed-loss types depend on the operational function of the phase. MP4 and MP6 are stationary handling phases and do not receive generated speed-loss events. The remaining phases can receive movement- or manoeuvring-related losses. It is summarised in Table~\ref{tab:phase-specific-speed-loss-types}.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Speed-loss types by mission phase}
+\label{tab:phase-specific-speed-loss-types}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{1.0cm}|p{6.5cm}|p{10.7cm}|}
+\hline
+\textbf{Phase} & \textbf{Description} & \textbf{Speed-loss types} \\
+\hline
+MP1 & Follow the predefined path & Intersection wait; protective stop; moving-obstacle wait \\
+\hline
+MP2 & Manoeuvre toward pre-insertion point & Protective stop; remote validation; intersection wait; moving-obstacle wait \\
+\hline
+MP3 & Insert into spot under swap body & Remote validation; protective stop; slow-approach correction \\
+\hline
+MP4 & Pick up swap body & None -- stationary phase \\
+\hline
+MP5 & Insert into empty spot & Remote validation; protective stop; slow-approach correction \\
+\hline
+MP6 & Set down swap body & None -- stationary phase \\
+\hline
+MP7 & Extract from spot & Protective stop; remote validation; moving-obstacle wait \\
+\hline
+MP8 & Catch up the predefined path & Intersection wait; protective stop; moving-obstacle wait \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+This separation preserves the distinction between Availability and Performance losses. Downtime reduces phase Availability, whereas temporary execution delays appear through ESR.
+
+The resulting dataset contains 8,035 mission-phase records representing 1,561 missions across 800 expanded transfers. A total of 597 synthetic speed-loss events are generated. Transfers that cannot be expanded remain available only at transfer level.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\textwidth]{images/mp_workflow.png}
+  \caption{Construction of the synthetic mission-phase dataset}
+  \label{fig:mp_workflow}
+\end{figure}
+
+\subsection{Phase-Level Diagnostic Metrics}
+\label{subsec:phase-level-diagnostic-metrics}
+The generated mission-phase dataset is used to calculate diagnostic Availability, Performance, and Quality for each phase.
+
+Phase Availability considers only downtime that can be assigned to a specific phase:
+
+$$
+A_{\mathrm{phase}} = 1 - \frac{T_{\mathrm{DT},\mathrm{phase}}}{T_{\mathrm{phase}}}.
+$$
+
+Downtime that cannot be linked to a phase remains classified as between-phase downtime. It is retained only in the transfer-level calculation.
+
+At mission-phase level, Performance is represented by the Execution Speed Rate (\acrshort{esr}) only:
+
+$$
+P_{\mathrm{phase}} = \mathrm{ESR}_{\mathrm{phase}}.
+$$
+
+\acrshort{dur} is not used at this level. \acrshort{dur} measures the share of vehicle Available Time occupied by qualifying execution. This denominator is meaningful at transfer and operating-period level, but not for an individual phase. For a short phase, a phase-level \acrshort{dur} would mainly reflect how often that phase occurs during the shift rather than how efficiently it is executed.
+
+\acrshort{esr} is therefore more suitable for phase diagnosis. It directly compares the actual duration of a phase with its nominal reference and allows MP1--MP8 to be compared independently of their frequency or duration within the shift.
+
+The phase-level Quality indicator follows the time-based Quality principle defined in Chapter 2. Availability, \acrshort{esr}, and Quality can then be combined into a diagnostic phase effectiveness value:
+
+$$
+\mathrm{OEE}_{\mathrm{phase},\mathrm{diag}} = A_{\mathrm{phase}} \times \mathrm{ESR}_{\mathrm{phase}} \times Q_{\mathrm{phase}}.
+$$
+
+This value is used only to compare phases. It is not aggregated to obtain the headline OEE.
+
+Table~\ref{tab:diagnostic-metrics-by-mission-phase} presents the diagnostic metrics obtained for the generated mission-phase dataset.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Diagnostic metrics by mission phase}
+\label{tab:diagnostic-metrics-by-mission-phase}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{1.0cm}|p{2.7cm}|p{2.2cm}|p{1.7cm}|p{1.7cm}|p{2.0cm}|}
+\hline
+\textbf{Phase} & \textbf{Qualifying instances} & \textbf{Availability (\%)} & \textbf{ESR (\%)} & \textbf{Quality (\%)} & \textbf{Diagnostic phase OEE (\%)} \\
+\hline
+MP1 & 859 & 85.49 & 43.16 & 96.19 & 35.40 \\
+\hline
+MP2 & 1,392 & 36.52 & 14.22 & 93.39 & 4.85 \\
+\hline
+MP3 & 594 & 42.68 & 3.61 & 89.56 & 1.38 \\
+\hline
+MP4 & 537 & 63.22 & 2.57 & 80.07 & 1.30 \\
+\hline
+MP5 & 667 & 44.15 & 12.38 & 91.60 & 5.01 \\
+\hline
+MP6 & 527 & 86.35 & 5.02 & 87.67 & 3.80 \\
+\hline
+MP7 & 1,560 & 96.57 & 6.26 & 97.69 & 5.91 \\
+\hline
+MP8 & 908 & 89.24 & 26.39 & 97.36 & 22.93 \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The generated dataset shows different loss patterns across the mission sequence. MP2 has the lowest phase Availability, while MP3 and MP4 have the lowest ESR values. MP4 also has the lowest generated Quality value.
+
+The mission-phase extension therefore focuses on Availability, ESR, Quality, and diagnostic phase effectiveness. These indicators demonstrate how the framework can localise losses within the operational sequence without modifying the authoritative transfer-level OEE.
+
+\subsection{Phase Execution-Time Capability}
+\label{subsec:phase-execution-time-capability}
+Phase-level capability analysis was applied to assess the dispersion of reconstructed execution times relative to their nominal references. The analysis follows the same methodology introduced in Section~\ref{subsec:execution-time-capability-analysis} and uses an analytical tolerance of $\pm 30\%$ around the nominal duration. Accordingly, execution-time ratios between 0.70 and 1.30 are considered within the selected tolerance.
+
+Table~\ref{tab:mission-phase-execution-time-capability} presents the capability results obtained for the eight mission phases.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.3}
+\centering
+\caption{Mission-phase execution-time capability}
+\label{tab:mission-phase-execution-time-capability}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{1.0cm}|p{1.2cm}|p{2.9cm}|p{2.1cm}|p{2.0cm}|p{1.2cm}|p{1.2cm}|}
+\hline
+\textbf{Phase} & \textbf{$n$} & \textbf{Mean actual-to-nominal ratio} & \textbf{Standard deviation} & \textbf{Mean duration (s)} & \textbf{$C_p$} & \textbf{$C_{pk}$} \\
+\hline
+MP1 & 825 & 2.47 & 13.18 & 154.1 & 0.0076 & -0.0297 \\
+\hline
+MP2 & 1,300 & 6.33 & 27.15 & 284.7 & 0.0037 & -0.0617 \\
+\hline
+MP3 & 532 & 24.95 & 109.66 & 249.5 & 0.0009 & -0.0719 \\
+\hline
+MP4 & 430 & 28.45 & 119.44 & 142.2 & 0.0008 & -0.0758 \\
+\hline
+MP5 & 611 & 8.66 & 67.23 & 86.6 & 0.0015 & -0.0365 \\
+\hline
+MP6 & 462 & 9.61 & 71.42 & 28.8 & 0.0014 & -0.0388 \\
+\hline
+MP7 & 1,524 & 14.76 & 84.30 & 147.6 & 0.0012 & -0.0532 \\
+\hline
+MP8 & 884 & 3.79 & 27.29 & 75.8 & 0.0037 & -0.0304 \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+All phases exhibit very low $C_p$ values and negative $C_{pk}$ values. The mean execution-time ratio therefore lies above the selected upper tolerance for every phase. The largest deviations from the nominal reference are observed for MP3 and MP4, whereas MP1 and MP8 remain comparatively closer to their reference durations.
+
+These results are based on reconstructed phase-level durations. They are therefore used to demonstrate the capability-analysis function of the diagnostic layer rather than to characterise the measured capability of the deployed system. A direct industrial assessment would require phase-resolved timestamps recorded during operation.
+\section{Validation Approach}
+The industrial application shows that the framework can process different types of operational records. The dataset has no independent reference OEE. Some inputs were also reconstructed or configured. The industrial results show that the framework can be applied to real data. The controlled datasets test its calculations.
+
+Controlled synthetic data are therefore used to complement the industrial application. At transfer level, datasets with predefined operating conditions are generated and processed through the same metrics engine. This makes it possible to compare the calculated Availability, Performance, Quality, and OEE with expected values. At mission-phase level, the reconstructed MP1–MP8 structure is used to examine whether phase-specific losses are reflected in the corresponding diagnostic indicators.
+
+The three parts of the validation approach are summarised in Figure \ref{fig:validation_approach}.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\textwidth]{images/implemented_OEE_framework.png}
+  \caption{Validation approach of the implemented OEE framework}
+  \label{fig:validation_approach}
+\end{figure}
+The industrial-data branch shows practical applicability. The controlled datasets test the transfer- and phase-level calculations. The available data cannot confirm performance across other vehicles or sites.
+
+\subsection{Validation Checks}
+\label{subsec:validation-checks}
+\label{sec:acceptance-tolerance}
+For every controlled dataset, the calculated OEE must satisfy the relationship
+
+$$
+\mathrm{OEE} = \frac{T_u}{T_r} = A \times P \times Q.
+$$
+
+The Performance calculation must also preserve the decomposition
+
+$$
+P = \mathrm{DUR} \times \mathrm{ESR}.
+$$
+
+The difference between the equivalent calculation paths is required to remain below $10^{-6}$.
+
+The calculated time levels must also preserve the six-level hierarchy
+
+$$
+T_t \geq T_o \geq T_r \geq T_a \geq T_n \geq T_u \geq 0,
+$$
+
+and the three OEE factors must remain within
+
+$$
+A, P, Q \in [0,1].
+$$
+
+For scenarios generated around predefined numerical targets, a maximum deviation of five percentage points is accepted:
+
+$$
+\left| X_{\mathrm{computed}} - X_{\mathrm{target}} \right| \leq 5\ \text{percentage points},
+$$
+
+where $X$ represents $A$, $P$, $Q$, or $\mathrm{OEE}$.
+
+The main checks applied during validation are summarised in Table~\ref{tab:validation-checks-implemented-framework}.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Validation checks applied to the implemented framework}
+\label{tab:validation-checks-implemented-framework}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{4.5cm}|p{11.0cm}|}
+\hline
+\textbf{Validation check} & \textbf{Expected result} \\
+\hline
+OEE calculation & $T_u/T_r = A \times P \times Q$, deviation $< 10^{-6}$ \\
+\hline
+Performance calculation & $P = \mathrm{DUR} \times \mathrm{ESR}$, deviation $< 10^{-6}$ \\
+\hline
+Time hierarchy & Each time level remains non-negative and below its parent \\
+\hline
+Factor range & $A, P, Q \in [0,1]$ \\
+\hline
+Controlled numerical target & Deviation $\leq 5$ percentage points \\
+\hline
+Factor sensitivity & Increasing a loss decreases its corresponding factor \\
+\hline
+Mission-phase diagnosis & A phase-specific loss is reflected in the corresponding phase indicator \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+\section{Controlled Synthetic Validation}
+\label{sec:controlled-synthetic-validation}
+
+The industrial application presented in the previous sections demonstrates that the framework can process heterogeneous operational records, but it does not provide a known reference OEE. Controlled synthetic datasets were therefore used to evaluate the implemented metrics engine under predefined operating conditions. Three validation profiles were considered—Degraded, Operational, and High-OEE—and processed through the same calculation pipeline, with Availability, Performance, and Quality controlled through their corresponding loss mechanisms.
+\subsection{Synthetic Data Generator and Validation Profiles}
+\label{subsec:synthetic-generator}
+
+A configurable synthetic-data generator was developed to create the datasets required for
+validation. The generator produces operating schedules, transfer records, downtime events,
+execution outcomes, and the additional inputs required by the OEE calculation.
+
+Its interface allows the main simulation parameters and operating conditions to be configured,
+including the simulation horizon, fleet size, transfer activity, nominal duration, target
+Availability, Performance and Quality, weather conditions, speed losses, excluded time, and
+downtime distribution. A random seed can also be specified, and configurations can be stored
+as reusable validation profiles.
+
+Figure~\ref{fig:UI_synthetic_data_generator} shows the implemented interface using one of the
+validation profiles.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{images/loc.png}
-    \caption{Recommended installation site criteria for PWD sensors (see PWD12 Manual\cite{vaisala2015pwd}, Chapter 4)}
-    \label{fig:siteguidelines}
+    \includegraphics[width=0.78\textwidth]{images/UI_Generator.png}
+    \caption{Configuration interface of the synthetic-data generator}
+    \label{fig:UI_synthetic_data_generator}
 \end{figure}
 
-\subsection{Mounting Orientation and Positioning}
+The three OEE dimensions are controlled through their corresponding loss mechanisms.
+Availability is influenced through unplanned downtime, Performance through the relationship
+between qualifying nominal workload and Available Time, and Quality through the share of
+qualifying execution contributing to Useful Time.
 
-The \gls{pwd12} is typically mounted on a vertical pole or mast using Vaisala's dedicated mounting kit\cite{vaisala2015pwd} or a compatible adapter. The optical head must remain perfectly horizontal during operation to avoid distortion in visibility measurement. The mounting setup should ensure:
+The Required Time is calculated from the operating schedule generated for each profile and is
+therefore not assumed to be identical across the validation datasets. The target values used to
+configure the three profiles are summarised in Table~\ref{tab:validation-profile-target-values}.
 
-\begin{itemize}
-    \item A fixed, stable structure such as a mast or rail.
-    \item Horizontal alignment of the sensor body and unobstructed view of the measurement volume.
-    \item To avoid sunlight or artificial light interference, the optics should not face strong light sources.
-    \item In the northern hemisphere, the \textbf{receiver should be oriented toward the north}, while in the southern hemisphere it should face south.
-\end{itemize}
-
-\subsection{Grounding and Surge Protection}
-
-Electrical protection is essential, especially in outdoor installations exposed to lightning or power surges. Vaisala recommends the following protection measures\cite{vaisala2015pwd}:
-
-\begin{itemize}
-    \item The \gls{pwd12} sensor chassis must be \textbf{properly grounded} to earth using a dedicated grounding wire.
-    \item A Vaisala \textbf{lightning protection device} should be installed in-line between the power source and the sensor, especially in high-risk areas.
-    \item Shielded cables and grounded cable armor are recommended to further suppress electromagnetic interference.
-\end{itemize}
-
-Failing to implement grounding and surge protection can compromise both safety and long-term sensor performance.
-
-
-
-\section{Electrical Wiring and Communication Interfaces}
-
-The \gls{pwd12} sensor requires careful attention during electrical integration to ensure reliable communication and power delivery. This includes proper pin-out matching, interface selection, cable shielding, and adherence to electrical specifications. For complete wiring specifications, see the Vaisala PWD12 User Manual, Section 4.2\cite{vaisala2015pwd}.
-
-\subsection{Pin-out and Wire Color Mapping}
-
-The sensor is delivered with a fixed 16-wire cable, which provides lines for power, serial communication, relay outputs, and diagnostics. Table~\ref{tab:pwd12pins} shows the color mapping of the 16 wires in the \gls{pwd12} cable, the function of each wire, and the assigned pin:
-
-\begin{table}[H]
+\begin{table}[htbp]
 \small
-\renewcommand{\arraystretch}{1.5}
+\renewcommand{\arraystretch}{1.15}
 \centering
-\caption{Recommended Pin-out Connections for Basic Operation}
-\label{tab:pwd12pins}
-\begin{tabular}{|c|l|l|}
+\caption{Target values of the validation profiles}
+\label{tab:validation-profile-target-values}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{3.1cm}|p{2.0cm}|p{2.0cm}|p{2.0cm}|p{2.0cm}|}
 \hline
-\textbf{Wire Color} & \textbf{Function} & \textbf{Pin} \\
+\textbf{Validation profile} &
+\textbf{Target $A$} &
+\textbf{Target $P$} &
+\textbf{Target $Q$} &
+\textbf{Target OEE} \\
 \hline
-Red     & Power +24 VDC & 1 \\
+Degraded &
+$\approx 80\%$ &
+$\approx 74\%$ &
+$\approx 85\%$ &
+$\approx 50\%$ \\
 \hline
-Black   & Power GND     & 2 \\
+Operational &
+$\approx 93\%$ &
+$\approx 91\%$ &
+$\approx 95\%$ &
+$\approx 80\%$ \\
 \hline
-White   & RS-485 B (-)     & 3 \\
-\hline
-Brown    & RS-485 A (+)     & 4 \\
-\hline
-Green    & RS-232 Tx      & 5 \\
-\hline
-Yellow  & RS-232 Rx  & 6 \\
-\hline
-Grey     & RS-232 GND & 7 \\
-\hline
-Blue   & Analog Output     & 8 \\
-\hline
-White/Green   & Heating Power +     & 9 \\
-\hline
-Brown/Green    & Heating Power +     & 10 \\
-\hline
-White/Yellow    & Heating Power -      & 11 \\
-\hline
-Brown/Yellow  & Heating Power -  & 12 \\
-\hline
-Grey/Pink   & Relay Control 1     & 13 \\
-\hline
-Red/Blue    & Relay Control 2     & 14 \\
-\hline
-Violet    & Relay Control 3 / Ext Vb      & 15 \\
-\hline
-Pink  & Ext Vb  & 16 \\
+High-OEE &
+$\approx 100\%$ &
+$\approx 100\%$ &
+$100\%$ &
+$\approx 100\%$ \\
 \hline
 \end{tabular}
+\end{adjustbox}
 \end{table}
 
-Figure~\ref{fig:pwd12pinouts} shows the full 16-pin connector layout that should be used in this installation.
+The target values of the individual OEE factors are used to define the intended operating
+condition. The numerical acceptance criterion introduced in Section~\ref{sec:acceptance-tolerance} is applied to the
+headline OEE value.
+
+\subsection{Cross-Profile Comparison}
+\label{subsec:cross-profile-comparison}
+
+The three validation profiles provide a controlled progression from a loss-intensive operating
+condition to one approaching the upper effectiveness range. The principal results are summarised
+in Table~\ref{tab:cross-profile-oee-comparison}.
+
+\begin{table}[htbp]
+\small
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Cross-profile comparison of the controlled validation results}
+\label{tab:cross-profile-oee-comparison}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{2.7cm}|p{1.8cm}|p{1.9cm}|p{1.9cm}|p{1.9cm}|p{2.0cm}|p{2.0cm}|}
+\hline
+\textbf{Profile} &
+\textbf{Target OEE} &
+\textbf{$A$} &
+\textbf{$P$} &
+\textbf{$Q$} &
+\textbf{Computed OEE} &
+\textbf{OEE deviation} \\
+\hline
+Degraded &
+$50.00\%$ &
+$74.62\%$ &
+$78.66\%$ &
+$85.67\%$ &
+$\mathbf{50.29\%}$ &
+$+0.29$ pp \\
+\hline
+Operational &
+$80.00\%$ &
+$94.50\%$ &
+$91.84\%$ &
+$92.10\%$ &
+$\mathbf{79.93\%}$ &
+$-0.07$ pp \\
+\hline
+High-OEE &
+$100.00\%$ &
+$99.00\%$ &
+$99.49\%$ &
+$100.00\%$ &
+$\mathbf{98.49\%}$ &
+$-1.51$ pp \\
+\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+The Degraded Profile reaches an OEE of 50.29\%. Losses are present across all three factors, with Availability showing the strongest reduction. The Operational Profile reaches 79.93\%, as the losses in Availability, Performance, and Quality are substantially reduced. The High-OEE Profile reaches 98.49\%. Quality reaches 100\%, while small residual losses remain in Availability and Performance.
+
+All computed OEE values remain within the five-percentage-point acceptance tolerance defined in Section~\ref{sec:acceptance-tolerance}. The progression of the individual factors and the resulting OEE is illustrated in Figure~\ref{fig:profile-factor-comparison}.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.4\textwidth]{images/16pins.png}
-\caption{\gls{pwd12} cabling overview: 16-wire original mapping}
-\label{fig:pwd12pinouts}
+\includegraphics[width=0.57\textwidth]{images/output.png}
+\caption{Comparison of Availability, Performance, Quality, and OEE across the profiles}
+\label{fig:profile-factor-comparison}
 \end{figure}
 
-\subsection{Supported Communication Interfaces}
-\label{sec:pwd12wiring}
+Execution-time capability was additionally evaluated for each transport scenario across the
+three validation profiles. This analysis complements the OEE comparison by examining the
+dispersion and centring of execution times relative to their nominal references. The resulting
+$C_{pk}$ values are presented in Table~\ref{tab:cross-profile-capability}.
 
-The \gls{pwd12} supports two digital communication interfaces:
-
-\begin{itemize}
-    \item \textbf{\gls{rs485} (default):} Full-duplex, differential communication. Recommended for long distances and electrically noisy environments. Baud rate: \textbf{9600}, \textbf{7 data bits}, \textbf{even parity}, \textbf{1 stop bit}.
-    \item \textbf{\gls{rs232} (optional):} Used primarily for manual configuration and diagnostics. Requires a \gls{usb}–\gls{rs232} converter and a terminal emulator on the host device.
-\end{itemize}
-
-\textbf{RS-485 was selected for this integration} due to its superior resistance to electromagnetic interference, support for longer cable runs, and compatibility with existing RevPi serial interfaces. RS-232 was used only during initial bench testing and manual configuration.
-
-\subsection{Cable Shielding and Length Constraints}
-
-To ensure stable signal quality and \gls{emi} protection:
-
-\begin{itemize}
-    \item Use shielded twisted pair cables for \gls{rs485} signals.
-    \item The cable shield (bare wire) should be grounded at the panel side only.
-    \item Keep the communication cable length under \textbf{1,200 meters} for \gls{rs485}, as per standard limitations.
-    \item Ensure separation between power lines and communication lines to reduce noise coupling.
-\end{itemize}
-
-These precautions improve data integrity and prevent \gls{crc} parsing errors in electrically noisy or outdoor environments\cite{vaisala2015pwd}.
-
-
-
-\section{Sensor Configuration and Command Structure}
-
-The Vaisala \gls{pwd12} sensor offers flexible configuration through a serial interface, primarily using \gls{rs232} for direct command access. Most configuration and diagnostic operations are executed in \textit{command mode}. The required serial parameters were outlined in Section~\ref{sec:pwd12wiring}, and this section focuses on the command protocol and available setup options.
-
-During integration, the default settings were largely sufficient. Only minor adjustments were made to the output format (Message 2/7 selection), output interval, and filtering level using documented commands. All commands follow the syntax and descriptions provided in the Vaisala \gls{pwd12} User Manual (e.g., Section 7.3)\cite{vaisala2015pwd}.
-
-\subsection{Command Mode and Access}
-
-To access command mode via \gls{rs232}, the following command must be sent:
-
-\begin{center}
-    \texttt{OPEN *}
-\end{center}
-
-Once command mode is active, the sensor accepts \gls{ascii}-based instructions. All commands must be terminated with a carriage return (CR, \texttt{0x0D}). The sensor replies with either confirmation messages or returned data strings depending on the command type.
-
-\subsection{Configuration and Setup Commands}
-
-Table~\ref{tab:pwd12commands_config} summarizes common setup commands used to control sensor behavior and output characteristics.
-
-\begin{table}[H]
-\centering
+\begin{table}[htbp]
 \small
-\renewcommand{\arraystretch}{1.4}
-\caption{PWD12 Configuration Commands (see PWD12 Manual\cite{vaisala2015pwd}, Chap. 5)}
-\label{tab:pwd12commands_config}
-\begin{tabular}{|l|p{9cm}|}
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Execution-time capability across the validation profiles}
+\label{tab:cross-profile-capability}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{5.0cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|}
 \hline
-\textbf{Command} & \textbf{Description} \\
+\textbf{Transport scenario} &
+\textbf{Degraded} &
+\textbf{Operational} &
+\textbf{High-OEE} \\
 \hline
-\texttt{WSET} & View or modify weather message type and code format (NWS/WMO). \\
+Close-proximity gate &
+17.282 &
+18.096 &
+43.366 \\
 \hline
-\texttt{SSET} & Configure output interval, filtering, and enabled parameters (e.g., temperature, luminance). \\
+Close-proximity parking spot &
+8.579 &
+9.415 &
+23.431 \\
 \hline
-\texttt{CLRS} & Clear accumulated rain and snow measurements. Used at installation or reset. \\
+Park &
+5.698 &
+3.246 &
+9.658 \\
 \hline
-\texttt{WPAR} & Display current weather-related parameters such as visibility, precipitation thresholds. \\
-\hline
-\texttt{MSG} & Select which output messages to emit (e.g., Message 2 or Message 7). \\
+\acrshort{rmf} parking spot &
+9.314 &
+9.359 &
+22.465 \\
 \hline
 \end{tabular}
+\end{adjustbox}
 \end{table}
 
-\subsection{Calibration and RAINCAP Adjustment}
+All transport scenarios exhibit positive $C_{pk}$ values well above unity across the three
+profiles, indicating that the generated execution-time distributions remain centred within the
+selected tolerance around their nominal references. The High-OEE Profile generally produces
+the highest capability values, reflecting the lower execution-time variability configured for
+this operating condition.
 
-The RAINCAP sensor can be recalibrated if necessary. Table~\ref{tab:pwd12commands_calibration} lists relevant commands.
+The capability results do not, however, follow the OEE level directly. OEE combines losses
+in Availability, Performance, and Quality, whereas $C_{pk}$ characterises the distribution of
+execution times for a given transport scenario. A profile may therefore exhibit reduced overall
+effectiveness because of downtime, unsuccessful transfers, or other losses while maintaining
+consistent execution times for successfully completed operations. This explains why the
+Degraded Profile can retain high capability values despite its lower OEE.
 
-\begin{table}[H]
-\centering
+The comparison therefore confirms that the framework distinguishes global operational
+effectiveness from execution-time consistency. The controlled profiles produce the expected
+variation in OEE while capability remains an independent diagnostic measure of execution-time
+behaviour.
+\subsection{Downtime Diagnosis Across the Validation Profiles}
+\label{subsec:downtime-diagnosis-validation}
+
+The downtime reporting layer was also examined across the three controlled profiles.
+Table~\ref{tab:cross-profile-downtime-comparison} compares the generated downtime durations
+and the effective Availability losses used by the metrics engine.
+
+\begin{table}[htbp]
 \small
-\renewcommand{\arraystretch}{1.4}
-\caption{PWD12 RAINCAP Calibration Commands (see PWD12 Manual\cite{vaisala2015pwd}, Chap. 5)}
-\label{tab:pwd12commands_calibration}
-\begin{tabular}{|l|p{9cm}|}
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Cross-profile comparison of generated and effective downtime}
+\label{tab:cross-profile-downtime-comparison}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|p{2.7cm}|p{2.2cm}|p{2.5cm}|p{2.2cm}|p{2.4cm}|p{2.5cm}|}
 \hline
-\textbf{Command} & \textbf{Description} \\
+\textbf{Profile} &
+\textbf{System fault (h)} &
+\textbf{Operational error (h)} &
+\textbf{Intervention (h)} &
+\textbf{Generated downtime (h)} &
+\textbf{Effective downtime (h)} \\
 \hline
-\texttt{DRY ON} & Set reference level for no precipitation. Run when the sensor is dry. \\
+Degraded &
+94.080 &
+39.200 &
+23.117 &
+156.397 &
+113.313 \\
 \hline
-\texttt{WET ON} & Set reference level for active precipitation. Run during rain. \\
+Operational &
+15.680 &
+9.408 &
+6.272 &
+31.360 &
+24.572 \\
 \hline
-\texttt{DRY} / \texttt{WET} & Read current dry/wet calibration status and thresholds. \\
+High-OEE &
+3.938 &
+2.362 &
+1.575 &
+7.875 &
+7.875 \\
 \hline
 \end{tabular}
+\end{adjustbox}
 \end{table}
 
-\subsection{Diagnostic and Status Commands}
+The generated downtime decreases substantially from the Degraded to the High-OEE Profile.
+For the Degraded and Operational profiles, the effective Availability loss is lower than the raw
+generated downtime because downtime is limited to the Required Time available on each
+operating day.
 
-The sensor provides various commands to monitor internal status and ensure healthy operation:
+The comparison also highlights the distinction between event frequency and downtime severity.
+Although the High-OEE Profile contains a relatively large number of short downtime events,
+their accumulated duration remains small and therefore has only a limited effect on Availability.
 
-\begin{table}[H]
-\centering
-\small
-\renewcommand{\arraystretch}{1.4}
-\caption{PWD12 Status and Diagnostic Commands (see PWD12 Manual\cite{vaisala2015pwd}, Chap. 5)}
-\label{tab:pwd12commands_diag}
-\begin{tabular}{|l|p{9cm}|}
-\hline
-\textbf{Command} & \textbf{Description} \\
-\hline
-\texttt{STAT} & Returns internal status and error flags. \\
-\hline
-\texttt{TEMP} & Displays current internal and ambient temperatures. \\
-\hline
-\texttt{IDN?} & Query the sensor’s model ID, firmware version, and serial number. \\
-\hline
-\end{tabular}
-\end{table}
+\subsection{Factor Sensitivity Check}\label{subsec:factor-sensitivity-check}The three validation profiles evaluate the complete data-generation and computation pipeline at selected operating levels. A one-parameter-at-a-time sensitivity analysis was additionally performed to examine how the individual OEE factors respond to their corresponding losses.
 
-These diagnostic tools support field validation, health monitoring, and automated sensor management. Most of the commands listed above are covered in Section 7.3 and Appendix A of the PWD12 User Manual.
+In each test, one loss mechanism was varied from 0\% to 30\%, while the remaining conditions were kept constant. Unplanned downtime was varied for Availability, unused Available Time for Performance, and unsuccessful execution for Quality.
 
-\paragraph{}%
-Wherever possible, configuration changes were minimized to preserve factory-calibrated accuracy. The default Message 2 format and 15-second output interval proved sufficient for integration with the RevPi data pipeline and downstream GraphQL schema.
+\begin{figure}[H]\centering\includegraphics[width=0.85\textwidth]{images/factor_sensitivity.png}\caption{One-parameter-at-a-time sensitivity of the OEE factors}\label{fig:factor_sensitivity}\end{figure}Increasing each imposed loss produces the expected decrease in its corresponding factor. Availability decreases as unplanned downtime increases, Performance decreases as the unused share of Available Time increases, and Quality decreases as unsuccessful execution increases. The remaining factors stay unchanged within each test.
 
 
-\section{Sensor Testing and Message Validation}
+In the Availability and Quality tests, the OEE curve lies slightly below the varied factor because the reference Performance remains marginally below 100\%. Transfers are scheduled as complete operational units, and the remaining Available Time at the end of an operating window may be insufficient to accommodate another complete transfer. This residual unused time slightly reduces DUR while ESR remains at its reference level.
 
-To ensure proper functionality and compatibility of the \gls{pwd12} sensor before integration into the operational weather station, it is essential to carry out standalone testing. This includes establishing a communication link, analyzing output message formats, and validating that all expected parameters are correctly reported and parsable.
+In the Performance test, Availability and Quality remain at 100\%, and OEE therefore coincides with Performance.
 
-\subsection{Bench Setup and Mock Communication}
+The sensitivity analysis confirms the expected response of each OEE dimension to its associated loss. Together with the controlled validation profiles, the results show that the implemented framework behaves consistently across different operating levels and across a continuous range of controlled loss conditions.
 
-For standalone testing outside of the field deployment, the \gls{pwd12} was connected to a controlled bench setup using a regulated laboratory power supply and a USB–RS485 converter attached to a development laptop. This allowed direct communication with the sensor before integrating it into the RevPi system.
+\section{Mission-Phase Diagnostic Validation}
+\label{sec:mission-phase-validation}
 
-The external power supply delivered 24\,V\,DC, sufficient to power the measurement electronics. Only the essential lines from the PWD12 16-wire cable were connected: power (red/black) and the differential pair for RS-485 communication (brown/white). The heaters and additional auxiliary lines were not used in this configuration.
+The controlled validation in Section~\ref{sec:controlled-synthetic-validation}
+verified the transfer-level OEE engine against predefined Availability,
+Performance, and Quality conditions. The mission-phase layer requires a
+different validation approach. Its phase durations are reconstructed from the
+parent transfer duration and therefore do not have an independent measured
+phase-level ground truth.
 
-Table~\ref{tab:pwd12benchpins} summarizes the connections made during the bench setup.
 
-\begin{table}[H]
-\renewcommand{\arraystretch}{1.6}
-\centering
-\small
-\caption{Pin-out connections used for bench testing}
-\label{tab:pwd12benchpins}
-\begin{tabular}{|l|l|}
-\hline
-\textbf{PWD12 Wire Color} & \textbf{Function} \\
-\hline
-Red   & Power +24 VDC \\
-\hline
-Black & Power GND \\
-\hline
-Brown & RS-485 A (+) \\
-\hline
-White & RS-485 B (–) \\
-\hline
-\end{tabular}
-\end{table}
+The three controlled datasets introduced in Section~\ref{sec:controlled-synthetic-validation} were processed through
+the mission-phase pipeline. Each dataset was expanded into MP1--MP8 records
+using the reconstruction procedure defined in Section~\ref{subsec:construction-of-the-synthetic-mission-phase-dataset}. The resulting
+records were then evaluated using the phase diagnostic engine introduced in
+Section~\ref{subsec:phase-level-diagnostic-metrics}. Figure~\ref{fig:phase-validation-flow} summarises the validation procedure.
 
-Figure~\ref{fig:pwd12benchsetup} illustrates the simplified bench setup, showing the PWD12 sensor connected to the external power supply and to a laptop via USB–RS485 converter.
+
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.7\textwidth]{images/pwd12_bench_setup.jpg} % <-- replace with your schematic
-  \caption{Bench testing setup: PWD12 connected to external PSU and USB–RS485 converter}
-  \label{fig:pwd12benchsetup}
+    \centering
+    \includegraphics[width=0.3\textwidth]
+    {images/phase_diagnostic_validation.png}
+    \caption{Mission-phase diagnostic validation flow}
+    \label{fig:phase-validation-flow}
 \end{figure}
 
-% \begin{table}[H]
-% \renewcommand{\arraystretch}{1.8}
-% \centering
-% \caption{Pin-out Connections used for testing}
-% \label{tab:pwd12testpins}
-% \begin{tabular}{|c|l|l|l|}
-% \hline
-% \textbf{Wire Color} & \textbf{Function} & \textbf{M12 Pin} & \textbf{PWD12 Wire Color} \\
-% \hline
-% White     & ---                 & 1 & --- \\
-% \hline
-% Brown     & Power +24 VDC       & 2 & Red \\
-% \hline
-% Green     & ---                 & 3 & --- \\
-% \hline
-% Yellow    & ---                 & 4 & --- \\
-% \hline
-% Grey      & \gls{rs485} A (+)   & 5 & Brown \\
-% \hline
-% Pink      & ---                 & 6 & --- \\
-% \hline
-% Blue      & \gls{rs485} B (-)   & 7 & White \\
-% \hline
-% Red       & Power GND           & 8 & Black \\
-% \hline
-% \end{tabular}
-% \end{table}
+\subsection{Controlled Phase-Level Datasets}
+\label{subsec:controlled-phase-datasets}
 
-% Figure~\ref{fig:pwd12bench} shows the simplified 8-pin M12 connector layout used in the test bench.
+The three controlled datasets were expanded using the same phase-reconstruction
+procedure. Each generated phase record contains its nominal reference,
+reconstructed duration, outcome, and any downtime that can be associated with
+that phase.
 
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[width=0.5\textwidth]{images/8pins.png}
-%   \caption{Simplified 8-pin wiring used for bench setup}
-%   \label{fig:pwd12bench}
-% \end{figure}
+The resulting datasets contain 16,415, 22,346, and 25,617 mission-phase records for
+the OEE-50, OEE-80, and OEE-100 profiles, respectively. These dataset sizes provide
+the basis for the phase-level comparisons presented below.
 
-Before switching to VS Code, data was monitored using a terminal emulator (\texttt{Putty}), with serial settings matching the \gls{pwd12} specification: 9600 baud, 7 data bits, even parity, and 1 stop bit.
-
-\subsection{Message Format Verification and Sensor Behavior}
-
-Once powered and initialized, the \gls{pwd12} begins periodically transmitting data via the \gls{rs485} interface. By default, this output is in Message 2 format, which includes visibility readings, present weather codes, and precipitation data.
-
-A representative message output is shown below:
-
-\begin{verbatim}
-PW 100 1839 1505 C 61 61 61 0.33 12.16 0
-\end{verbatim}
-
-Each field in the message corresponds to a specific parameter:
-
-\begin{itemize}
-  \item \texttt{PW} — Sensor prefix
-  \item \texttt{1} — Sensor unit ID
-  \item \texttt{00} — Status code
-  \item \texttt{1839} — 1-minute average visibility (m)
-  \item \texttt{1505} — 10-minute average visibility (m)
-  \item \texttt{C} — Instant present weather (\gls{nws} code)
-  \item \texttt{61, 61, 61} — Instant, 15-min, and 1-hour \gls{wmo} \gls{synop} weather codes
-  \item \texttt{0.33} — Precipitation intensity (mm/h)
-  \item \texttt{12.16} — Cumulative water sum (mm)
-  \item \texttt{0} — Cumulative snow sum (mm)
-\end{itemize}
-
-During testing, this message was confirmed to:
-
-\begin{itemize}
-  \item Be emitted at the expected interval (typically every 15 seconds)
-  \item Contain no malformed syntax or communication errors
-  \item Include all expected measurement fields
-\end{itemize}
-
-\subsection{Raw Message Interpretation and Field Mapping}
-
-To ensure compatibility with downstream processing and the cloud API, a dedicated Python parser was implemented to interpret raw messages. The parser handled:
-
-\begin{itemize}
-  \item Serial readout and newline stripping
-  \item Splitting by whitespace
-  \item Assigning each field to a semantically meaningful key
-  \item Type validation (e.g., casting to float or integer)
-\end{itemize}
+The three datasets therefore provide a controlled progression from a degraded
+condition to a nearly ideal operating condition.
 
 
-\subsection{Final JSON Structure and Cloud Compatibility}
+\subsection{Phase Availability Response}
+\label{subsec:phase-av-validation}
 
-The parsed fields are serialized into a structured \gls{json} object as follows:
+Phase Availability provides a clear diagnostic response to the controlled
+degradation. At the OEE-100 level, all phases reach full Availability because
+no phase-attributed downtime is generated.
 
-\begin{lstlisting}[language=json, caption={Parsed JSON structure from raw PWD12 message}, label={lst:parsedjson}]
-{
-  "sensor_id": "PW7",
-  "visibility_alarm": "No Alarm",
-  "status_code": "No hardware error",
-  "visibility_1min": 1839,
-  "visibility_10min": 1505,
-  "present_weather_nws": "Light Rain",
-  "present_weather_code_inst": "Rain",
-  "present_weather_code_15min": "Rain",
-  "present_weather_code_1h": "Rain",
-  "precip_intensity": 0.33,
-  "precip_cumulative": 12.16,
-  "snow_sum": 0
-}
-\end{lstlisting}
-
-This structure aligns with the expected GraphQL schema and supports direct ingestion by the cloud backend. The translation from \gls{wmo} and \gls{nws} codes to descriptive weather types is handled using predefined mapping tables.
-
-Figure~\ref{fig:pwd12-raw-json} illustrates the transformation result: 
-a raw ASCII message from the PWD12 sensor is parsed into a structured JSON object, 
-aligning with the cloud schema for direct ingestion.
+As the overall effectiveness decreases, the largest Availability losses appear in MP2, MP7, and MP8, with an additional reduction in MP5 at the OEE-50 level. MP2 and MP7 show the strongest degradation, reaching 37.70\% and 49.48\%, respectively. MP8 decreases to 73.58%, while MP5 reaches 72.78\%. MP1 remains effectively unaffected, with only a marginal reduction to 99.73\%. MP3, MP4, and MP6 remain at 100\%.
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{images/pwd12_raw_vs_json.png} % <-- your screenshot
-  \caption{Example of a raw PWD12 message and the corresponding parsed JSON structure.}
-  \label{fig:pwd12-raw-json}
+    \centering
+    \includegraphics[width=0.7\textwidth]
+    {images/figure_phase_availability_validation_levels.png}
+    \caption{Phase Availability across the controlled validation levels}
+    \label{fig:phase-availability-comparison}
+\end{figure}
+The observed Availability pattern is consistent with the role of the different mission phases. MP2, MP7, and MP8 involve manoeuvring, extraction, and return-to-path movements. These phases are more exposed to interruptions during vehicle motion and positioning. MP5 is also affected at the OEE-50 level because it involves insertion into an empty spot.
+
+In contrast, MP4 and MP6 are short stationary handling actions. Their Availability remains at 100\% because no downtime is associated with these phases in the controlled datasets.
+
+The pattern is therefore operationally plausible. However, it should not be interpreted as proof that these phases are the least available in real operation. The main result is that the diagnostic localises the introduced losses and shows their increasing severity as the overall effectiveness decreases.
+
+
+\subsection{Phase Quality Response}
+\label{subsec:phase-quality-validation}
+Phase Quality also responds consistently to the controlled degradation, but the loss is localised to different parts of the mission sequence. Figure \ref{fig:phase-q-comparison} presents the progression.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]
+    {images/figure_phase_quality_validation_levels.png}
+    \caption{Phase-level Quality across the controlled validation profiles}
+    \label{fig:phase-q-comparison}
+\end{figure}
+At the OEE-100 level, all phases reach 100\% Quality because no unsuccessful phase execution is introduced. As the effectiveness level decreases, the strongest Quality losses appear in MP5 and MP6. At the OEE-50 level, their Quality values fall to 91.58\% and 91.28\%, respectively. MP1, MP2, MP7, and MP8 show smaller reductions. MP3 and MP4 remain at 100\% across all three levels.
+
+The strongest Quality losses occur in MP5 and MP6, corresponding to the final insertion and set-down part of the transfer. Failures occurring at this stage affect the final transfer outcome while earlier phases, including MP3 and MP4, remain classified as successfully completed.
+
+Phase-level Quality therefore remains higher than transfer-level Quality because unsuccessful execution is localised to the phase where the failure occurs rather than propagated to the complete mission sequence. Previously completed phases remain successful. Phase Quality should consequently be interpreted as a localisation indicator that identifies where unsuccessful execution becomes visible within the mission sequence, rather than as a second measure of complete-transfer success.
+
+
+
+
+
+
+\subsection{Phase Performance Response}
+\label{subsec:phase-performance-validation}
+At mission-phase level, Performance is represented by the Execution Speed Rate (\acrshort{esr}). Table~\ref{tab:phase-esr-validation} presents the values obtained across the three controlled validation levels.
+
+\begin{table}[H]
+\small
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Phase Execution Speed Rate across the validation profiles}
+\label{tab:phase-esr-validation}
+\begin{tabular}{|c|r|r|r|}
+\hline
+\textbf{Phase} &
+\textbf{OEE-100 (\%)} &
+\textbf{OEE-80 (\%)} &
+\textbf{OEE-50 (\%)} \\
+\hline
+MP1 & 95.16 & 94.99 & 94.61 \\
+MP2 & 95.22 & 94.88 & 94.08 \\
+MP3 & 95.14 & 95.28 & 95.25 \\
+MP4 & 95.12 & 95.23 & 95.28 \\
+MP5 & 95.22 & 94.53 & 91.63 \\
+MP6 & 95.30 & 94.44 & 92.09 \\
+MP7 & 95.23 & 95.07 & 95.05 \\
+MP8 & 95.19 & 94.98 & 94.25 \\
+\hline
+\end{tabular}
+\end{table}
+
+The phase \acrshort{esr} varies less strongly than Availability and Quality. Most values remain between approximately 91\% and 95\%. The largest reductions at the OEE-50 level occur in MP5 and MP6.
+
+MP5 shows the largest reduction among the moving phases. It corresponds to insertion into an empty spot and can receive several manoeuvring-related speed losses. Its \acrshort{esr} decreases from 95.22\% at OEE-100 to 91.63\% at OEE-50.
+
+MP6 follows a different pattern. It is a stationary set-down phase and does not receive generated speed-loss events. Its execution time can nevertheless increase when a set-down attempt fails or must be repeated. Its \acrshort{esr} therefore decreases from 95.30\% to 92.09\%.
+
+MP4 is also stationary and is excluded from the speed-loss mechanism. Its \acrshort{esr} consequently remains almost unchanged across the three levels. The remaining phases show only small changes because the additional execution time is limited when averaged across all qualifying phase executions.
+\subsection{Diagnostic Phase Effectiveness}
+\label{subsec:diagnostic-phase-effectiveness-validation}
+
+The diagnostic phase effectiveness combines phase Availability, \acrshort{esr}, and Quality into a single indicator. It therefore shows where several loss mechanisms accumulate within the mission sequence. Figure~\ref{fig:diagnostic-phase-comparison} presents the results for the three validation profiles.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.62\textwidth]{images/figure_3_17_diagnostic_phase_effectiveness.png}
+    \caption{Diagnostic phase effectiveness across the controlled validation profiles}
+    \label{fig:diagnostic-phase-comparison}
 \end{figure}
 
+At the OEE-100 level, all phases remain close to 95\%. Availability and Quality are equal to 100% at this level. The remaining difference is mainly caused by the reconstructed \acrshort{esr}.
 
-Additional parser logic ensures graceful failure handling for:
+As the overall effectiveness decreases, the phase pattern becomes more differentiated. MP2 and MP7 show the strongest reductions. At the OEE-50 level, their diagnostic effectiveness falls to 34.59\% and 46.85\%, respectively. MP5 and MP8 are also strongly affected.
+
+The low value of MP2 is mainly driven by its Availability loss. The same applies to MP7. MP5 combines a lower Availability with reductions in \acrshort{esr} and Quality. MP6 keeps full Availability, but its Quality and \acrshort{esr} decrease. The combined indicator therefore shows not only where a loss occurs, but also where several loss dimensions affect the same phase.
+
+MP3 and MP4 remain close to their OEE-100 values across the three levels. These phases receive little or no Availability and Quality loss in the controlled datasets. Their diagnostic effectiveness is therefore determined mainly by \acrshort{esr}.
+
+
+
+The phase-level view therefore adds information that is not available from the
+transfer-level OEE alone. The transfer-level indicator quantifies the overall
+effectiveness loss. The phase diagnostic identifies where the losses occur
+within the mission sequence.
+
+The diagnostic phase effectiveness is used only for phase comparison and loss
+localisation. It is not aggregated to reproduce the transfer-level OEE.
+\section{Discussion and Limitations}
+\subsection{Overall Findings and Root-Cause Synthesis}
+The implementation demonstrates that the proposed OEE framework can be applied to autonomous yard-logistics operations using heterogeneous industrial records. The automatic data export and manual field logs were harmonised, reconstructed, and mapped to the canonical data model before the OEE indicators were computed. The canonical model therefore provides a common structure between the available operational data and the metrics engine.
+
+The industrial application also confirms the need to separate different types of operational loss. Availability accounts for unplanned interruptions during Required Time, Performance reflects additional execution time relative to the nominal reference, and Quality distinguishes useful autonomous completion from unsuccessful or manually completed execution. The complementary reliability, process-quality, capability, and supervision indicators provide additional diagnostic information without modifying the OEE calculation itself.
+
+The industrial results show the complete calculation chain on real operational records. Some inputs were reconstructed or configured because they were not recorded directly. Longer recordings, more vehicles, and independent reference values are needed to confirm wider performance claims.
+
+The industrial database covered one vehicle and a short recording period. It shows that the framework can be applied to the available records. It does not establish fleet-wide or long-term performance. For this dataset, Availability was \textbf{57.08\%}, Performance \textbf{21.62\%}, Quality \textbf{59.08\%}, and OEE \textbf{7.29\%} across \textbf{908 transfers} and \textbf{1,692 missions}. The results show the main losses: system faults accounted for \textbf{69.73\%} of downtime, recovery gaps for \textbf{24.02\%}, and the low Performance value was mainly linked to an Execution Speed Rate of \textbf{21.62\%}. Wider conclusions require more vehicles, longer observation periods, and independent reference values.
+
+The controlled synthetic validation confirms that the calculation engine works under known conditions. The degraded, operational, and high-effectiveness profiles produced OEE values close to their targets: \textbf{50.29\%}, \textbf{79.93\%}, and \textbf{98.49\%}. The sensitivity analysis also showed that changes in Availability, Performance, and Quality affect the correct factors. These results validate the calculations. They do not prove real-world improvement.
+
+The mission-phase extension adds a second level of analysis. Transfer-level OEE provides the overall effectiveness of the transport operation, while phase-level Availability, ESR, Quality, and diagnostic phase effectiveness localise losses within the MP1--MP8 sequence. The two levels are therefore complementary: the transfer level indicates how much effectiveness is lost, while the phase level helps identify where the loss occurs.
+
+The different factors identified throughout the analysis are summarised in the Ishikawa diagram shown in Figure~\ref{fig:ishikawa_effectiveness}. The diagram groups the potential causes of reduced operational effectiveness into six categories: vehicle and autonomy behaviour, mission execution, yard and traffic interaction, human supervision, operational coordination, and environmental conditions.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/Ishikawa.png}
+    \caption{Root-cause synthesis of factors affecting operational effectiveness in autonomous yard logistics.}
+    \label{fig:ishikawa_effectiveness}
+\end{figure}
+The synthesis shows that reduced effectiveness cannot be attributed to a single technical cause. System faults and recovery-related events mainly contribute to Availability losses. Protective stops, manoeuvring delays, and other increases in execution time affect Performance. Retries and unsuccessful mission execution contribute to Quality losses. Human supervision, yard interactions, operational coordination, and ODD restrictions may influence one or more dimensions. The proposed framework combines these views by quantifying their global effect at transfer level and supporting a finer diagnosis at mission-phase level.
+
+\subsection{Limitations and Future Data Requirements}
+The main limitations can be divided into three categories: data completeness, telemetry and measurement, and loss classification.
+
+\subsubsection{Data Completeness}
+The main limitation of the industrial evaluation is the \textbf{quality and completeness of the available data}. The automatic data export and manual field logs were produced independently and differ in structure, identifiers, temporal precision, and acquisition periods. As a result, only part of the observations could be matched directly, while the remaining records required source-specific reconstruction.
+
+This limitation is consistent with the purpose of the industrial database: it was made available to test the methodology, not to evaluate operational performance. Consequently, the reported indicators demonstrate that the calculation chain can be executed on real operational records, but they cannot by themselves establish a statistically reliable improvement in availability, performance, or quality.
+
+Several inputs required by the OEE framework were also unavailable as direct measurements. The operating schedule and planned exclusions were configured from project information, while nominal transfer durations were derived from successful executions. In particular, the 1.20 multiplier applied to the shortest clean transfer is a provisional benchmark choice, not an independently validated ideal cycle time. The resulting ESR, Performance-Adjusted Time, Useful Time, and capability indices are therefore conditional on this reference definition. Some repair and event durations were also missing and therefore required fallback values. These assumptions make the calculation possible, but they also introduce uncertainty into the results. Future validation should compare the benchmark with engineering cycle-time specifications and report sensitivity results for alternative multipliers, such as 1.10 and 1.30.
+
+The environmental analysis has a similar limitation. Weather conditions were reconstructed from ERA5 hourly data using the closest available grid point rather than measurements collected directly at the operating yard. The resulting weather-based ODD exclusions should therefore be considered an approximation of the actual environmental conditions experienced by the vehicle.
+
+The mission-phase diagnostic layer is further limited by the absence of reliable timestamps for MP1--MP8 in the industrial records. Phase durations were therefore reconstructed using transfer and mission information together with configured nominal references. The phase indicators demonstrate the diagnostic potential of the framework, but they should not be interpreted as directly measured phase performance.
+
+\subsubsection{Telemetry and Measurement}
+The framework depends strongly on telemetry data. Telemetry provides the timestamps, states, durations, and event signals used to reconstruct the time hierarchy and the OEE factors. Data quality problems can therefore affect the results. These problems include missing messages, delayed transmission, unsynchronised clocks, coarse sampling, and changes in the meaning of status codes.
+
+The framework measures what can be observed through the telemetry system. It cannot identify losses that are not recorded or cannot be inferred. This dependence limits comparisons between different deployments unless the data schema, timestamp rules, sampling resolution, and event definitions are standardised and carefully controlled.
+
+\subsubsection{Loss Classification}
+Loss classification is another important limitation. Some events cannot be assigned to a single category directly. For example, a single event may be related to technical downtime, an autonomy limitation, or an ODD exclusion. The same event may also affect more than one mission phase.
+
+The proposed precedence and overlap-correction rules make the calculation more consistent, but engineering judgement is still required when defining event mappings. The classification system may also need to change as the system evolves. New failure codes, intervention modes, or operating procedures may require a revised taxonomy.
+
+A stable classification dictionary is therefore needed. Clear event precedence rules should also be defined, and regular review with operations and maintenance experts is recommended.
+
+\subsubsection{Future Data Requirements}
+Future implementations should prioritise the direct and consistent recording of the inputs required by the proposed data model. The following information should be prioritised:
 
 \begin{itemize}
-  \item Incomplete messages or field truncation
-  \item Unexpected data types
-  \item Out-of-range values
+    \item persistent transfer and mission identifiers
+    \item complete shift schedules and planned stoppages
+    \item synchronised timestamps
+    \item technical-failure and recovery timestamps
+    \item structured ODD events
+    \item start and end timestamps for each mission phase
 \end{itemize}
 
-This structured pipeline guarantees that data entering the cloud is both semantically valid and consistent across all weather stations.
+Direct recording of these data would reduce the need for reconstruction and support continuous operational monitoring rather than only retrospective analysis.
 
+\subsection{Transferability to Other Environments}
+The framework is designed around concepts that can extend beyond the studied yard, including transfer-based measurement, hierarchical time accounting and ODD exclusions. It can therefore provide a useful starting point for other autonomous transport environments, such as different logistics yards, warehouses, or industrial sites. However, the current implementation should not be considered universally applicable without adaptation.
 
-\section*{Conclusion}
+Portability requires recalibration of the mission and transfer definitions, nominal durations, outcome taxonomy and ODD thresholds. A warehouse may be dominated by congestion and pedestrian interactions, whereas a port may introduce different traffic rules, loading constraints, and weather limits. The meaning of a successful transfer, an acceptable intervention, or an excluded operating period may therefore differ between environments. In addition, a framework validated with one vehicle, one telemetry architecture, and one site-specific dataset cannot by itself establish validity for another fleet or operating context.
 
-This chapter provided a comprehensive study of the Vaisala \gls{pwd12} sensor, outlining its measurement principles, internal components, technical specifications, and operational requirements. Particular emphasis was placed on understanding the optical forward-scatter method for visibility estimation, the RAINCAP precipitation detection system, and the role of integrated heating and protective mechanisms in ensuring continuous operation under harsh weather conditions.
+Extension to other environments should therefore follow a staged process: 
+\begin{itemize}
+    \item define the local operational concepts and ODD criteria
+    \item map available telemetry to the canonical data model
+    \item calibrate nominal references and classification rules with domain experts
+    \item validate the resulting indicators against independently observed operational outcomes
+\end{itemize}
+\section{Conclusion}
+This chapter presented the implementation and validation of the proposed OEE framework for autonomous yard logistics. A structured ingestion pipeline was developed to transform heterogeneous industrial records into the canonical data model. Weather-based ODD information was then integrated before computing transfer-level OEE, complementary engineering indicators, and mission-phase diagnostic metrics.
 
-Through standalone bench testing, the sensor’s communication interface and output format were successfully verified. Raw ASCII messages were captured, parsed, and transformed into structured JSON objects, demonstrating compatibility with downstream data handling pipelines. The tests confirmed that the sensor reliably outputs visibility, precipitation, and present weather codes at the expected intervals, with no communication errors or malformed data.
+Application to the consolidated industrial data demonstrated that the complete calculation chain can be executed using the proposed structure, while also revealing the effect of incomplete data on the interpretation of the results. \textbf{Controlled synthetic validation confirmed the consistency and sensitivity of the transfer-level calculations}, while the mission-phase analysis demonstrated the ability of the diagnostic extension to localise Availability, Performance, and Quality losses within the operational sequence.
 
-By establishing both the theoretical background and practical validation of the sensor’s output, this study laid the groundwork for its integration into the operational weather station. The findings ensure confidence that the \gls{pwd12} can extend the system’s capabilities with accurate visibility data, thereby supporting weather-aware flight monitoring and vertiport operations. The next chapter builds on these results by addressing the integration process, covering the hardware wiring, software architecture, and cloud connectivity required to deploy the sensor in the field.
+Overall, the proposed framework combines a global measure of operational effectiveness with finer engineering diagnosis. More complete and directly measured operational data are required before the resulting indicators can be interpreted as definitive deployment-level performance measures. The main contribution is therefore a \textbf{structured and practical framework for measuring and diagnosing autonomous yard-logistics performance}.
+\setlength{\textfloatsep}{\chapterThreeTextFloatSep}
+\setlength{\floatsep}{\chapterThreeFloatSep}
+\setlength{\intextsep}{\chapterThreeInTextSep}
+\setlength{\abovecaptionskip}{\chapterThreeAboveCaptionSkip}
+\setlength{\belowcaptionskip}{\chapterThreeBelowCaptionSkip}

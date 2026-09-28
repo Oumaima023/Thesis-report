@@ -1,0 +1,260 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{unisphere_linkedin}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=c4f78113ea2b4ea6124441e2c8678449}{%
+           family={{Unisphere GmbH}},
+           familyi={U\bibinitperiod}}}%
+      }
+      \strng{namehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{fullhash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{fullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{bibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authorbibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authornamehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authorfullhash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authorfullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
+      \field{extraname}{1}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://www.linkedin.com/company/unisphere-gmbh}}
+      \field{note}{Accessed: 2025-07-10}
+      \field{title}{LinkedIn Profile}
+    \endentry
+    \entry{handelsregister}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=c4f78113ea2b4ea6124441e2c8678449}{%
+           family={{Unisphere GmbH}},
+           familyi={U\bibinitperiod}}}%
+      }
+      \strng{namehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{fullhash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{fullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{bibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authorbibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authornamehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authorfullhash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authorfullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
+      \field{extraname}{2}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Official company registration data. Accessed: 2025-07-10}
+      \field{title}{Handelsregister (German Commercial Register) Entry}
+    \endentry
+    \entry{unisphere_website}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=c4f78113ea2b4ea6124441e2c8678449}{%
+           family={{Unisphere GmbH}},
+           familyi={U\bibinitperiod}}}%
+      }
+      \strng{namehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{fullhash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{fullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{bibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authorbibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authornamehash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authorfullhash}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{authorfullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
+      \field{extraname}{3}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://unisphere.ai}}
+      \field{note}{Accessed: 2025-07-10}
+      \field{title}{Company Website}
+    \endentry
+    \entry{uav_industry_news}{misc}{}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{note}{e.g., UAV Industry News. Accessed: 2025-07-10}
+      \field{title}{Aviation and Drone Industry News Articles}
+    \endentry
+    \entry{solar_impulse_official}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=55c02d057ec10067ce53c333b888c225}{%
+           family={{Solar Impulse Foundation}},
+           familyi={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{55c02d057ec10067ce53c333b888c225}
+      \strng{fullhash}{55c02d057ec10067ce53c333b888c225}
+      \strng{fullhashraw}{55c02d057ec10067ce53c333b888c225}
+      \strng{bibnamehash}{55c02d057ec10067ce53c333b888c225}
+      \strng{authorbibnamehash}{55c02d057ec10067ce53c333b888c225}
+      \strng{authornamehash}{55c02d057ec10067ce53c333b888c225}
+      \strng{authorfullhash}{55c02d057ec10067ce53c333b888c225}
+      \strng{authorfullhashraw}{55c02d057ec10067ce53c333b888c225}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://solarimpulse.com/}}
+      \field{note}{Accessed: 2025-07-10}
+      \field{title}{Solar Impulse - A Flying Laboratory for Clean Technologies}
+    \endentry
+    \entry{skyports_vertiport_dubai}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=9cb0a382bc282d2773bc74f25bc68eb9}{%
+           family={{Skyports Infrastructure}},
+           familyi={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{9cb0a382bc282d2773bc74f25bc68eb9}
+      \strng{fullhash}{9cb0a382bc282d2773bc74f25bc68eb9}
+      \strng{fullhashraw}{9cb0a382bc282d2773bc74f25bc68eb9}
+      \strng{bibnamehash}{9cb0a382bc282d2773bc74f25bc68eb9}
+      \strng{authorbibnamehash}{9cb0a382bc282d2773bc74f25bc68eb9}
+      \strng{authornamehash}{9cb0a382bc282d2773bc74f25bc68eb9}
+      \strng{authorfullhash}{9cb0a382bc282d2773bc74f25bc68eb9}
+      \strng{authorfullhashraw}{9cb0a382bc282d2773bc74f25bc68eb9}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://skyports.net/skyports-and-rta-break-ground-on-first-vertiport-in-dubai/}}
+      \field{note}{Accessed: 2025-07-10}
+      \field{title}{Skyports and RTA Break Ground on First Vertiport in Dubai}
+    \endentry
+    \entry{skyports_vertiport_approval}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=f21d54d09b058d9226432fb3272d1d72}{%
+           family={{AINonline}},
+           familyi={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{f21d54d09b058d9226432fb3272d1d72}
+      \strng{fullhash}{f21d54d09b058d9226432fb3272d1d72}
+      \strng{fullhashraw}{f21d54d09b058d9226432fb3272d1d72}
+      \strng{bibnamehash}{f21d54d09b058d9226432fb3272d1d72}
+      \strng{authorbibnamehash}{f21d54d09b058d9226432fb3272d1d72}
+      \strng{authornamehash}{f21d54d09b058d9226432fb3272d1d72}
+      \strng{authorfullhash}{f21d54d09b058d9226432fb3272d1d72}
+      \strng{authorfullhashraw}{f21d54d09b058d9226432fb3272d1d72}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://www.ainonline.com/aviation-news/futureflight/2025-01-15/skyports-first-uae-vertiport-earns-technical-design-approval}}
+      \field{note}{Published: 2025-01-15. Accessed: 2025-07-10}
+      \field{title}{Skyports’ First UAE Vertiport Earns Technical Design Approval}
+    \endentry
+    \entry{vaisala2015pwd}{manual}{}{}
+      \list{organization}{1}{%
+        {Vaisala Oyj}%
+      }
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labeltitlesource}{title}
+      \field{note}{Vaisala, Finland; retrieved from datasheet}
+      \field{title}{Present Weather Detector PWD22/52 User's Guide}
+      \field{year}{2015}
+      \verb{urlraw}
+      \verb https://www.qiameter.com/upfile/datasheet/PWD22_52%20Users%20Guide%20M210543EN-F.pdf
+      \endverb
+      \verb{url}
+      \verb https://www.qiameter.com/upfile/datasheet/PWD22_52%20Users%20Guide%20M210543EN-F.pdf
+      \endverb
+    \endentry
+    \entry{vaisala2025pwd12}{manual}{}{}
+      \list{organization}{1}{%
+        {Vaisala Oyj}%
+      }
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labeltitlesource}{title}
+      \field{note}{Accessed \today}
+      \field{title}{Present Weather Detector PWD12 User’s Guide}
+      \field{year}{2025}
+      \verb{urlraw}
+      \verb https://docs.vaisala.com/v/u/B210385EN-G/en-US
+      \endverb
+      \verb{url}
+      \verb https://docs.vaisala.com/v/u/B210385EN-G/en-US
+      \endverb
+    \endentry
+    \entry{sqlite-whentouse}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=abc88efd85f1d8482dc06c18d13a5d7e}{%
+           family={Hipp},
+           familyi={H\bibinitperiod},
+           given={D.\bibnamedelimi Richard},
+           giveni={D\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=098321d62b1c091ef7ba6f19ba0893ea}{%
+           family={Consortium},
+           familyi={C\bibinitperiod},
+           given={SQLite},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{fullhash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{fullhashraw}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{bibnamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{authorbibnamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{authornamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{authorfullhash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{authorfullhashraw}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \field{extraname}{1}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://www.sqlite.org/whentouse.html}}
+      \field{note}{Accessed 2025-08-19}
+      \field{title}{Appropriate Uses for SQLite}
+    \endentry
+    \entry{sqlite-acid}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=abc88efd85f1d8482dc06c18d13a5d7e}{%
+           family={Hipp},
+           familyi={H\bibinitperiod},
+           given={D.\bibnamedelimi Richard},
+           giveni={D\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=098321d62b1c091ef7ba6f19ba0893ea}{%
+           family={Consortium},
+           familyi={C\bibinitperiod},
+           given={SQLite},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{fullhash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{fullhashraw}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{bibnamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{authorbibnamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{authornamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{authorfullhash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{authorfullhashraw}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \field{extraname}{2}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://www.sqlite.org/atomiccommit.html}}
+      \field{note}{Accessed 2025-08-19}
+      \field{title}{Atomic Commit and Durability in SQLite}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

@@ -1,0 +1,236 @@
+
+\chapter{General Context}
+
+\section*{Introduction}
+
+This chapter introduces the overall context of the project. It includes a brief overview of the hosting company, its key products, and the organizational structure. This background information provides the necessary foundation to understand the environment in which the project takes place.
+
+\section{Presentation of the Hosting Company}
+
+\subsection{Unisphere GmbH}
+
+Unisphere GmbH is a privately held company headquartered in Konstanz, Germany. Founded in 2017 by a team of aviation and technology experts, it employs a diverse group of engineers, data scientists, and aviation professionals, focusing on serving clients across Europe and internationally. \cite{unisphere_linkedin, handelsregister, unisphere_website}.
+
+Operating within the aerospace and aviation technology industry, Unisphere specializes in leveraging advanced data analytics, and software development to enhance the safety and efficiency of \gls{uam} and \gls{uas}. The company aims to contribute to the development of sustainable and automated flight technologies, addressing the growing demand for innovative air transport solutions \cite{unisphere_linkedin, unisphere_website}.
+
+Its mission centers on enabling safe, efficient, and sustainable aviation through digital innovation, envisioning a future where automated and electric flight transform urban environments while maintaining the highest safety standards \cite{unisphere_linkedin, unisphere_website}.
+
+Since its founding, Unisphere has gained recognition for its innovative contributions, securing multiple funding rounds and establishing strategic partnerships with key industry players. The company’s experts actively participate in international aviation forums, influencing regulatory frameworks for emerging airspace technologies \cite{unisphere_linkedin, unisphere_website, uav_industry_news}.
+
+Unisphere fosters a collaborative and innovative work culture that values interdisciplinary teamwork, continuous learning, and inclusivity. The company also emphasizes sustainability and social responsibility within its workplace practices, aligning its culture closely with its mission and vision \cite{unisphere_linkedin, unisphere_website}.
+
+Figure \ref{fig:unisphere_approach} illustrates how Unisphere classifies different airspace domains based on altitude, ranging from low-level drone operations to higher-altitude \gls{evtol} and commercial aircraft operations. This classification reflects the company’s focus on developing digital infrastructure and operational tools tailored to each layer of the airspace ecosystem, which can be summarized as follows:
+
+\begin{itemize}
+\item \textbf{Ground Level, Altitude < 150 m:} Focused on drone operations for various applications, including delivery and surveillance, ensuring efficient and safe operations within urban environments.
+\item \textbf{Altitude from 150 m to 3 km:} Dedicated to air taxis and other piloted or automated aircraft designed for \gls{uam}, facilitating quick and sustainable transportation across cities.
+\item \textbf{Altitude from 11 km to 20 km:} Encompasses high-altitude platforms such as solar-powered drones and airships, enabling long-endurance missions and extending connectivity and observation capabilities.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{images/unisphere_approach.jpg}
+  
+  \caption{Unisphere’s technology-driven approach for reliable,\\ automated flight operations from the ground to the stratosphere.\cite{unisphere_website}}
+  \label{fig:unisphere_approach}
+\end{figure}
+
+
+
+\subsection{Solar Impulse Project}
+
+The Solar Impulse project, renowned for achieving the first solar-powered circumnavigation of the globe, played a pivotal role in the founding of Unisphere GmbH. This groundbreaking initiative, led by Bertrand Piccard and André Borschberg, showcased the potential of sustainable aviation by completing a 40,000-kilometer journey without a single drop of fuel. The aircraft, Solar Impulse 2, was equipped with 17,000 solar cells powering its electric motors and charging its batteries, enabling night flights and setting multiple aviation records.\cite{unisphere_website} \cite{solar_impulse_official}
+
+The operational challenges encountered during the Solar Impulse mission, particularly the aircraft's sensitivity to weather conditions due to its lightweight, electric-propelled design, necessitated innovative approaches to flight planning and operations management. A significant portion of Unisphere's leadership and technical teams previously worked on the Solar Impulse project, where they were responsible for flight planning and operations. Their experience in simulation-based flight planning, assessing over 2,000 airports worldwide, and analyzing extensive historical weather data laid the foundation for Unisphere's development. This expertise has been instrumental in creating Unisphere's high-value services aimed at addressing real-life operational challenges in the realm of innovative air mobility.\cite{unisphere_website}
+
+To visually represent the global scope and historical achievement of the Solar Impulse mission, figure \ref{fig:solar_impulse} illustrates the full circumnavigation route undertaken by Solar Impulse 2. The map highlights key stopovers across Asia, North America, Europe, and the Middle East during its journey around the world. This mission not only demonstrated the feasibility of solar-powered flight but also laid the operational and technological foundation that would later inspire the creation of Unisphere GmbH\cite{solar_impulse_official}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/solarimpulse.png}
+  \caption{Global flight path of Solar Impulse 2.\cite{unisphere_website}}
+  \label{fig:solar_impulse}
+\end{figure}
+
+
+Unisphere offers a range of digital tools and platforms designed to support the safe and efficient operation of unmanned and automated aircraft. These solutions target different aspects of flight operations, from real-time weather monitoring to advanced mission simulation and data-driven operational analysis. The main products and services are presented below.
+
+\subsection{Products and services}
+
+\subsubsection{NOVA Platform}
+
+Unisphere GmbH's NOVA Operations Platform is a comprehensive solution designed to streamline and automate drone flight operations. It integrates advanced weather intelligence, centralized asset management, and intuitive mission planning tools to enhance safety and efficiency for professional drone airlines.\cite{unisphere_website}
+The NOVA platform is a modular system designed to ingest various types of data, process and analyze it in real time, and support decision-making through a user-friendly interface. Its architecture includes several functional layers: data ingestion, processing and analytics, automation and decision support, and cloud services. These components work together to provide real-time insights into weather conditions, airspace constraints, and operational risks.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{images/nova arch.png}
+  \caption{Functional Architecture of the NOVA Platform}
+  \label{fig:novaarch}
+\end{figure}
+
+Figure \ref{fig:novaarch} illustrates the functional architecture of the NOVA platform, including its interaction with external data sources such as weather sensors, flight plans, \gls{notams}, and terrain data. Each layer performs a dedicated role, ensuring secure and efficient data flow from input to user interface.
+
+Key features of the NOVA platform include:
+
+\begin{itemize}
+    \item \textbf{Smart Dispatching: }  Consolidates all missions in one interface, enabling efficient resource management through automated weather assessments for the upcoming seven days. \cite{unisphere_website}
+    \item \textbf{Asset Management: } Centralizes the management of various aircraft types and their operational limits, ensuring compliance across the organization. \cite{unisphere_website}
+    \item \textbf{Team Assignment: } Provides teams with access to comprehensive weather data pertinent to their drone missions, facilitating informed decision-making. \cite{unisphere_website}
+    \item \textbf{All-in-One Weather Tool: } Combines rain radar, weather observations, and high-resolution forecasts into a single, globally accessible platform. \cite{unisphere_website}
+    \item \textbf{Efficient Flight Planning: } Enables quick go/no-go decisions based on automated evaluations of weather conditions in conjunction with specific mission parameters. \cite{unisphere_website}
+    \item \textbf{Weather Intelligence: } Automatically identifies optimal flight windows with favorable weather conditions over the next 48 hours. \cite{unisphere_website}
+\end{itemize}
+
+%To visually represent the capabilities of the NOVA Operations Platform, its user-friendly interface, and how it integrates various operational aspects into a cohesive system, the following figure from Unisphere's official website can be included:
+
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.9\textwidth]{images/NOVA.jpg}
+%  \caption{NOVA Platform interface for mission planning and weather tools.}
+%  \label{fig:nova}
+%\end{figure}
+
+
+\subsubsection{Operational Analysis}
+
+The Operational Analysis module is part of the NOVA platform and is designed to evaluate both simulated and historical flight operations. It enables operators and engineers to assess mission feasibility, flight safety, and aircraft performance under varying environmental and regulatory constraints.\cite{unisphere_website}
+
+This module works by combining different input data layers, such as terrain, airspace structure, aircraft characteristics, mission profiles, and meteorological conditions. These are used to simulate flight paths and compute key safety indicators, including trajectory deviation, maximum climb or sink rates, battery state-of-charge, and other aircraft limitations.\cite{unisphere_website}
+
+Unlike the NOVA real-time simulation tools (NOW, AWARE, CAST), which support operational decision-making during or prior to a mission, the Operational Analysis module is tailored for post-flight assessment and long-term mission planning. It allows users to conduct detailed evaluations of operational performance and weather impact across timeframes ranging from a single day to an entire year.
+
+Unisphere’s Operational Analysis supports four main types of analysis:
+
+\begin{itemize}
+    \item \textbf{Wind Analysis:} Identifies wind characteristics by altitude, location, and time of day, providing insights into vertical flight feasibility.\cite{unisphere_website}
+    \item \textbf{Service Availability:} Quantifies how often a given flight path or operation is feasible under weather and airspace constraints.\cite{unisphere_website}
+    \item \textbf{Track Analysis:} Evaluates route-specific performance metrics under simulated historical weather conditions.\cite{unisphere_website}
+    \item \textbf{Benchmark Analysis:} Compares different operational sites or conditions to identify optimal performance zones.\cite{unisphere_website}
+\end{itemize}
+
+Figure \ref{fig:oa} illustrates the data flow and safety indicators generated by the Operational Analysis module. It shows how multiple input layers—including terrain, weather, aircraft data, and mission plans—are integrated to feed the simulation engine. This engine produces operational indicators that allow engineers to identify risk patterns, detect exceedance of defined thresholds, and ensure compliance with aviation standards such as the \gls{easa}’s 95\% usability requirement.\cite{unisphere_website}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/OA.png}
+  \caption{Input Layers and Safety Metrics Generated by the Operational Analysis Module.\cite{unisphere_website}}
+  \label{fig:oa}
+\end{figure}
+
+This module plays a critical role in long-term flight optimization, infrastructure planning, and safety evaluation, especially in \gls{aam} contexts where novel aircraft and unstructured airspace introduce additional uncertainty.
+
+
+\subsubsection{U-Space Weather Service}
+
+The U-Space Weather Service is designed to meet the emerging regulatory and operational needs of drone traffic management in designated U-Space airspaces. This service seamlessly integrates real-time and forecast weather information—sourced from both local sensors and global weather models—and delivers them through a standardized \gls{api}, fully compliant with \gls{easa} Regulation (EU) 2021/664 \cite{unisphere_website}. 
+
+Figure~\ref{fig:wis} illustrates the system workflow: multiple weather service providers deliver data to Unisphere’s Weather Information Service (WIS) through interfaces such as FTP or dedicated APIs. The WIS consolidates and processes this information before exposing it via a REST API to U-Space Service Providers (USSPs) or similar traffic management systems, which in turn provide operational weather intelligence to end users. This architecture ensures that drone operators and other stakeholders can access harmonized, high-quality weather data through a single integration point.
+
+Unisphere’s weather service enhances operational reliability in U-Space environments by automating complex meteorological calculations. It manages multiple weather variables—like wind, visibility, precipitation, and cloud ceilings—allowing operators to assess mission feasibility, flight risk, and contingency planning. As described on Unisphere’s website, this tool aims to streamline \gls{bvlos} drone and \gls{evtol} operations by delivering “best-in-class weather intelligence” through simplified integrations \cite{unisphere_website}.
+
+In addition, the service supports infrastructure-level insights by offering business-case analysis for vertiport planning. For example, it helps determine site suitability by estimating weather availability, identifying optimal approach routes, and evaluating seasonal weather patterns \cite{unisphere_website}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/wis.png}
+  \caption{Workflow of the U-Space Weather Service.}
+  \label{fig:wis}
+\end{figure}
+
+
+
+\subsection{Company Structure and Organization}
+
+Unisphere GmbH maintains a flat and collaborative organizational structure that supports agile development and cross-functional coordination. The company is led by an Executive Bureau composed of the \gls{ceo}, \gls{cto}, and \gls{coo}. While the \gls{ceo} oversees general strategy and administration—including human resources and finance, the \gls{cto} supervises the Software Development and Engineering Teams, and the \gls{coo} handles operations and sales.
+
+The development team is divided into frontend and backend roles, while the engineering team includes domain experts such as aerospace engineers. This structure encourages continuous communication across technical and strategic departments, ensuring that product development aligns with client needs and regulatory demands.
+
+Figure \ref{fig:org} provides an overview of Unisphere’s internal organizational structure.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/org.png}
+  \caption{Organizational Structure of Unisphere GmbH}
+  \label{fig:org}
+\end{figure}
+
+
+
+
+\section{Project Overview}
+
+\subsection{Background and Motivation}
+
+The integration of \gls{aam} systems, such as \gls{evtol} aircraft, is gaining momentum globally. A key milestone in this direction is the construction of the world's first permanent commercial vertiport near \gls{dxb}, launched in November 2024. The project, led by \textbf{Skyports Infrastructure} in partnership with the \textbf{\gls{rta} of Dubai}, aims to enable air taxi services with \textbf{Joby Aviation} by early 2026. \cite{skyports_vertiport_dubai}
+
+
+
+\textbf{Unisphere GmbH} was selected to provide the weather data infrastructure for this pioneering vertiport project through its integrated weather station system and the \textbf{NOVA platform}, which is central to Unisphere’s portfolio of drone operation management tools. \textbf{Since visibility data is a mandatory requirement} for \gls{evtol} operations under \gls{vfr}, the integration of a dedicated visibility sensor became essential. This provided an opportunity for Unisphere to extend its weather station capabilities, which previously focused on parameters such as wind, temperature, and precipitation, to now also include \textbf{visibility measurement} through sensors like the Vaisala \gls{pwd12}.
+
+This project fits into Unisphere’s broader strategy of continuously enhancing its simulation and operational analysis capabilities. While the vertiport use case was a primary driver, the addition of visibility data has broader applications for Unisphere’s other flight models, simulations, and operational planning tools. The goal is to provide highly accurate and localized weather data to optimize flight performance, ensure safety, and support strategic decision-making.
+
+Figure \ref{fig:dxv} shows a conceptual rendering of the vertiport infrastructure being constructed in Dubai. As one of the first operational hubs for \gls{evtol} air taxi services, this facility illustrates the real-world application context of the weather data integration carried out during the internship.
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/skyports.jpg}
+  \caption{The \gls{dxv}, adjacent to \gls{dxb}, the first commercial vertiport facility to receive technical design approval from the UAE. \cite{skyports_vertiport_approval}}
+  \label{fig:dxv}
+\end{figure}
+
+
+%From a personal perspective, the project was highly motivating due to its interdisciplinary nature, combining \textbf{hardware integration}, \textbf{embedded systems}, and \textbf{cloud technologies}, all in the context of a highly innovative and fast-growing industry. Although the intern had previous experience with sensors and embedded systems, this was the first exposure to cloud integration and large-scale infrastructure using platforms like \gls{aws}. It also offered a unique opportunity to deepen knowledge in \textbf{aviation}, \textbf{meteorology}, and \textbf{Linux-based systems}, making it a rich and formative technical experience.
+
+%Ultimately, the project’s outcome is expected to enhance Unisphere’s ability to support real-time decision-making for pilots and U-space service providers by delivering precise, site-specific environmental data. This is crucial for safe and efficient \gls{uav} operations and aligns with the broader vision of \textbf{increasing global integration of autonomous aviation systems}.
+
+\subsection{Project Context and Environment}
+
+The integration task was conducted within the framework of an existing weather monitoring system already in use by Unisphere GmbH. This system consisted of a Vaisala WXT536 sensor, which collected weather parameters such as wind speed, temperature, humidity, pressure, and precipitation. The sensor was connected via \gls{rs485} to a \gls{revpi} Connect+ industrial controller, where the data was parsed, validated, and transmitted to the cloud through \gls{aws} AppSync for use in the NOVA platform.
+
+The system was modular and already deployed in operational settings. Its primary purpose was to provide high-resolution, localized weather data for real-time flight simulation, monitoring, and operational analysis. Due to its architecture and reliability, the \gls{revpi}-based platform was considered suitable for extending with additional functionality. However, incorporating a second sensor required careful consideration of the existing communication interfaces, data processing logic, and system scalability.
+
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.51\textwidth]{images/archi.png}
+%  \caption{High-Level Architecture of the Weather Station System and Cloud Integration}
+%  \label{fig:archi}
+%\end{figure}
+
+
+\subsection{Problem Statement and Challenges}
+
+Despite the robustness of the existing system, a key functional limitation remained: the absence of a visibility measurement parameter, the quantitative estimation of meteorological visibility distance, expressed in meters, which is essential for \gls{evtol} operations conducted under \gls{vfr}. Under these flight rules, pilots and autonomous systems rely on sufficient visual range to navigate safely, particularly during approach and landing phases. Without accurate visibility readings, the platform could not fully support mission planning and feasibility analysis for \gls{aam} use cases such as the Dubai vertiport project.
+
+Addressing this limitation required the addition of a dedicated visibility sensor, as the existing Vaisala WXT536 in the weather station does not measure this parameter. The chosen solution was to integrate a Vaisala \gls{pwd12}, which not only measures visibility but also reports present weather conditions such as precipitation type and intensity — further enriching the dataset available for operational decision-making.
+
+The technical integration of this second sensor posed several challenges. These included ensuring compatibility with the \gls{revpi}’s serial interfaces, managing multiple communication ports with different baud rates, and adapting the system’s data handling logic to support an additional data stream with a different message structure. Early testing efforts also faced logistical issues, such as hardware availability, power supply setup, and validating sensor outputs. Since this was the first time Unisphere integrated a Vaisala \gls{pwd12} into the system, additional effort was required to understand its communication protocol and behavior in both simulated and live conditions.
+
+Beyond hardware and data parsing challenges, the project also introduced new expectations regarding system robustness, scalability, and cloud integration readiness. These challenges shaped the scope of the internship project and laid the foundation for the development work presented in the following chapters.
+
+\section{Methodology}
+
+\subsection{Action Plan and Approach}
+
+The internship followed a structured yet flexible development approach inspired by the \textbf{Agile methodology}. Although not implemented formally using a framework such as Scrum, the work was carried out in \textit{incremental phases}, each focusing on specific tasks such as local testing, sensor integration, system deployment, and cloud adaptation. Each phase included testing and feedback, allowing the plan to evolve based on practical findings and technical constraints.
+
+In line with Agile principles, the process emphasized \textbf{continuous validation}, \textbf{modularity}, and \textbf{adaptability}. The work was not predefined in a rigid Gantt chart but instead progressed through short development loops, frequent test sessions, and regular updates. Informal daily exchanges with the company supervisor, combined with weekly reports sent to the academic supervisor, ensured clear communication and ongoing alignment with project objectives.
+
+The initial steps focused on acquiring the necessary competencies, including Git usage, Linux terminal commands, and understanding the \gls{revpi}-based weather station system. This was followed by bench testing of individual components, integration of the new visibility sensor, and deployment to the actual \gls{revpi} system. Throughout the internship, a \textbf{top-down integration approach} was applied, starting from system-level understanding and gradually moving toward low-level implementation and optimization.
+
+This combination of \textit{iterative planning}, \textit{real-time testing}, and \textit{continuous feedback} provided an effective structure for carrying out a technically complex integration within a live, production-ready environment.
+
+
+\subsection{Gantt Chart and Timeline}
+The internship spanned a total of six months, starting on April 14th, 2025 and scheduled to end in mid-October 2025, with the final two weeks conducted remotely. The project was divided into clear, consecutive phases to ensure efficient progress and a logical development workflow. The following timeline outlines the major milestones and activities:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[angle=90, width=1\textwidth]{images/gantt.jpg}
+  \caption{Gantt Diagram}
+  \label{fig:gantt}
+\end{figure}
+
+\section*{Conclusion}
+This chapter introduced the operational context of Unisphere’s weather monitoring platform, the scope of the internship project, and the specific challenges addressed during the integration of a visibility sensor. The lack of visibility measurements, critical for supporting \gls{evtol} and other \gls{aam} operations under \gls{vfr}, was identified as a key gap in the existing system. To close this gap, the project set out clear objectives, defined a structured methodology, and established a realistic timeline for implementation, as outlined in the Gantt chart. The next chapter presents a detailed study of the existing system, providing the technical foundation for the integration work described later in this report.

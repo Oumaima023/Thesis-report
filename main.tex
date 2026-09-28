@@ -1,0 +1,433 @@
+\documentclass[12pt,a4paper]{report}
+
+\setcounter{tocdepth}{3} % Include subsubsection in TOC
+\setcounter{secnumdepth}{3} %number subsubsections in TOC
+%\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{fancyhdr}
+
+\usepackage{lipsum}
+\usepackage{appendix}
+
+% Load fontspec and polyglossia before biblatex
+\usepackage{fontspec}
+\usepackage{bidi}
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\setotherlanguages{french}
+\newfontfamily\frenchfont{Times New Roman}
+\newfontfamily\arabicfont[Script=Arabic]{Amiri}
+
+
+% Load biblatex after polyglossia
+\usepackage[backend=biber,style=ieee]{biblatex}
+\addbibresource{references.bib}
+
+\renewcommand{\arraystretch}{0.85} % Tighter vertical spacing
+\usepackage{setspace}
+\usepackage[justification=centering]{caption}
+\usepackage{indentfirst}
+
+% Set headheight before loading fancyhdr to avoid warnings
+\setlength{\headheight}{27.42pt}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage[acronym]{glossaries}
+\makeglossaries
+\usepackage{float}
+\usepackage{adjustbox}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows.meta, positioning, shapes.misc, fit, backgrounds, calc}
+\usetikzlibrary{shapes.geometric}
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
+\tikzstyle{process} = [rectangle, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=blue!20]
+\tikzstyle{decision} = [diamond, aspect=2, text centered, draw=black, fill=green!20]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3.2cm, minimum height=0.9cm, text centered, draw=black]
+\tikzstyle{process}   = [rectangle, minimum width=3.6cm, minimum height=0.9cm, text centered, draw=black]
+\tikzstyle{decision}  = [diamond, aspect=2, text centered, draw=black, inner sep=1pt]
+\tikzstyle{arrow}     = [thick,->,>=stealth]
+\lstdefinelanguage{json}{
+    basicstyle=\ttfamily,
+    showstringspaces=false,
+    morestring=[b]",
+    morecomment=[l]{//},
+    morekeywords={true,false,null},
+    keywordstyle=\color{blue},
+    stringstyle=\color{black},
+    commentstyle=\color{gray}
+}
+
+% --- Define acronyms ---
+\newacronym{evtol}{eVTOL}{electric Vertical Take-Off and Landing}
+\newacronym{wis}{WIS}{Weather Information Service}
+\newacronym{uas}{UAS}{Unmanned Aerial Systems}
+\newacronym{easa}{EASA}{European Union Aviation Safety Agency}
+\newacronym{metar}{METAR}{Meteorological Aerodrome Report}
+\newacronym{api}{API}{Application Programming Interface}
+\newacronym{rest}{REST}{Representational State Transfer}
+\newacronym{oauth2}{OAuth2}{Open Authorization 2.0}
+\newacronym{aam}{AAM}{Advanced Air Mobility}
+\newacronym{dxb}{DXB}{Dubai International Airport}
+\newacronym{rta}{RTA}{Roads and Transport Authority}
+\newacronym{vfr}{VFR}{Visual Flight Rules}
+\newacronym{uav}{UAV}{Unmanned Aerial Vehicle}
+\newacronym{aws}{AWS}{Amazon Web Services}
+\newacronym{dxv}{DXV}{Dubai International Vertiport}
+\newacronym{revpi}{RevPi}{Revolution Pi}
+\newacronym{uam}{UAM}{Urban Air Mobility}
+\newacronym{notams}{NOTAMs}{Notice to Air Missions}
+\newacronym{bvlos}{BVLOS}{Beyond Visual Line of Sight}
+\newacronym{ceo}{CEO}{Chief Executive Officer}
+\newacronym{cto}{CTO}{Chief Technology Officer}
+\newacronym{coo}{COO}{Chief Operating Officer}
+\newacronym{venv}{venv}{Virtual Environment}
+\newacronym{din}{DIN}{Deutsches Institut für Normung}
+\newacronym{ascii}{ASCII}{American Standard Code for Information Interchange}
+\newacronym{crc}{CRC}{Cyclic Redundancy Check}
+\newacronym{ssh}{SSH}{Secure Shell}
+\newacronym{ip}{IP}{Internet Protocol}
+\newacronym{rtu}{RTU}{Remote Terminal Unit}
+\newacronym{ttl}{TTL}{Time-to-Live}
+\newacronym{vcs}{VCS}{Version Control System}
+\newacronym{mor}{MOR}{Meteorological Optical Range}
+\newacronym{ip66}{IP66}{Ingress Protection rating 66}
+\newacronym{emc}{EMC}{Electromagnetic Compatibility}
+\newacronym{en61326}{EN61326-1}{European standard for EMC requirements}
+\newacronym{pwd12}{PWD12}{Present Weather Detector 12}
+\newacronym{nws}{NWS}{National Weather Service}
+\newacronym{wmo}{WMO}{World Meteorological Organization}
+\newacronym{rs485}{RS-485}{Recommended Standard 485}
+\newacronym{hvac}{HVAC}{Heating, Vnetilation, and Air Conditioning}
+\newacronym{rs232}{RS-232}{Recommended Standard 232}
+\newacronym{emi}{EMI}{Electromagnetic Interference}
+\newacronym{usb}{USB}{Universal Serial Bus}
+\newacronym{cr}{CR}{Carriage Return}
+\newacronym{synop}{SYNOP}{Surface Synoptic Observation}
+\newacronym{json}{JSON}{JavaScript Object Notation}
+\newacronym{utc}{UTC}{Coordinated Universal Time}
+\newacronym{dns}{DNS}{Domain Name System}
+\newacronym{acid}{ACID}{Atomicity, Consistency, Isolation, and Durability}
+\newacronym{uv}{UV}{Ultra-Violet}
+\newacronym{fifo}{FIFO}{First In First Out}
+\newacronym{cli}{CLI}{Command Line Interface}
+\newacronym{cicd}{CI/CD}{Continuous Integration and Continuous Delivery/Deployment}
+\newacronym{iot}{IoT}{Internet of Things}
+
+
+\geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
+
+\begin{document}
+\onehalfspacing
+
+
+\begin{titlepage}
+    \begin{center}
+        \begin{tabular}{ m{2.5cm} m{10cm} m{2.5cm} }
+            \includegraphics[width=2.5cm]{images/insat.jpg} &
+            \centering
+            \begin{minipage}[c]{\linewidth}
+                \centering
+                {\small \textbf{REPUBLIC OF TUNISIA}}\\[0.15cm]
+                {\small Ministry of Higher Education and Scientific Research}\\[0.15cm]
+                {\small University of Carthage}\\[0.15cm]
+                {\small National Institute of Applied Sciences and Technology}
+            \end{minipage}
+            &
+            \includegraphics[width=2.5cm]{images/unicar.png} \\
+        \end{tabular}
+    \end{center}
+   
+    \vspace{0.5cm}
+\noindent\rule{\textwidth}{0.4pt}
+
+
+\begin{center}
+    \LARGE \textbf{Graduation Project}\\[0.4cm]
+    \normalsize to obtain the\\[0.4cm]
+    \LARGE \textbf{National Engineering Diploma}\\[0.4cm]
+    \normalsize in Applied Sciences and Technology\\[0.4cm]
+    \normalsize \textbf{Specialty: Instrumentation and Industrial Maintenance}\\[0.5cm]
+    \rule{10cm}{0.5pt}\\[0.4cm]
+    \Large \textbf{Development of an IOT-based Weather Sensor System for Drone Operations}\\
+    \rule{10cm}{0.5pt}\\[0.4cm]
+    \normalsize Prepared by\\[0.4cm]
+    \large \textbf{Mahdi MAJJEDI}\\[0.4cm]
+    \normalsize Hosted by Unisphere GmbH\\[0.4cm]
+    \includegraphics[width=6cm]{images/unisphere.png}\\[0.4cm]
+    \normalsize Defended on 25/09/2025 in front of a jury composed of:\\[0.4cm]
+    \begin{tabular}{@{} r l @{}}
+        \large \textbf{Mr. Atef BOULILA} & \large President of the jury \\[0.3cm]
+        \large \textbf{Mr. Saber TLILI} & \large Reviewer \\[0.3cm]
+        \large \textbf{Ms. Imen JAAFAR}       & \large Supervisor at INSAT \\[0.3cm]
+        \large \textbf{Mr. Michael ANGER}     & \large Supervisor at the Company \\[1cm]
+    \end{tabular}
+    
+    {\normalsize \textbf{School year: 2024/2025}}\\
+\end{center}
+
+
+
+\end{titlepage}
+
+\newpage
+
+\begin{titlepage}
+    \begin{center}
+        \begin{tabular}{ m{2.5cm} m{10cm} m{2.5cm} }
+            \includegraphics[width=2.5cm]{images/insat.jpg} &
+            \centering
+            \begin{minipage}[c]{\linewidth}
+                \centering
+                {\small \textbf{REPUBLIC OF TUNISIA}}\\[0.15cm]
+                {\small Ministry of Higher Education and Scientific Research}\\[0.15cm]
+                {\small University of Carthage}\\[0.15cm]
+                {\small National Institute of Applied Sciences and Technology}
+            \end{minipage}
+            &
+            \includegraphics[width=2.5cm]{images/unicar.png} \\
+        \end{tabular}
+    \end{center}
+   
+   
+\noindent\rule{\textwidth}{0.4pt}
+
+
+\begin{center}
+    \LARGE \textbf{Graduation Project}\\[0.4cm]
+    \normalsize to obtain the\\[0.4cm]
+    \LARGE \textbf{National Engineering Diploma}\\[0.4cm]
+    \normalsize in Applied Sciences and Technology\\[0.4cm]
+    \normalsize \textbf{Specialty: Instrumentation and Industrial Maintenance}\\
+    \rule{10cm}{0.5pt}\\
+    \Large \textbf{Development of an IOT-based Weather Sensor System for Drone Operations}\\
+    \rule{10cm}{0.5pt}\\
+    \normalsize Prepared by\\[0.4cm]
+    \large \textbf{Mahdi MAJJEDI}\\[0.4cm]
+    \normalsize Hosted by Unisphere GmbH\\[0.4cm]
+    \includegraphics[width=6cm]{images/unisphere.png}\\[0.4cm]
+    \begin{tabular}{|p{7cm}|p{7cm}|}
+        \hline\\
+        {\centering Supervisor at the Company \par} & {\centering Supervisor at INSAT \par}\\
+        {\centering Mr. Michael ANGER \par} & {\centering Ms. Imen JAAFAR \par}\\
+        \hline
+        \rule{0pt}{2.5cm} & \rule{0pt}{2.5cm}\\
+        Date:  & Date: \\
+        \hline
+    \end{tabular}
+
+\vspace{0.5cm}
+
+    
+    {\normalsize \textbf{School year: 2024/2025}}\\
+\end{center}
+
+
+
+\end{titlepage}
+
+% Use Roman numbering for front matter (or no numbering)
+\pagenumbering{roman}
+\pagestyle{plain} % or empty, or fancy if you customize headers
+
+% --- Dedication (not in TOC) ---
+\cleardoublepage
+\chapter*{Dedication}
+\thispagestyle{empty}
+\vspace*{2cm}
+
+\begin{center}
+\itshape   % Italic for elegance
+\setlength{\parskip}{1.2em} % space between paragraphs
+\setlength{\parindent}{0pt} % no indentation
+
+To my beloved family—my mother, father, and sister—whose love, encouragement, and unwavering belief in me have been the foundation of my journey. Your constant support gave me the strength to persevere through challenges and the motivation to keep striving for more.
+
+To my extended family, whose kindness and support in many different ways have helped me reach this milestone and made the path smoother along the way.
+
+To my friends, who stood by me with patience, laughter, and understanding, reminding me that even during the busiest and most difficult times, life is brighter when shared.
+
+This work is dedicated to all of you, with gratitude for your emotional support, and with the hope that it reflects the values of learning, growth, and persistence that you have helped instill in me.
+\end{center}
+
+\vspace{3em}
+
+\begin{flushright}
+\textit{Mahdi Majjedi}
+\end{flushright}
+
+
+% --- Acknowledgements (not in TOC) ---
+\cleardoublepage
+\chapter*{Acknowledgements}
+\thispagestyle{empty}
+\vspace*{2cm}
+\begin{center}
+\itshape   % Italic for elegance
+\setlength{\parskip}{1.2em} % space between paragraphs
+\setlength{\parindent}{0pt} % no indentation
+
+First and foremost, I would like to express my sincere gratitude to my professor, \textbf{Imen JAAFAR}, for her invaluable guidance, encouragement, and continuous support throughout this thesis project. Her expertise and thoughtful advice were essential in shaping both the technical and academic aspects of this work.
+
+I would also like to thank the members of the \textbf{jury}, who dedicated their time and effort to carefully read this report and evaluate my work. Their contribution ensures that this project is assessed with fairness and rigor, and I deeply appreciate their commitment.
+
+I am profoundly grateful to \textbf{Michael ANGER}, CTO of Unisphere GmbH, for giving me the opportunity to carry out my internship within the company. His trust allowed me to explore a challenging and meaningful project in a stimulating professional environment.
+
+My heartfelt thanks go to \textbf{Michael SCHEER}, software developer at Unisphere, with whom I had the privilege of working closely. His supervision, availability, and constructive feedback were invaluable throughout this journey, and I benefited greatly from his expertise and mentorship.
+
+Finally, I wish to express my appreciation to the entire \textbf{Unisphere team}. Their collaborative spirit, welcoming atmosphere, and unique company culture made this internship not only professionally enriching but also personally memorable.  
+\end{center}
+
+
+% --- Abstract (not in TOC) ---
+\cleardoublepage
+\chapter*{Abstract}
+\thispagestyle{empty}
+
+This thesis presents the integration of the Vaisala \gls{pwd12} visibility sensor into an existing weather station system initially built around a Vaisala WXT536 sensor. The system is deployed on a Revolution Pi industrial controller and serves the needs of Unisphere GmbH, where high-quality, real-time meteorological data is required to support safe and efficient flight monitoring through the NOVA platform.
+
+The work addresses both hardware and software challenges. On the hardware side, the \gls{pwd12} was connected using a dedicated \gls{rs485} interface to ensure compatibility with its baud rate and communication protocol. The wiring design prioritized simplicity and robustness, while maintaining independence between sensors to avoid interference.  
+
+On the software side, the integration followed a modular Python-based approach. Each sensor was assigned its own reader and parser modules, running concurrently under a systemd-managed service. Data acquisition, validation, and parsing pipelines were implemented to produce structured \gls{json} payloads compatible with the existing cloud infrastructure. Particular attention was given to error handling and resilience, including checksum verification and code modularity for future extensibility.  
+
+One of the key contributions of this work is the implementation of local offline buffering through an embedded SQLite database. This ensures data persistence and reliable synchronization with the \acrshort{aws} AppSync GraphQL \gls{api} even during connectivity interruptions. Retry logic and recovery workflows were designed to preserve data integrity and maintain chronological ordering of records during cloud uploads.  
+
+The results demonstrate a resilient and extensible system capable of supporting additional sensors with minimal reconfiguration. The integration of the \gls{pwd12} significantly expands the scope of collected environmental data, particularly by enabling visibility and present weather measurements. This work not only enhances the operational value of the weather station for Unisphere but also provides a modular blueprint for future sensor integrations in similar embedded cloud-connected environments.  
+
+
+% --- Table of Contents ---
+\cleardoublepage
+\tableofcontents
+
+% --- List of Figures ---
+\cleardoublepage
+\listoffigures
+
+% --- List of Tables ---
+\cleardoublepage
+\listoftables
+
+\cleardoublepage
+\lstlistoflistings
+% --- List of Acronyms ---
+
+
+
+\printacronyms
+
+
+
+% --- MAIN MATTER ---
+
+\cleardoublepage
+\pagenumbering{arabic} % restart page numbering in Arabic numerals
+\setcounter{page}{1}   % start at page 1
+\pagestyle{fancy}      % set page style for main chapters
+\fancyhead{} % clear all header fields
+\fancyhead[L]{\MakeUppercase{\leftmark}} % show chapter name uppercase on left
+
+% Redefine \chaptermark to show only chapter name (no section)
+\renewcommand{\chaptermark}[1]{%
+\markboth{CHAPTER \thechapter. #1}{}%
+}
+
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+
+Weather has always been one of the most decisive factors in aviation. 
+According to the U.S. Federal Aviation Administration, nearly 26\% of flight delays are directly caused by adverse weather conditions. 
+For traditional air traffic, this can mean rerouted flights, extended delays, or cancellations. 
+With the rapid development of urban air mobility concepts such as air taxis and drone operations, the challenge becomes even greater: 
+these aircraft will fly at lower altitudes, more frequently, and within densely populated environments where local weather phenomena such as fog or sudden precipitation can have an immediate impact on safety.  
+
+Unisphere GmbH is a company that develops digital solutions for flight operations and U-Space services. 
+One of its focus areas is providing reliable and localized weather information to support decision-making for manned and unmanned aviation. 
+This is achieved through \acrshort{iot}-based weather monitoring solutions, where sensors, edge devices, and cloud platforms are combined to deliver real-time insights for operators.  
+Nevertheless, ensuring reliable data flow in field deployments remains a challenge. 
+Weather stations must capture all relevant parameters, operate autonomously in harsh environments, and continue functioning even when network connectivity is temporarily unavailable.  
+
+In this context, the present work addresses the problem of extending and reinforcing an existing IoT weather monitoring system at Unisphere. 
+The goal is to enhance the range of measurements, particularly by ensuring that local visibility and present weather conditions are available, and to increase the system’s resilience by enabling local data buffering during connectivity disruptions. 
+By improving both the scope and reliability of weather data, the system can better support operational decisions in aviation and emerging UAM applications.  
+
+This thesis is organized as follows. 
+It first introduces the general context and objectives of the work, then presents the existing weather station system with its architecture, strengths, and current limitations. 
+Next, it describes the methodology and technical steps followed for integration and implementation, before reporting on deployment and results obtained in real conditions. 
+The document concludes with a discussion of remaining challenges and perspectives for future development.  
+
+
+\cleardoublepage
+
+\input{chapter1}
+
+\cleardoublepage
+
+\input{chapter2}
+
+\cleardoublepage
+
+\input{chapter3}
+
+\cleardoublepage
+
+\input{chapter4}
+
+\cleardoublepage
+
+\chapter*{General Conclusion}
+\addcontentsline{toc}{chapter}{General Conclusion}
+
+This thesis presented the design and implementation of an **IoT-based weather monitoring solution** that extends the capabilities of an existing weather station at Unisphere GmbH. 
+The overall objective was to integrate visibility and present weather measurements while increasing the resilience of the system against temporary network disruptions.  
+
+The work began with a study of the deployed infrastructure, which originally consisted of a single multisensor unit connected to a Revolution Pi industrial controller and synchronized with the cloud through AWS AppSync. 
+While effective for parameters such as wind, temperature, humidity, and precipitation, this setup lacked both visibility monitoring and offline buffering, two features that are essential for reliable operation in the context of aviation and urban air mobility.  
+
+To address these shortcomings, a new visibility sensor was examined in detail. 
+Its measurement principle, installation constraints, and communication formats were analyzed, followed by bench tests that confirmed stable RS-485 operation at 9600~bps. 
+A parsing logic was implemented to convert raw ASCII messages into structured JSON records aligned with the cloud schema. 
+This ensured that data generated locally could be seamlessly integrated with Unisphere’s existing cloud services.  
+
+Integration into the operational weather station required hardware and software adaptations. 
+On the hardware side, the sensor was connected via a dedicated serial interface, with only power and RS-485 lines wired through an M12 connector. 
+On the software side, modular Python components were developed to separate sensor reading, message parsing, and data serialization. 
+These processes were executed under \texttt{systemd} to guarantee autonomous operation, automatic restart on failure, and secure long-term deployment.  
+
+A critical contribution of this work was the addition of a local SQLite buffer. 
+This mechanism stores data whenever connectivity is lost, retries synchronization once the network is restored, and guarantees the temporal order of measurements without duplication. 
+Validation confirmed that several hundred entries could be buffered and recovered successfully, demonstrating a significant improvement in reliability compared to the previous version of the system.  
+
+The complete workflow was validated through live Qbee logs and DynamoDB records, which confirmed successful acquisition, parsing, buffering, and synchronization of sensor data. 
+Rooftop tests provided further evidence that the system functions correctly under real environmental conditions, with continuous acquisition and cloud delivery confirmed over several days of operation.  
+
+Beyond these results, several perspectives open the way for future developments. 
+At the cloud level, the GraphQL schema could be extended to support batch ingestion, improving efficiency for high-frequency deployments. 
+A formal monitoring and alerting layer would strengthen operational reliability by enabling proactive maintenance. 
+At the hardware level, additional sensors such as ceilometers could be integrated to enrich the range of meteorological parameters. 
+Finally, scaling the solution across multiple stations would reinforce Unisphere’s U-Space weather services and provide reliable, localized data for flight planning and traffic management.  
+
+In conclusion, this work delivered a resilient and extensible IoT weather monitoring system that enhances measurement coverage and ensures robust data availability. 
+The results demonstrate the feasibility of integrating advanced sensors with industrial controllers, local buffering, and cloud synchronization in a modular framework. 
+Such solutions are key enablers for safe and efficient operations in aviation and emerging urban air mobility environments.  
+
+%\appendix
+
+%\chapter{Code}
+
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+\printbibliography
+
+\cleardoublepage
+\thispagestyle{empty}
+\input{Abstract.tex}
+
+\end{document}

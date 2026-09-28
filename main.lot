@@ -1,0 +1,14 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces \xpg@aux {}{english}Comparison between \gls {ascii} and Modbus \gls {rtu} protocols}}{19}{table.caption.27}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces \xpg@aux {}{english}\gls {pwd12} Visibility Sensor Measurement Characteristics (See PWD Datasheet\blx@tocontentsinit {0}\cite {vaisala2025pwd12})}}{27}{table.caption.34}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces \xpg@aux {}{english}Recommended Pin-out Connections for Basic Operation}}{30}{table.caption.36}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces \xpg@aux {}{english}PWD12 Configuration Commands (see PWD12 Manual\blx@tocontentsinit {0}\cite {vaisala2015pwd}, Chap. 5)}}{32}{table.caption.38}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces \xpg@aux {}{english}PWD12 RAINCAP Calibration Commands (see PWD12 Manual\blx@tocontentsinit {0}\cite {vaisala2015pwd}, Chap. 5)}}{32}{table.caption.39}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces \xpg@aux {}{english}PWD12 Status and Diagnostic Commands (see PWD12 Manual\blx@tocontentsinit {0}\cite {vaisala2015pwd}, Chap. 5)}}{33}{table.caption.40}%
+\contentsline {table}{\numberline {3.6}{\ignorespaces \xpg@aux {}{english}Pin-out connections used for bench testing}}{34}{table.caption.42}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces \xpg@aux {}{english}Pin-out connections used for PWD12 integration into the weather station}}{39}{table.caption.47}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces \xpg@aux {}{english}Key development tools and technologies}}{42}{table.caption.51}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces \xpg@aux {}{english}Local storage option comparison for embedded buffering \blx@tocontentsinit {0}\cite {sqlite-whentouse,sqlite-acid}.}}{46}{table.caption.54}%

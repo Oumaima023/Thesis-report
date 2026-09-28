@@ -1,0 +1,116 @@
+\xpg@aux {}{english}
+\contentsline {chapter}{Introduction}{1}{chapter*.10}%
+\contentsline {chapter}{\numberline {1}General Context}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Presentation of the Hosting Company}{2}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Unisphere GmbH}{2}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Solar Impulse Project}{4}{subsection.1.1.2}%
+\contentsline {subsection}{\numberline {1.1.3}Products and services}{4}{subsection.1.1.3}%
+\contentsline {subsubsection}{\numberline {1.1.3.1}NOVA Platform}{4}{subsubsection.1.1.3.1}%
+\contentsline {subsubsection}{\numberline {1.1.3.2}Operational Analysis}{6}{subsubsection.1.1.3.2}%
+\contentsline {subsubsection}{\numberline {1.1.3.3}U-Space Weather Service}{7}{subsubsection.1.1.3.3}%
+\contentsline {subsection}{\numberline {1.1.4}Company Structure and Organization}{8}{subsection.1.1.4}%
+\contentsline {section}{\numberline {1.2}Project Overview}{9}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Background and Motivation}{9}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Project Context and Environment}{10}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Problem Statement and Challenges}{10}{subsection.1.2.3}%
+\contentsline {section}{\numberline {1.3}Methodology}{11}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Action Plan and Approach}{11}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Gantt Chart and Timeline}{11}{subsection.1.3.2}%
+\contentsline {chapter}{\numberline {2}Study of the Existing System}{14}{chapter.2}%
+\contentsline {section}{\numberline {2.1}System Description}{14}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}System Overview}{14}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Hardware Architecture}{15}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Communication Interfaces}{16}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}Software Stack and Cloud Services}{17}{subsection.2.1.4}%
+\contentsline {section}{\numberline {2.2}System Evaluation}{18}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}System Strengths}{18}{subsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.1.1}Robustness and Reliability}{18}{subsubsection.2.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.2.1.2}Simplicity and Modularity}{18}{subsubsection.2.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.2.1.3}Cloud Integration}{19}{subsubsection.2.2.1.3}%
+\contentsline {subsection}{\numberline {2.2.2}Limitations and Opportunities for Improvement}{19}{subsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.2.1}Lack of Visibility Measurement}{19}{subsubsection.2.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2.2}Protocol and Communication Constraints}{19}{subsubsection.2.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.2.3}Lack of Offline Resilience}{20}{subsubsection.2.2.2.3}%
+\contentsline {subsubsection}{\numberline {2.2.2.4}Data Handling and Storage Gaps}{20}{subsubsection.2.2.2.4}%
+\contentsline {subsubsection}{\numberline {2.2.2.5}Scope of This Work}{21}{subsubsection.2.2.2.5}%
+\contentsline {chapter}{\numberline {3}Study of the PWD12 Sensor}{22}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Sensor Context and Operational Role}{23}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Purpose of Integrating the PWD12}{23}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Role in the Weather Station}{23}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Relevance to UAS Operations and the NOVA Platform}{23}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Internal Architecture and Hardware Components}{23}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Optical Measurement System}{23}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}RAINCAP Precipitation Sensor}{24}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Anti-Icing and Heating Mechanisms}{25}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}Signal Processing Unit and Embedded Controller}{25}{subsection.3.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.4.1}Enclosure and Protection}{25}{subsubsection.3.2.4.1}%
+\contentsline {section}{\numberline {3.3}Technical Specifications}{26}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Measurable Parameters and Units}{26}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Accuracy, Resolution, and Operating Ranges}{26}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Supported Message Types and Baud Rates}{27}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Power Requirements and Electrical Characteristics}{27}{subsection.3.3.4}%
+\contentsline {section}{\numberline {3.4}Installation and Environment Requirements}{28}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Site Selection Guidelines}{28}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Mounting Orientation and Positioning}{28}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Grounding and Surge Protection}{29}{subsection.3.4.3}%
+\contentsline {section}{\numberline {3.5}Electrical Wiring and Communication Interfaces}{29}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Pin-out and Wire Color Mapping}{29}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Supported Communication Interfaces}{31}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Cable Shielding and Length Constraints}{31}{subsection.3.5.3}%
+\contentsline {section}{\numberline {3.6}Sensor Configuration and Command Structure}{31}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Command Mode and Access}{32}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Configuration and Setup Commands}{32}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Calibration and RAINCAP Adjustment}{32}{subsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.6.4}Diagnostic and Status Commands}{33}{subsection.3.6.4}%
+\contentsline {paragraph}{}{33}{section*.41}%
+\contentsline {section}{\numberline {3.7}Sensor Testing and Message Validation}{33}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Bench Setup and Mock Communication}{33}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Message Format Verification and Sensor Behavior}{34}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}Raw Message Interpretation and Field Mapping}{35}{subsection.3.7.3}%
+\contentsline {subsection}{\numberline {3.7.4}Final JSON Structure and Cloud Compatibility}{36}{subsection.3.7.4}%
+\contentsline {chapter}{\numberline {4}Integration of the PWD12 Sensor into the Weather Station}{38}{chapter.4}%
+\contentsline {section}{\numberline {4.1}System Architecture and Data Flow}{38}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Revised Hardware and Software Stack Overview}{38}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Local Communication and Parsing Workflow}{40}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Cloud Transmission Pipeline and AWS Integration}{41}{subsection.4.1.3}%
+\contentsline {section}{\numberline {4.2}Codebase Structure and Development Environment}{41}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Programming Environment and Tools Used}{41}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Folder Layout and Modularization Approach}{42}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Environment Variable Management and Secrets Handling}{43}{subsection.4.2.3}%
+\contentsline {section}{\numberline {4.3}Data Acquisition Pipeline}{43}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Serial Port Communication}{43}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Message Parsing and Error Handling}{43}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Schema Mapping and Output Structuring}{44}{subsection.4.3.3}%
+\contentsline {section}{\numberline {4.4}Offline Buffering and Local Data Resilience}{46}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Problem Statement and Design Requirements}{46}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Evaluation of Local Storage Options}{46}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Buffer Architecture and File Management}{46}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}Retry Logic and Recovery Workflow}{47}{subsection.4.4.4}%
+\contentsline {subsection}{\numberline {4.4.5}Edge Case Handling and Failure Modes}{48}{subsection.4.4.5}%
+\contentsline {paragraph}{Duplicate Prevention}{48}{section*.56}%
+\contentsline {paragraph}{Batching Efficiency}{48}{section*.57}%
+\contentsline {paragraph}{Max Buffer Size and Cleanup}{48}{section*.58}%
+\contentsline {section}{\numberline {4.5}Cloud Communication and Batch Upload}{48}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}GraphQL Mutation Design}{48}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}AppSync Pipeline Resolver for Batching}{49}{subsection.4.5.2}%
+\contentsline {section}{\numberline {4.6}Deployment and Monitoring}{49}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Deployment Strategy for RevPi}{49}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Systemd Configuration and Startup Behavior}{50}{subsection.4.6.2}%
+\contentsline {paragraph}{Operational hardening.}{51}{section*.59}%
+\contentsline {subsection}{\numberline {4.6.3}Remote Access and Diagnostics}{51}{subsection.4.6.3}%
+\contentsline {subsection}{\numberline {4.6.4}Logging, Metrics, and Alerting}{51}{subsection.4.6.4}%
+\contentsline {paragraph}{Future improvements.}{51}{section*.60}%
+\contentsline {section}{\numberline {4.7}Documentation and Maintainability}{52}{section.4.7}%
+\contentsline {subsection}{\numberline {4.7.1}Developer Documentation and Comments}{52}{subsection.4.7.1}%
+\contentsline {subsection}{\numberline {4.7.2}Update Strategy and Future Expansion}{52}{subsection.4.7.2}%
+\contentsline {subsection}{\numberline {4.7.3}Testing Guidelines and Deployment Checklist}{53}{subsection.4.7.3}%
+\contentsline {subsection}{\numberline {4.7.4}Files to touch when adding a new sensor.}{53}{subsection.4.7.4}%
+\contentsline {section}{\numberline {4.8}Results}{53}{section.4.8}%
+\contentsline {subsection}{\numberline {4.8.1}Local Logs via Qbee}{54}{subsection.4.8.1}%
+\contentsline {subsection}{\numberline {4.8.2}Cloud Data on AWS DynamoDB}{54}{subsection.4.8.2}%
+\contentsline {subsection}{\numberline {4.8.3}Discussion of Results}{56}{subsection.4.8.3}%
+\contentsline {subsection}{\numberline {4.8.4}Field Validation and Bug Fixing}{56}{subsection.4.8.4}%
+\contentsline {chapter}{General Conclusion}{58}{chapter*.66}%
+\contentsline {chapter}{Bibliography}{59}{section*.67}%
+\xpg@aux {}{french}
+\xpg@aux {}{english}

@@ -19,240 +19,382 @@
 
 \refsection{0}
   \datalist[entry]{none/global//global/global/global}
-    \entry{unisphere_linkedin}{misc}{}{}
+    \entry{tiikamag_linkedin}{misc}{}{}
       \name{author}{1}{}{%
-        {{hash=c4f78113ea2b4ea6124441e2c8678449}{%
-           family={{Unisphere GmbH}},
-           familyi={U\bibinitperiod}}}%
+        {{hash=1a9956304d37de8a407474babc530fa8}{%
+           family={{TII KAMAG}},
+           familyi={T\bibinitperiod}}}%
       }
-      \strng{namehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{fullhash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{fullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{bibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authorbibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authornamehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authorfullhash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authorfullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{namehash}{1a9956304d37de8a407474babc530fa8}
+      \strng{fullhash}{1a9956304d37de8a407474babc530fa8}
+      \strng{fullhashraw}{1a9956304d37de8a407474babc530fa8}
+      \strng{bibnamehash}{1a9956304d37de8a407474babc530fa8}
+      \strng{authorbibnamehash}{1a9956304d37de8a407474babc530fa8}
+      \strng{authornamehash}{1a9956304d37de8a407474babc530fa8}
+      \strng{authorfullhash}{1a9956304d37de8a407474babc530fa8}
+      \strng{authorfullhashraw}{1a9956304d37de8a407474babc530fa8}
       \field{extraname}{1}
       \field{sortinit}{1}
       \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{howpublished}{\url{https://www.linkedin.com/company/unisphere-gmbh}}
-      \field{note}{Accessed: 2025-07-10}
+      \field{howpublished}{\url{https://www.linkedin.com/company/tii-kamag}}
+      \field{note}{Accessed: 2026-07-10}
       \field{title}{LinkedIn Profile}
     \endentry
-    \entry{handelsregister}{misc}{}{}
+    \entry{tiikamag_website}{misc}{}{}
       \name{author}{1}{}{%
-        {{hash=c4f78113ea2b4ea6124441e2c8678449}{%
-           family={{Unisphere GmbH}},
-           familyi={U\bibinitperiod}}}%
+        {{hash=1a9956304d37de8a407474babc530fa8}{%
+           family={{TII KAMAG}},
+           familyi={T\bibinitperiod}}}%
       }
-      \strng{namehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{fullhash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{fullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{bibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authorbibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authornamehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authorfullhash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authorfullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
+      \strng{namehash}{1a9956304d37de8a407474babc530fa8}
+      \strng{fullhash}{1a9956304d37de8a407474babc530fa8}
+      \strng{fullhashraw}{1a9956304d37de8a407474babc530fa8}
+      \strng{bibnamehash}{1a9956304d37de8a407474babc530fa8}
+      \strng{authorbibnamehash}{1a9956304d37de8a407474babc530fa8}
+      \strng{authornamehash}{1a9956304d37de8a407474babc530fa8}
+      \strng{authorfullhash}{1a9956304d37de8a407474babc530fa8}
+      \strng{authorfullhashraw}{1a9956304d37de8a407474babc530fa8}
       \field{extraname}{2}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{note}{Official company registration data. Accessed: 2025-07-10}
-      \field{title}{Handelsregister (German Commercial Register) Entry}
-    \endentry
-    \entry{unisphere_website}{misc}{}{}
-      \name{author}{1}{}{%
-        {{hash=c4f78113ea2b4ea6124441e2c8678449}{%
-           family={{Unisphere GmbH}},
-           familyi={U\bibinitperiod}}}%
-      }
-      \strng{namehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{fullhash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{fullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{bibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authorbibnamehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authornamehash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authorfullhash}{c4f78113ea2b4ea6124441e2c8678449}
-      \strng{authorfullhashraw}{c4f78113ea2b4ea6124441e2c8678449}
-      \field{extraname}{3}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{howpublished}{\url{https://unisphere.ai}}
-      \field{note}{Accessed: 2025-07-10}
-      \field{title}{Company Website}
-    \endentry
-    \entry{uav_industry_news}{misc}{}{}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
-      \field{labeltitlesource}{title}
-      \field{note}{e.g., UAV Industry News. Accessed: 2025-07-10}
-      \field{title}{Aviation and Drone Industry News Articles}
-    \endentry
-    \entry{solar_impulse_official}{misc}{}{}
-      \name{author}{1}{}{%
-        {{hash=55c02d057ec10067ce53c333b888c225}{%
-           family={{Solar Impulse Foundation}},
-           familyi={S\bibinitperiod}}}%
-      }
-      \strng{namehash}{55c02d057ec10067ce53c333b888c225}
-      \strng{fullhash}{55c02d057ec10067ce53c333b888c225}
-      \strng{fullhashraw}{55c02d057ec10067ce53c333b888c225}
-      \strng{bibnamehash}{55c02d057ec10067ce53c333b888c225}
-      \strng{authorbibnamehash}{55c02d057ec10067ce53c333b888c225}
-      \strng{authornamehash}{55c02d057ec10067ce53c333b888c225}
-      \strng{authorfullhash}{55c02d057ec10067ce53c333b888c225}
-      \strng{authorfullhashraw}{55c02d057ec10067ce53c333b888c225}
       \field{sortinit}{2}
       \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{howpublished}{\url{https://solarimpulse.com/}}
-      \field{note}{Accessed: 2025-07-10}
-      \field{title}{Solar Impulse - A Flying Laboratory for Clean Technologies}
+      \field{howpublished}{\url{https://www.tii-group.com/tii-kamag}}
+      \field{note}{Accessed: 2026-07-10}
+      \field{title}{Company Website}
     \endentry
-    \entry{skyports_vertiport_dubai}{misc}{}{}
+    \entry{dachser_google_maps}{misc}{}{}
       \name{author}{1}{}{%
-        {{hash=9cb0a382bc282d2773bc74f25bc68eb9}{%
-           family={{Skyports Infrastructure}},
+        {{hash=addefca19981affa2ff560e5262683de}{%
+           family={{Google Maps}},
+           familyi={G\bibinitperiod}}}%
+      }
+      \strng{namehash}{addefca19981affa2ff560e5262683de}
+      \strng{fullhash}{addefca19981affa2ff560e5262683de}
+      \strng{fullhashraw}{addefca19981affa2ff560e5262683de}
+      \strng{bibnamehash}{addefca19981affa2ff560e5262683de}
+      \strng{authorbibnamehash}{addefca19981affa2ff560e5262683de}
+      \strng{authornamehash}{addefca19981affa2ff560e5262683de}
+      \strng{authorfullhash}{addefca19981affa2ff560e5262683de}
+      \strng{authorfullhashraw}{addefca19981affa2ff560e5262683de}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://maps.app.goo.gl/KWCexqDtW4gDGhew7}}
+      \field{note}{Accessed: 2026-07-21}
+      \field{title}{DACHSER SE}
+    \endentry
+    \entry{nakajima1988tpm}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=f38ee6cf5ce02f28b6720cd82935b8b6}{%
+           family={Nakajima},
+           familyi={N\bibinitperiod},
+           given={Seiichi},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Cambridge, MA}%
+      }
+      \list{publisher}{1}{%
+        {Productivity Press}%
+      }
+      \strng{namehash}{f38ee6cf5ce02f28b6720cd82935b8b6}
+      \strng{fullhash}{f38ee6cf5ce02f28b6720cd82935b8b6}
+      \strng{fullhashraw}{f38ee6cf5ce02f28b6720cd82935b8b6}
+      \strng{bibnamehash}{f38ee6cf5ce02f28b6720cd82935b8b6}
+      \strng{authorbibnamehash}{f38ee6cf5ce02f28b6720cd82935b8b6}
+      \strng{authornamehash}{f38ee6cf5ce02f28b6720cd82935b8b6}
+      \strng{authorfullhash}{f38ee6cf5ce02f28b6720cd82935b8b6}
+      \strng{authorfullhashraw}{f38ee6cf5ce02f28b6720cd82935b8b6}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Introduction to TPM: Total Productive Maintenance}
+      \field{year}{1988}
+      \verb{urlraw}
+      \verb https://www.proquest.com/openview/b0a44c494f870eef789e6cdd56844247/1?pq-origsite=gscholar&cbl=17558
+      \endverb
+      \verb{url}
+      \verb https://www.proquest.com/openview/b0a44c494f870eef789e6cdd56844247/1?pq-origsite=gscholar&cbl=17558
+      \endverb
+    \endentry
+    \entry{sciencedirect_oee_figure}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=ed15e0ed8bc63d1935fbdf9b7d303228}{%
+           family={{ScienceDirect}},
            familyi={S\bibinitperiod}}}%
       }
-      \strng{namehash}{9cb0a382bc282d2773bc74f25bc68eb9}
-      \strng{fullhash}{9cb0a382bc282d2773bc74f25bc68eb9}
-      \strng{fullhashraw}{9cb0a382bc282d2773bc74f25bc68eb9}
-      \strng{bibnamehash}{9cb0a382bc282d2773bc74f25bc68eb9}
-      \strng{authorbibnamehash}{9cb0a382bc282d2773bc74f25bc68eb9}
-      \strng{authornamehash}{9cb0a382bc282d2773bc74f25bc68eb9}
-      \strng{authorfullhash}{9cb0a382bc282d2773bc74f25bc68eb9}
-      \strng{authorfullhashraw}{9cb0a382bc282d2773bc74f25bc68eb9}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \strng{namehash}{ed15e0ed8bc63d1935fbdf9b7d303228}
+      \strng{fullhash}{ed15e0ed8bc63d1935fbdf9b7d303228}
+      \strng{fullhashraw}{ed15e0ed8bc63d1935fbdf9b7d303228}
+      \strng{bibnamehash}{ed15e0ed8bc63d1935fbdf9b7d303228}
+      \strng{authorbibnamehash}{ed15e0ed8bc63d1935fbdf9b7d303228}
+      \strng{authornamehash}{ed15e0ed8bc63d1935fbdf9b7d303228}
+      \strng{authorfullhash}{ed15e0ed8bc63d1935fbdf9b7d303228}
+      \strng{authorfullhashraw}{ed15e0ed8bc63d1935fbdf9b7d303228}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{howpublished}{\url{https://skyports.net/skyports-and-rta-break-ground-on-first-vertiport-in-dubai/}}
-      \field{note}{Accessed: 2025-07-10}
-      \field{title}{Skyports and RTA Break Ground on First Vertiport in Dubai}
+      \field{note}{Figure 5. Accessed: 2026-07-27}
+      \field{title}{Figure source for Major Losses and Computation of OEE}
+      \verb{urlraw}
+      \verb https://www.sciencedirect.com/science/article/pii/S0166361517300787
+      \endverb
+      \verb{url}
+      \verb https://www.sciencedirect.com/science/article/pii/S0166361517300787
+      \endverb
     \endentry
-    \entry{skyports_vertiport_approval}{misc}{}{}
+    \entry{iso22400_2_2014}{misc}{}{}
       \name{author}{1}{}{%
-        {{hash=f21d54d09b058d9226432fb3272d1d72}{%
-           family={{AINonline}},
-           familyi={A\bibinitperiod}}}%
+        {{hash=7058e4bd76f877c52b621c942b30613c}{%
+           family={{International Organization for Standardization}},
+           familyi={I\bibinitperiod}}}%
       }
-      \strng{namehash}{f21d54d09b058d9226432fb3272d1d72}
-      \strng{fullhash}{f21d54d09b058d9226432fb3272d1d72}
-      \strng{fullhashraw}{f21d54d09b058d9226432fb3272d1d72}
-      \strng{bibnamehash}{f21d54d09b058d9226432fb3272d1d72}
-      \strng{authorbibnamehash}{f21d54d09b058d9226432fb3272d1d72}
-      \strng{authornamehash}{f21d54d09b058d9226432fb3272d1d72}
-      \strng{authorfullhash}{f21d54d09b058d9226432fb3272d1d72}
-      \strng{authorfullhashraw}{f21d54d09b058d9226432fb3272d1d72}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{howpublished}{\url{https://www.ainonline.com/aviation-news/futureflight/2025-01-15/skyports-first-uae-vertiport-earns-technical-design-approval}}
-      \field{note}{Published: 2025-01-15. Accessed: 2025-07-10}
-      \field{title}{Skyports’ First UAE Vertiport Earns Technical Design Approval}
-    \endentry
-    \entry{vaisala2015pwd}{manual}{}{}
-      \list{organization}{1}{%
-        {Vaisala Oyj}%
-      }
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
-      \field{labeltitlesource}{title}
-      \field{note}{Vaisala, Finland; retrieved from datasheet}
-      \field{title}{Present Weather Detector PWD22/52 User's Guide}
-      \field{year}{2015}
-      \verb{urlraw}
-      \verb https://www.qiameter.com/upfile/datasheet/PWD22_52%20Users%20Guide%20M210543EN-F.pdf
-      \endverb
-      \verb{url}
-      \verb https://www.qiameter.com/upfile/datasheet/PWD22_52%20Users%20Guide%20M210543EN-F.pdf
-      \endverb
-    \endentry
-    \entry{vaisala2025pwd12}{manual}{}{}
-      \list{organization}{1}{%
-        {Vaisala Oyj}%
-      }
-      \field{sortinit}{5}
-      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
-      \field{labeltitlesource}{title}
-      \field{note}{Accessed \today}
-      \field{title}{Present Weather Detector PWD12 User’s Guide}
-      \field{year}{2025}
-      \verb{urlraw}
-      \verb https://docs.vaisala.com/v/u/B210385EN-G/en-US
-      \endverb
-      \verb{url}
-      \verb https://docs.vaisala.com/v/u/B210385EN-G/en-US
-      \endverb
-    \endentry
-    \entry{sqlite-whentouse}{misc}{}{}
-      \name{author}{2}{}{%
-        {{hash=abc88efd85f1d8482dc06c18d13a5d7e}{%
-           family={Hipp},
-           familyi={H\bibinitperiod},
-           given={D.\bibnamedelimi Richard},
-           giveni={D\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
-        {{hash=098321d62b1c091ef7ba6f19ba0893ea}{%
-           family={Consortium},
-           familyi={C\bibinitperiod},
-           given={SQLite},
-           giveni={S\bibinitperiod}}}%
-      }
-      \strng{namehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{fullhash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{fullhashraw}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{bibnamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{authorbibnamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{authornamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{authorfullhash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{authorfullhashraw}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
+      \strng{namehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{fullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{fullhashraw}{7058e4bd76f877c52b621c942b30613c}
+      \strng{bibnamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorbibnamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authornamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhashraw}{7058e4bd76f877c52b621c942b30613c}
       \field{extraname}{1}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{howpublished}{\url{https://www.sqlite.org/whentouse.html}}
-      \field{note}{Accessed 2025-08-19}
-      \field{title}{Appropriate Uses for SQLite}
+      \field{note}{Accessed: 2026-07-27}
+      \field{title}{ISO 22400-2:2014 Automation systems and integration --- Key performance indicators (KPIs) for manufacturing operations management --- Part 2: Definitions and descriptions}
+      \verb{urlraw}
+      \verb https://www.iso.org/obp/ui/en/#iso:std:iso:22400:-2:ed-1:v1:en
+      \endverb
+      \verb{url}
+      \verb https://www.iso.org/obp/ui/en/#iso:std:iso:22400:-2:ed-1:v1:en
+      \endverb
     \endentry
-    \entry{sqlite-acid}{misc}{}{}
-      \name{author}{2}{}{%
-        {{hash=abc88efd85f1d8482dc06c18d13a5d7e}{%
-           family={Hipp},
-           familyi={H\bibinitperiod},
-           given={D.\bibnamedelimi Richard},
-           giveni={D\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
-        {{hash=098321d62b1c091ef7ba6f19ba0893ea}{%
-           family={Consortium},
-           familyi={C\bibinitperiod},
-           given={SQLite},
-           giveni={S\bibinitperiod}}}%
+    \entry{semi_e10_ram}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=44e0adec5ae2b0638111bce7061281bb}{%
+           family={Pomorski},
+           familyi={P\bibinitperiod},
+           given={Thomas},
+           giveni={T\bibinitperiod}}}%
       }
-      \strng{namehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{fullhash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{fullhashraw}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{bibnamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{authorbibnamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{authornamehash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{authorfullhash}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \strng{authorfullhashraw}{12abcd0ec6cc2ac4f66e1b2d8dec07f3}
-      \field{extraname}{2}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \strng{namehash}{44e0adec5ae2b0638111bce7061281bb}
+      \strng{fullhash}{44e0adec5ae2b0638111bce7061281bb}
+      \strng{fullhashraw}{44e0adec5ae2b0638111bce7061281bb}
+      \strng{bibnamehash}{44e0adec5ae2b0638111bce7061281bb}
+      \strng{authorbibnamehash}{44e0adec5ae2b0638111bce7061281bb}
+      \strng{authornamehash}{44e0adec5ae2b0638111bce7061281bb}
+      \strng{authorfullhash}{44e0adec5ae2b0638111bce7061281bb}
+      \strng{authorfullhashraw}{44e0adec5ae2b0638111bce7061281bb}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{howpublished}{\url{https://www.sqlite.org/atomiccommit.html}}
-      \field{note}{Accessed 2025-08-19}
-      \field{title}{Atomic Commit and Durability in SQLite}
+      \field{note}{SEMI webpage. Accessed: 2026-07-27}
+      \field{title}{Major Revision Update for SEMI E10 Specification for Definition and Measurement of Equipment Reliability, Availability, and Maintainability (RAM)}
+      \verb{urlraw}
+      \verb https://www.semi.org/en/Standards/CTR_031244
+      \endverb
+      \verb{url}
+      \verb https://www.semi.org/en/Standards/CTR_031244
+      \endverb
+    \endentry
+    \entry{fragapane2021intralogistics}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=668994abb682ab688597e60ff6d2bffa}{%
+           family={Fragapane},
+           familyi={F\bibinitperiod},
+           given={Giuseppe},
+           giveni={G\bibinitperiod}}}%
+        {{hash=c3cbb6b513c528a72bfb954b30bbe43c}{%
+           family={Koster},
+           familyi={K\bibinitperiod},
+           given={René},
+           giveni={R\bibinitperiod},
+           prefix={de},
+           prefixi={d\bibinitperiod}}}%
+        {{hash=b81b5bb722f3156fad49bfcb7530611d}{%
+           family={Sgarbossa},
+           familyi={S\bibinitperiod},
+           given={Fabio},
+           giveni={F\bibinitperiod}}}%
+        {{hash=8e87b0200ed9908bfcb2e07d16f57712}{%
+           family={Strandhagen},
+           familyi={S\bibinitperiod},
+           given={Jan\bibnamedelima Ola},
+           giveni={J\bibinitperiod\bibinitdelim O\bibinitperiod}}}%
+      }
+      \strng{namehash}{153368a0e322531c01947b7757b3c4a6}
+      \strng{fullhash}{ceb1ce8340b8fbfafc84aa70f1e4e5b2}
+      \strng{fullhashraw}{ceb1ce8340b8fbfafc84aa70f1e4e5b2}
+      \strng{bibnamehash}{ceb1ce8340b8fbfafc84aa70f1e4e5b2}
+      \strng{authorbibnamehash}{ceb1ce8340b8fbfafc84aa70f1e4e5b2}
+      \strng{authornamehash}{153368a0e322531c01947b7757b3c4a6}
+      \strng{authorfullhash}{ceb1ce8340b8fbfafc84aa70f1e4e5b2}
+      \strng{authorfullhashraw}{ceb1ce8340b8fbfafc84aa70f1e4e5b2}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{European Journal of Operational Research}
+      \field{note}{Accessed: 2026-07-28}
+      \field{number}{2}
+      \field{title}{Planning and control of autonomous mobile robots for intralogistics: Literature review and research agenda}
+      \field{volume}{294}
+      \field{year}{2021}
+      \field{pages}{405\bibrangedash 426}
+      \range{pages}{22}
+      \verb{urlraw}
+      \verb https://www.researchgate.net/publication/348569276_Planning_and_control_of_autonomous_mobile_robots_for_intralogistics_Literature_review_and_research_agenda
+      \endverb
+      \verb{url}
+      \verb https://www.researchgate.net/publication/348569276_Planning_and_control_of_autonomous_mobile_robots_for_intralogistics_Literature_review_and_research_agenda
+      \endverb
+    \endentry
+    \entry{sae_j3016_rg}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=9c71ca0e8ac5da7336ffa149007898f9}{%
+           family={{ResearchGate}},
+           familyi={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{9c71ca0e8ac5da7336ffa149007898f9}
+      \strng{fullhash}{9c71ca0e8ac5da7336ffa149007898f9}
+      \strng{fullhashraw}{9c71ca0e8ac5da7336ffa149007898f9}
+      \strng{bibnamehash}{9c71ca0e8ac5da7336ffa149007898f9}
+      \strng{authorbibnamehash}{9c71ca0e8ac5da7336ffa149007898f9}
+      \strng{authornamehash}{9c71ca0e8ac5da7336ffa149007898f9}
+      \strng{authorfullhash}{9c71ca0e8ac5da7336ffa149007898f9}
+      \strng{authorfullhashraw}{9c71ca0e8ac5da7336ffa149007898f9}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://www.researchgate.net/publication/339371847_A_Standard_Driven_Software_Architecture_for_Fully_Autonomous_Vehicles/figures?lo=1}}
+      \field{note}{Figure from: A Standard-Driven Software Architecture for Fully Autonomous Vehicles. Accessed: 2026-07-29}
+      \field{title}{SAE J3016 Levels of Driving Automation}
+    \endentry
+    \entry{iso34503_2023}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=7058e4bd76f877c52b621c942b30613c}{%
+           family={{International Organization for Standardization}},
+           familyi={I\bibinitperiod}}}%
+      }
+      \strng{namehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{fullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{fullhashraw}{7058e4bd76f877c52b621c942b30613c}
+      \strng{bibnamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorbibnamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authornamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhashraw}{7058e4bd76f877c52b621c942b30613c}
+      \field{extraname}{2}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Accessed: 2026-07-29}
+      \field{title}{ISO 34503:2023, Road vehicles --- Test scenarios for automated driving systems --- Taxonomy for operational design domain}
+      \field{year}{2023}
+      \verb{urlraw}
+      \verb https://www.iso.org/obp/ui/en/#iso:std:iso:34503:ed-1:v1:en
+      \endverb
+      \verb{url}
+      \verb https://www.iso.org/obp/ui/en/#iso:std:iso:34503:ed-1:v1:en
+      \endverb
+    \endentry
+    \entry{iso21448_2022}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=7058e4bd76f877c52b621c942b30613c}{%
+           family={{International Organization for Standardization}},
+           familyi={I\bibinitperiod}}}%
+      }
+      \strng{namehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{fullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{fullhashraw}{7058e4bd76f877c52b621c942b30613c}
+      \strng{bibnamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorbibnamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authornamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhashraw}{7058e4bd76f877c52b621c942b30613c}
+      \field{extraname}{3}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Accessed: 2026-07-29}
+      \field{title}{ISO 21448:2022, Road vehicles --- Safety of the intended functionality}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.iso.org/standard/77490.html
+      \endverb
+      \verb{url}
+      \verb https://www.iso.org/standard/77490.html
+      \endverb
+    \endentry
+    \entry{six_sigma_cp_cpk}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=5a37e052c2087cc1923f27dfe7dbb001}{%
+           family={{Six Sigma Study Guide}},
+           familyi={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{5a37e052c2087cc1923f27dfe7dbb001}
+      \strng{fullhash}{5a37e052c2087cc1923f27dfe7dbb001}
+      \strng{fullhashraw}{5a37e052c2087cc1923f27dfe7dbb001}
+      \strng{bibnamehash}{5a37e052c2087cc1923f27dfe7dbb001}
+      \strng{authorbibnamehash}{5a37e052c2087cc1923f27dfe7dbb001}
+      \strng{authornamehash}{5a37e052c2087cc1923f27dfe7dbb001}
+      \strng{authorfullhash}{5a37e052c2087cc1923f27dfe7dbb001}
+      \strng{authorfullhashraw}{5a37e052c2087cc1923f27dfe7dbb001}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{n.d. Accessed: 2026-07-29}
+      \field{title}{Process Capability (Cp \& Cpk) Explained Clearly}
+      \verb{urlraw}
+      \verb https://sixsigmastudyguide.com/process-capability-cp-cpk/
+      \endverb
+      \verb{url}
+      \verb https://sixsigmastudyguide.com/process-capability-cp-cpk/
+      \endverb
+    \endentry
+    \entry{era5_single_levels_cds}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=52a970923f4f7257d07dacd485361295}{%
+           family={{Copernicus Climate Data Store}},
+           familyi={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{52a970923f4f7257d07dacd485361295}
+      \strng{fullhash}{52a970923f4f7257d07dacd485361295}
+      \strng{fullhashraw}{52a970923f4f7257d07dacd485361295}
+      \strng{bibnamehash}{52a970923f4f7257d07dacd485361295}
+      \strng{authorbibnamehash}{52a970923f4f7257d07dacd485361295}
+      \strng{authornamehash}{52a970923f4f7257d07dacd485361295}
+      \strng{authorfullhash}{52a970923f4f7257d07dacd485361295}
+      \strng{authorfullhashraw}{52a970923f4f7257d07dacd485361295}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Accessed: 2026-08-07}
+      \field{title}{ERA5 hourly data on single levels from 1940 to present}
+      \field{year}{2018}
+      \verb{doi}
+      \verb 10.24381/cds.adbb2d47
+      \endverb
+      \verb{urlraw}
+      \verb https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview
+      \endverb
+      \verb{url}
+      \verb https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview
+      \endverb
     \endentry
   \enddatalist
 \endrefsection

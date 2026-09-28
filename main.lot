@@ -1,14 +1,43 @@
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {1.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Canonical Mission Phases}}{6}{table.caption.14}%
+\contentsline {table}{\numberline {1.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Transfer scenarios}}{7}{table.caption.15}%
+\contentsline {table}{\numberline {1.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Adaptation of Nakajima's Six Big Losses to Mobile Logistics}}{14}{table.caption.20}%
+\contentsline {table}{\numberline {1.4}{\ignorespaces \xpg@aux {}{english}\ignorespaces Common Performance Metrics for Autonomous Vehicles}}{16}{table.caption.22}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {2.1}{\ignorespaces \xpg@aux {}{english}Comparison between \gls {ascii} and Modbus \gls {rtu} protocols}}{19}{table.caption.27}%
+\contentsline {table}{\numberline {2.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Definition of the Six-Level Time Hierarchy}}{25}{table.caption.26}%
+\contentsline {table}{\numberline {2.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Outcome Taxonomy for Quality Assessment in Autonomous Yard Logistics}}{29}{table.caption.29}%
+\contentsline {table}{\numberline {2.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Comparison of OEE, GEE, and TEEP}}{30}{table.caption.30}%
+\contentsline {table}{\numberline {2.4}{\ignorespaces \xpg@aux {}{english}\ignorespaces Weather-Based ODD Exclusion Criteria}}{31}{table.caption.31}%
+\contentsline {table}{\numberline {2.5}{\ignorespaces \xpg@aux {}{english}\ignorespaces Reliability Metric Definitions}}{34}{table.caption.32}%
+\contentsline {table}{\numberline {2.6}{\ignorespaces \xpg@aux {}{english}\ignorespaces Process-Quality Indicators}}{34}{table.caption.33}%
+\contentsline {table}{\numberline {2.7}{\ignorespaces \xpg@aux {}{english}\ignorespaces Human Supervision and Autonomy Indicators}}{35}{table.caption.34}%
+\contentsline {table}{\numberline {2.8}{\ignorespaces \xpg@aux {}{english}\ignorespaces Capacity and Throughput Indicators}}{35}{table.caption.35}%
+\contentsline {table}{\numberline {2.9}{\ignorespaces \xpg@aux {}{english}\ignorespaces Environmental Influence Indicators}}{36}{table.caption.36}%
+\contentsline {table}{\numberline {2.10}{\ignorespaces \xpg@aux {}{english}\ignorespaces Availability of source-data inputs for OEE computation}}{40}{table.caption.39}%
+\contentsline {table}{\numberline {2.11}{\ignorespaces \xpg@aux {}{english}\ignorespaces Main information groups in the Transfers entity}}{42}{table.caption.41}%
+\contentsline {table}{\numberline {2.12}{\ignorespaces \xpg@aux {}{english}\ignorespaces Entities and levels of granularity in the canonical data model}}{43}{table.caption.42}%
+\contentsline {table}{\numberline {2.13}{\ignorespaces \xpg@aux {}{english}\ignorespaces Mapping of the OEE time hierarchy to the canonical data model}}{43}{table.caption.43}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces \xpg@aux {}{english}\gls {pwd12} Visibility Sensor Measurement Characteristics (See PWD Datasheet\blx@tocontentsinit {0}\cite {vaisala2025pwd12})}}{27}{table.caption.34}%
-\contentsline {table}{\numberline {3.2}{\ignorespaces \xpg@aux {}{english}Recommended Pin-out Connections for Basic Operation}}{30}{table.caption.36}%
-\contentsline {table}{\numberline {3.3}{\ignorespaces \xpg@aux {}{english}PWD12 Configuration Commands (see PWD12 Manual\blx@tocontentsinit {0}\cite {vaisala2015pwd}, Chap. 5)}}{32}{table.caption.38}%
-\contentsline {table}{\numberline {3.4}{\ignorespaces \xpg@aux {}{english}PWD12 RAINCAP Calibration Commands (see PWD12 Manual\blx@tocontentsinit {0}\cite {vaisala2015pwd}, Chap. 5)}}{32}{table.caption.39}%
-\contentsline {table}{\numberline {3.5}{\ignorespaces \xpg@aux {}{english}PWD12 Status and Diagnostic Commands (see PWD12 Manual\blx@tocontentsinit {0}\cite {vaisala2015pwd}, Chap. 5)}}{33}{table.caption.40}%
-\contentsline {table}{\numberline {3.6}{\ignorespaces \xpg@aux {}{english}Pin-out connections used for bench testing}}{34}{table.caption.42}%
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces \xpg@aux {}{english}Pin-out connections used for PWD12 integration into the weather station}}{39}{table.caption.47}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces \xpg@aux {}{english}Key development tools and technologies}}{42}{table.caption.51}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces \xpg@aux {}{english}Local storage option comparison for embedded buffering \blx@tocontentsinit {0}\cite {sqlite-whentouse,sqlite-acid}.}}{46}{table.caption.54}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Automatic-manual cross-matching rules}}{47}{table.caption.46}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Population of the canonical entities}}{48}{table.caption.47}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Configured and derived inputs used in the implementation}}{50}{table.caption.48}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces \xpg@aux {}{english}\ignorespaces Weather variables used for ODD classification}}{51}{table.caption.49}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces \xpg@aux {}{english}\ignorespaces Hourly weather-based ODD exclusion criteria}}{52}{table.caption.50}%
+\contentsline {table}{\numberline {3.6}{\ignorespaces \xpg@aux {}{english}\ignorespaces Consolidated OEE time hierarchy}}{54}{table.caption.52}%
+\contentsline {table}{\numberline {3.7}{\ignorespaces \xpg@aux {}{english}\ignorespaces Performance decomposition of the consolidated dataset}}{55}{table.caption.54}%
+\contentsline {table}{\numberline {3.8}{\ignorespaces \xpg@aux {}{english}\ignorespaces Engineering reliability indicators for the consolidated industrial dataset}}{56}{table.caption.55}%
+\contentsline {table}{\numberline {3.9}{\ignorespaces \xpg@aux {}{english}\ignorespaces Pareto analysis of recorded unplanned downtime}}{56}{table.caption.56}%
+\contentsline {table}{\numberline {3.10}{\ignorespaces \xpg@aux {}{english}\ignorespaces Process-quality indicators for the consolidated dataset}}{57}{table.caption.57}%
+\contentsline {table}{\numberline {3.11}{\ignorespaces \xpg@aux {}{english}\ignorespaces Transfer execution-time capability by scenario}}{58}{table.caption.59}%
+\contentsline {table}{\numberline {3.12}{\ignorespaces \xpg@aux {}{english}\ignorespaces Main information groups in the \texttt {Mission\_phases} entity}}{60}{table.caption.61}%
+\contentsline {table}{\numberline {3.13}{\ignorespaces \xpg@aux {}{english}\ignorespaces Mission-phase nominal-duration configuration}}{61}{table.caption.62}%
+\contentsline {table}{\numberline {3.14}{\ignorespaces \xpg@aux {}{english}\ignorespaces Main downtime sources attributable to mission phases}}{62}{table.caption.64}%
+\contentsline {table}{\numberline {3.15}{\ignorespaces \xpg@aux {}{english}\ignorespaces Speed-loss types by mission phase}}{63}{table.caption.66}%
+\contentsline {table}{\numberline {3.16}{\ignorespaces \xpg@aux {}{english}\ignorespaces Diagnostic metrics by mission phase}}{64}{table.caption.68}%
+\contentsline {table}{\numberline {3.17}{\ignorespaces \xpg@aux {}{english}\ignorespaces Mission-phase execution-time capability}}{65}{table.caption.69}%
+\contentsline {table}{\numberline {3.18}{\ignorespaces \xpg@aux {}{english}\ignorespaces Validation checks applied to the implemented framework}}{67}{table.caption.71}%
+\contentsline {table}{\numberline {3.19}{\ignorespaces \xpg@aux {}{english}\ignorespaces Target values of the validation profiles}}{68}{table.caption.73}%
+\contentsline {table}{\numberline {3.20}{\ignorespaces \xpg@aux {}{english}\ignorespaces Cross-profile comparison of the controlled validation results}}{69}{table.caption.74}%
+\contentsline {table}{\numberline {3.21}{\ignorespaces \xpg@aux {}{english}\ignorespaces Execution-time capability across the validation profiles}}{70}{table.caption.76}%
+\contentsline {table}{\numberline {3.22}{\ignorespaces \xpg@aux {}{english}\ignorespaces Cross-profile comparison of generated and effective downtime}}{70}{table.caption.77}%
+\contentsline {table}{\numberline {3.23}{\ignorespaces \xpg@aux {}{english}\ignorespaces Phase Execution Speed Rate across the validation profiles}}{74}{table.caption.82}%
